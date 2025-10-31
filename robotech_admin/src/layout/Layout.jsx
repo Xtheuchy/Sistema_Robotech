@@ -11,7 +11,7 @@ const Layout = ({children}) =>{
                 <Header
                 className="bg-gray-100 flex justify-between items-center p-2 border-b border-gray-600"
                 />
-                <main className="flex-1 overflow-y-auto p-1 bg-red-600">
+                <main className="flex-1 overflow-y-auto p-1">
                     {children}
                 </main>
             </div>

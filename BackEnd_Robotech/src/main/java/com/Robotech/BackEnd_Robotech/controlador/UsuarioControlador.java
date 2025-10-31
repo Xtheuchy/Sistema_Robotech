@@ -10,19 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usuarios") // Define la ruta base para todos los endpoints: /api/usuarios
-@CrossOrigin(origins = "*") // Permite que cualquier front-end pueda acceder a esta API (ajustar en producción)
+@RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioControlador {
-
     private final IUsuarioServicio usuarioServicio;
     @Autowired
     public UsuarioControlador(IUsuarioServicio usuarioServicio) {
         this.usuarioServicio = usuarioServicio;
     }
-
     // --- 1. REGISTRO / CREAR USUARIO (POST) ---
-    // Ruta: POST /api/usuarios/registrar
-    // Esta ruta debe ser pública (permit All) en SecurityConfiguration
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
         try {
@@ -31,12 +27,14 @@ public class UsuarioControlador {
 
             // Retorna el objeto creado con el ID generado y un estado 201 CREATED.
             return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
+
         } catch (Exception e) {
             // Captura errores de validación del servicio (duplicados, rol no existe)
             // Retorna el mensaje de error y un estado 400 BAD REQUEST.
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    // --- 2. ACTUALIZAR USUARIO (PUT) ---
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
         try {
@@ -51,16 +49,14 @@ public class UsuarioControlador {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST); // 400
         }
     }
-    // --- 2. LISTAR TODOS LOS USUARIOS (GET) ---
-    // Ruta: GET /api/usuarios
+    // --- 3. LISTAR TODOS LOS USUARIOS (GET) ---
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() throws Exception {
         List<Usuario> usuarios = usuarioServicio.listarUsuarios();
         return ResponseEntity.ok(usuarios); // Retorna la lista con estado 200 OK.
     }
 
-    // --- 3. OBTENER USUARIO POR ID (GET) ---
-    // Ruta: GET /api/usuarios/{id}
+    // --- 4. OBTENER USUARIO POR ID (GET) ---
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Integer id) {
         try {
@@ -72,8 +68,7 @@ public class UsuarioControlador {
         }
     }
 
-    // --- 4. ELIMINAR USUARIO POR ID (DELETE) ---
-    // Ruta: DELETE /api/usuarios/{id}
+    // --- 5. ELIMINAR USUARIO POR ID (DELETE) ---
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id) {
         try {

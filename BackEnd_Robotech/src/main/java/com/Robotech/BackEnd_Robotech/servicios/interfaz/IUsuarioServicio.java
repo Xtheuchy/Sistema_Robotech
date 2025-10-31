@@ -11,4 +11,6 @@ public interface IUsuarioServicio {
     public Usuario obtenerUsuarioPorId(Integer id) throws Exception;
     public void eliminarUsuario(Integer id)throws Exception;
     public Usuario actualizarUsuario(Integer id, Usuario usuario)throws Exception ;
+    public Usuario obtenerUsuarioPorCorreo(String correo) throws Exception;
+    public boolean verificarPassword(String rawPassword, String encodedPassword);
 }

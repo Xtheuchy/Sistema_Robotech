@@ -37,7 +37,7 @@ public class Usuario {
 
      @Column
      private String foto;
-    // Constructor para registro SIN foto
+
      public Usuario(String nombres, String correo, String dni, String password, Rol rol) {
         this.nombres = nombres;
         this.correo = correo;

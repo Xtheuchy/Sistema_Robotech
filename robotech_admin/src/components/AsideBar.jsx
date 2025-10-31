@@ -8,10 +8,10 @@ const AsideBar = ({className}) =>{
             </picture>
             <nav className='pt-3'>
                 <ul className='flex flex-col gap-3'>
-                    <li className='cursor-pointer p-3 hover:bg-sky-200 transition-all rounded-lg'><i class="fa-solid fa-chart-line"></i> <Link to="/">DashBoard</Link></li>
-                    <li className='cursor-pointer p-3 hover:bg-sky-200 transition-all rounded-lg'><i class="fa-solid fa-trophy"></i> Torneos</li>
-                    <li className='cursor-pointer p-3 hover:bg-sky-200 transition-all rounded-lg'><i class="fa-solid fa-users"></i> Usuarios</li>
-                    <li className='cursor-pointer p-3 hover:bg-sky-200 transition-all rounded-lg'><i class="fa-solid fa-square-xmark"></i> Cerrar sesión</li>
+                    <li className='cursor-pointer hover:bg-sky-200 transition-all rounded-lg'><Link className='block p-3' to="/"><i class="fa-solid fa-chart-line"></i> DashBoard</Link></li>
+                    <li className='cursor-pointer hover:bg-sky-200 transition-all rounded-lg'><Link className='block p-3' to="/sobre"><i class="fa-solid fa-trophy"></i> Torneos</Link></li>
+                    <li className='cursor-pointer hover:bg-sky-200 transition-all rounded-lg'><Link className='block p-3' to="/sobre"><i class="fa-solid fa-users"></i>Usuarios</Link></li>
+                    <li className='cursor-pointer hover:bg-sky-200 hover:text-red-500 transition-all rounded-lg'><Link className='block p-3' to="/sobre"><i class="fa-solid fa-square-xmark"></i> Cerrar sesión</Link></li>
                 </ul>
             </nav>
         </aside>
