@@ -1,17 +1,20 @@
+import { useAuth } from "../context/AuthContext";
+
 const Header = ({className}) => {
+    const {usuario, logout } = useAuth();
     return (
         <header className={className}>
             <h1 className="text-2xl font-bold">Panel de Administración</h1>
             <div className="flex w-55 gap-2">
                 <picture>
                     <img 
-                    className="w-[50px] h-[50px] rounded-[100%] object-cover"
-                    src="https://fotografias.lasexta.com/clipping/cmsimages02/2019/11/14/66C024AF-E20B-49A5-8BC3-A21DD22B96E6/default.jpg?crop=1300,731,x0,y0&width=1280&height=720&optimize=low" 
+                    className="w-[50px] h-[50px] object-cover"
+                    src={usuario.foto}
                     alt="perfil de usuario" />
                 </picture>
                 <div>
-                    <p className="font-medium">Administrador</p>
-                    <p className="font-sans text-[14px] font-light">Elvis@gmail.com</p>
+                    <p className="font-medium">{usuario.rol}</p>
+                    <p className="font-sans text-[14px] font-light">{usuario.correo}</p>
                 </div>
             </div>
         </header>

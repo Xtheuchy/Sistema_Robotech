@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import './App.css'
 import RutaProtegida from './RutaProtegida';
 import AppPrivada from './AppPrivada';
@@ -8,35 +7,36 @@ import RutaPublica from './RutaPublica';
 import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+  // --- ¡El estado [isLoggedIn] y handleLogin se fueron! ---
+  // AuthContext ahora maneja esto globalmente.
+  
   return (
     <Routes>
       {/* --- RUTAS PÚBLICAS --- */}
-      {/* Estas se pueden ver sin iniciar sesión */}
+      {/* (Protegidas por RutaPublica para que un usuario 
+           logueado no vea el login) */}
       <Route
         path="/login"
         element={
-          <RutaPublica isAuth={isLoggedIn}>
-            <LoginPage onLoginSuccess={handleLogin} />
+          <RutaPublica>
+            <LoginPage/> 
           </RutaPublica>
         }
       />
+
       {/* --- RUTAS PRIVADAS --- */}
-      {/* path="/*" significa "atrapa todo lo demás" */}
+      {/* (Protegidas por RutaProtegida para que solo 
+           usuarios logueados puedan verlas) */}
       <Route
         path="/*"
         element={
-          <RutaProtegida isAuth={isLoggedIn}>
+          <RutaProtegida>
             <AppPrivada />
           </RutaProtegida>
         }
       />
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,6 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
+import com.Robotech.BackEnd_Robotech.modelo.DTO.UsuarioDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio; // Inyectamos la interfaz IUsuarioServicio
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = "*")
-public class UsuarioControlador {
+public class UsuarioController {
     private final IUsuarioServicio usuarioServicio;
     @Autowired
-    public UsuarioControlador(IUsuarioServicio usuarioServicio) {
+    public UsuarioController(IUsuarioServicio usuarioServicio) {
         this.usuarioServicio = usuarioServicio;
     }
     // --- 1. REGISTRO / CREAR USUARIO (POST) ---
@@ -51,9 +52,21 @@ public class UsuarioControlador {
     }
     // --- 3. LISTAR TODOS LOS USUARIOS (GET) ---
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarUsuarios() throws Exception {
+    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() throws Exception {
         List<Usuario> usuarios = usuarioServicio.listarUsuarios();
-        return ResponseEntity.ok(usuarios); // Retorna la lista con estado 200 OK.
+        // 2. Mapear la lista usando Streams
+        List<UsuarioDTO> usuariosDTO = usuarios.stream()
+                .map(usuario -> new UsuarioDTO(
+                        usuario.getId(),
+                        usuario.getNombres(),
+                        usuario.getCorreo(),
+                        usuario.getRol().getNombre(),
+                        usuario.getDni(),
+                        usuario.getFoto()
+                ))
+                .toList(); // .collect(Collectors.toList()) en Java < 16
+        // 3. Retornar la respuesta
+        return ResponseEntity.ok(usuariosDTO);
     }
 
     // --- 4. OBTENER USUARIO POR ID (GET) ---

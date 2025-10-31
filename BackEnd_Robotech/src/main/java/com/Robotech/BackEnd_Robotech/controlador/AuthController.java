@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController{
     @Autowired
     private UsuarioServiceImp usuarioServiceImp; // Servicio que gestiona usuarios
-
     // Login de usuarios
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO usuarioLoginDTO) {
@@ -29,7 +28,6 @@ public class AuthController{
             if (!usuarioServiceImp.verificarPassword(usuarioLoginDTO.getPassword(), usuarioValidado.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
             }
-
             UsuarioDTO usuarioDTO = new UsuarioDTO(
                     usuarioValidado.getId(),
                     usuarioValidado.getNombres(),
