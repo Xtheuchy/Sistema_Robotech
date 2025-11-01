@@ -1,7 +1,10 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
+import com.Robotech.BackEnd_Robotech.modelo.DTO.RegistroDTO;
 import com.Robotech.BackEnd_Robotech.modelo.DTO.UsuarioDTO;
+import com.Robotech.BackEnd_Robotech.modelo.Rol;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRolServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio; // Inyectamos la interfaz IUsuarioServicio
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,15 +18,26 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class UsuarioController {
     private final IUsuarioServicio usuarioServicio;
+    private final IRolServicio rolServicio;
     @Autowired
-    public UsuarioController(IUsuarioServicio usuarioServicio) {
+    public UsuarioController(IUsuarioServicio usuarioServicio, IRolServicio rolServicio) {
         this.usuarioServicio = usuarioServicio;
+        this.rolServicio = rolServicio;
     }
     // --- 1. REGISTRO / CREAR USUARIO (POST) ---
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> registrarUsuario(@RequestBody RegistroDTO registroDTO) {
         try {
             // Llama al servicio, que encripta la contraseña, valida el DNI/Correo/Nombre y asigna el Rol.
+            Rol roldb = rolServicio.obtenerPorNombre(registroDTO.getRol());
+            Usuario usuario = new Usuario(
+                    registroDTO.getNombres(),
+                    registroDTO.getCorreo(),
+                    registroDTO.getDni(),
+                    registroDTO.getPassword(),
+                    registroDTO.getFoto(),
+                    roldb
+                    );
             Usuario nuevoUsuario = usuarioServicio.agregarUsuario(usuario);
 
             // Retorna el objeto creado con el ID generado y un estado 201 CREATED.
@@ -37,8 +51,10 @@ public class UsuarioController {
     }
     // --- 2. ACTUALIZAR USUARIO (PUT) ---
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
+    public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody RegistroDTO usuarioDTO) {
         try {
+            Rol roldb = rolServicio.obtenerPorNombre(usuarioDTO.getRol());
+            Usuario usuario = new Usuario(usuarioDTO.getNombres(),usuarioDTO.getCorreo(),usuarioDTO.getDni(),usuarioDTO.getPassword(),usuarioDTO.getFoto(),roldb);
             Usuario usuarioActualizado = usuarioServicio.actualizarUsuario(id, usuario);
             return ResponseEntity.ok(usuarioActualizado); // 200 OK
         } catch (Exception e) {
@@ -80,7 +96,6 @@ public class UsuarioController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
     // --- 5. ELIMINAR USUARIO POR ID (DELETE) ---
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id) {

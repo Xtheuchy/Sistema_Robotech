@@ -45,19 +45,6 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         // 2. Encriptar la contraseña
         // Se toma la contraseña en texto plano y se reemplaza por el hash
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-
-        // 3. Asignar el Rol
-        Rol rolEntidad = usuario.getRol();
-        if (rolEntidad == null || rolEntidad.getId() == 0) {
-            throw new Exception("Error: Debe proporcionar un ID de rol válido (1, 2 o 3).");
-        }
-        Optional<Rol> rolBD = rolRepositorio.findById(rolEntidad.getId());
-        if (rolBD.isEmpty()) {
-            throw new Exception("Error: El ID de Rol " + rolEntidad.getId() + " no existe en la base de datos.");
-        }
-        // Reemplazamos el Rol simple (solo ID) que vino del JSON por la entidad Rol completa de la BD.
-        usuario.setRol(rolBD.get());
-
         // 4. Guardar el usuario en la base de datos
         return usuarioRepositorio.save(usuario);
     }
