@@ -23,7 +23,7 @@ const App = () => {
           </RutaPublica>
         }
       />
-
+      
       {/* --- RUTAS PRIVADAS --- */}
       {/* (Protegidas por RutaProtegida para que solo 
            usuarios logueados puedan verlas) */}
