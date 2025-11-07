@@ -1,9 +1,8 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 // 1. Crear el Contexto
 // Este es el objeto que los componentes "consumirán"
 const AuthContext = createContext(null);
-// 2. Crear el Proveedor (El componente "cerebro")
+// 2. Crear el Proveedor
 export const AuthProvider = ({ children }) => {
   // 3. El estado global que guarda la info del usuario
   const [usuario, setUsuario] = useState(null);

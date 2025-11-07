@@ -12,12 +12,10 @@ import java.util.List;
 public class RolServiceImp implements IRolServicio {
     @Autowired
     private IRolRepositorio rolRepositorio;
-
     @Override
     public List<Rol> listarRoles() throws Exception {
         return rolRepositorio.findAll();
     }
-
     @Override
     public Rol agregarRol(Rol rol) throws Exception {
         return rolRepositorio.save(rol);

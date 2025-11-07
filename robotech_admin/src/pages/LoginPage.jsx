@@ -12,6 +12,7 @@ function LoginPage() {
     const [loading, setLoading] = useState(false);
     // 3. Obtiene la función "login" del CONTEXTO
     const { login } = useAuth();
+    
     // 4. Hook para redirigir
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
@@ -38,7 +39,7 @@ function LoginPage() {
     return (
         <div className="login-container min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <form onSubmit={handleSubmit} className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-                <h2 className="text-3xl font-bold text-center text-gray-900">Iniciar Sesión</h2>
+                <h2 className="text-3xl font-bold text-center text-gray-900">Iniciar Sesión <br/> ROBOTECH</h2>
                 <div className="form-group">
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Correo:</label>
                     <input
@@ -75,5 +76,4 @@ function LoginPage() {
         </div>
     );
 }
-
 export default LoginPage;

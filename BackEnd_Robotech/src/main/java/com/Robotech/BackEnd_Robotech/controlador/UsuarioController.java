@@ -5,7 +5,7 @@ import com.Robotech.BackEnd_Robotech.modelo.DTO.UsuarioDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Rol;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRolServicio;
-import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio; // Inyectamos la interfaz IUsuarioServicio
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +19,16 @@ import java.util.List;
 public class UsuarioController {
     private final IUsuarioServicio usuarioServicio;
     private final IRolServicio rolServicio;
+
     @Autowired
     public UsuarioController(IUsuarioServicio usuarioServicio, IRolServicio rolServicio) {
         this.usuarioServicio = usuarioServicio;
         this.rolServicio = rolServicio;
     }
-    // --- 1. REGISTRO / CREAR USUARIO (POST) ---
+    // --- 1. REGISTRO USUARIO (POST) ---
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarUsuario(@RequestBody RegistroDTO registroDTO) {
         try {
-            // Llama al servicio, que encripta la contraseña, valida el DNI/Correo/Nombre y asigna el Rol.
             Rol roldb = rolServicio.obtenerPorNombre(registroDTO.getRol());
             Usuario usuario = new Usuario(
                     registroDTO.getNombres(),
@@ -42,9 +42,7 @@ public class UsuarioController {
 
             // Retorna el objeto creado con el ID generado y un estado 201 CREATED.
             return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
-
         } catch (Exception e) {
-            // Captura errores de validación del servicio (duplicados, rol no existe)
             // Retorna el mensaje de error y un estado 400 BAD REQUEST.
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -62,7 +60,7 @@ public class UsuarioController {
             if (e.getMessage().contains("no encontrado")) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND); // 404
             }
-            // Cualquier otro error (duplicado, rol no existe)
+            // Cualquier otro error en caso de duplicado o no encontrado
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST); // 400
         }
     }
@@ -70,7 +68,7 @@ public class UsuarioController {
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarUsuarios() throws Exception {
         List<Usuario> usuarios = usuarioServicio.listarUsuarios();
-        // 2. Mapear la lista usando Streams
+
         List<UsuarioDTO> usuariosDTO = usuarios.stream()
                 .map(usuario -> new UsuarioDTO(
                         usuario.getId(),
@@ -80,8 +78,8 @@ public class UsuarioController {
                         usuario.getDni(),
                         usuario.getFoto()
                 ))
-                .toList(); // .collect(Collectors.toList()) en Java < 16
-        // 3. Retornar la respuesta
+                .toList();
+        // Retornar la respuesta
         return ResponseEntity.ok(usuariosDTO);
     }
 
@@ -90,9 +88,9 @@ public class UsuarioController {
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Integer id) {
         try {
             Usuario usuario = usuarioServicio.obtenerUsuarioPorId(id);
-            return ResponseEntity.ok(usuario); // Retorna el usuario con estado 200 OK.
+            return ResponseEntity.ok(usuario); // Retorna el usuario con estado 200 OK
         } catch (Exception e) {
-            //Si el servicio lanza la excepción (Usuario no encontrado), devolvemos 404 NOT FOUND.
+            //Si el servicio lanza la excepción es usuario no fue encontrado, devolvemos 404 NOT FOUND
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
@@ -101,10 +99,10 @@ public class UsuarioController {
     public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id) {
         try {
             usuarioServicio.eliminarUsuario(id);
-            // Si la eliminación es exitosa, se devuelve 204 NO CONTENT (sin cuerpo de respuesta).
+            // Si la eliminación es exitosa, se devuelve 204 NO CONTENT
             return new ResponseEntity<>("Usuario con ID " + id + " eliminado correctamente.", HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            // Si el servicio lanza la excepción (Usuario no encontrado), devolvemos 404 NOT FOUND.
+            //Devolvemos 404 NOT FOUND.
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }

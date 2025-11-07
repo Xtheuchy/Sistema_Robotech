@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class AuthController{
     @Autowired
-    private UsuarioServiceImp usuarioServiceImp; // Servicio que gestiona usuarios
+    private UsuarioServiceImp usuarioServiceImp;
+
     // Login de usuarios
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO usuarioLoginDTO) {
         try {
             Usuario usuarioValidado = usuarioServiceImp.obtenerUsuarioPorCorreo(usuarioLoginDTO.getCorreo());
-
             if (usuarioValidado == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
             }
@@ -36,9 +36,7 @@ public class AuthController{
                     usuarioValidado.getDni(),
                     usuarioValidado.getFoto()
             );
-
             return ResponseEntity.ok(usuarioDTO);
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor: " + e.getMessage());
         }

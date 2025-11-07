@@ -18,7 +18,6 @@ public class UsuarioServiceImp implements IUsuarioServicio {
     private final IUsuarioRepositorio usuarioRepositorio;
     private final IRolRepositorio rolRepositorio;
     private final PasswordEncoder passwordEncoder;
-
     @Autowired
     public UsuarioServiceImp(IUsuarioRepositorio usuarioRepositorio, IRolRepositorio rolRepositorio, PasswordEncoder passwordEncoder) {
         this.usuarioRepositorio = usuarioRepositorio;
@@ -29,7 +28,6 @@ public class UsuarioServiceImp implements IUsuarioServicio {
     public List<Usuario> listarUsuarios() throws Exception{
         return usuarioRepositorio.findAll();
     }
-
     @Override
     public Usuario agregarUsuario(Usuario usuario) throws Exception{
         // 1. Validaciones: Verificar si ya existe un nombre, correo o DNI.
@@ -45,7 +43,7 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         // 2. Encriptar la contraseña
         // Se toma la contraseña en texto plano y se reemplaza por el hash
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        // 4. Guardar el usuario en la base de datos
+        // 3. Guardar el usuario en la base de datos
         return usuarioRepositorio.save(usuario);
     }
     @Override
@@ -53,7 +51,6 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         return usuarioRepositorio.findById(id)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + id));
     }
-
     @Override
     public void eliminarUsuario(Integer id) throws Exception {
         // Buscamos para verificar la existencia antes de eliminar
@@ -61,7 +58,6 @@ public class UsuarioServiceImp implements IUsuarioServicio {
                 .orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + id));
         usuarioRepositorio.delete(usuario);
     }
-
     @Override
     public Usuario actualizarUsuario(Integer id, Usuario usuarioActualizado) throws Exception {
 
@@ -72,25 +68,23 @@ public class UsuarioServiceImp implements IUsuarioServicio {
 
         // 2. Manejo de la Contraseña
         if (usuarioActualizado.getPassword() != null && !usuarioActualizado.getPassword().isEmpty()) {
-            // Caso A: El usuario envió una NUEVA contraseña. La encriptamos.
+
             usuarioExistente.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
         }
-        // Caso B: El usuario NO envió una contraseña (password es null o vacío).
-        // No hacemos nada, y se conserva la contraseña encriptada que ya estaba.
 
-        // 3. Validar Duplicados (Nombres)
-        // Revisamos si el nuevo nombre ya existe Y si pertenece a un ID DIFERENTE al nuestro.
+        // 3. Validar Duplicados nombre
+        // Revisamos si el nuevo nombre ya existe Y si pertenece a un ID
         Optional<Usuario> usuarioPorNombre = usuarioRepositorio.findByNombres(usuarioActualizado.getNombres());
         if (usuarioPorNombre.isPresent() && usuarioPorNombre.get().getId() != id) {
             throw new Exception("Error: El nombre de usuario '" + usuarioActualizado.getNombres() + "' ya está en uso por otro usuario.");
         }
 
-        // 4. Validar Duplicados (Correo)
+        // 4. Validar Duplicados Correo
         Optional<Usuario> usuarioPorCorreo = usuarioRepositorio.findByCorreo(usuarioActualizado.getCorreo());
         if (usuarioPorCorreo.isPresent() && usuarioPorCorreo.get().getId() != id) {
             throw new Exception("Error: El correo '" + usuarioActualizado.getCorreo() + "' ya está en uso por otro usuario.");
         }
-        // 5. Validar Duplicados (DNI)
+        // 5. Validar Duplicados DNI
         Optional<Usuario> usuarioPorDni = usuarioRepositorio.findByDni(usuarioActualizado.getDni());
         if (usuarioPorDni.isPresent() && usuarioPorDni.get().getId() != id) {
             throw new Exception("Error: El DNI '" + usuarioActualizado.getDni() + "' ya está registrado por otro usuario.");
@@ -101,7 +95,7 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         usuarioExistente.setDni(usuarioActualizado.getDni());
         usuarioExistente.setFoto(usuarioActualizado.getFoto());
 
-        // 7. Actualizar el Rol (Buscamos el rol por el ID enviado)
+        // 7. Actualizar el Rol
         Rol rolEntidad = usuarioActualizado.getRol();
         if (rolEntidad == null || rolEntidad.getId() == 0) {
             throw new Exception("Error: Debe proporcionar un ID de rol válido (1, 2 o 3).");

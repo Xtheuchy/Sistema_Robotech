@@ -21,7 +21,7 @@ const AsideBar = ({ className }) => {
                         <Link className='block p-3' to="/"><i class="fa-solid fa-chart-line"></i> DashBoard</Link>
                     </li>
                     <li className='cursor-pointer hover:bg-sky-200 transition-all rounded-lg'>
-                        <Link className='block p-3' to="/usuarios"><i class="fa-solid fa-users"></i>Usuarios</Link>
+                        <Link className='block p-3' to="/usuarios"><i class="fa-solid fa-users"></i> Usuarios</Link>
                     </li>
                     <li className='cursor-pointer hover:bg-sky-200 transition-all rounded-lg'>
                         <Link className='block p-3' to="/usuarios"><i class="fa-solid fa-trophy"></i> Torneos</Link>

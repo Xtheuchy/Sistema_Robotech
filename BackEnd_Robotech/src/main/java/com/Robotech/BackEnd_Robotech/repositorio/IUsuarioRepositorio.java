@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface IUsuarioRepositorio extends JpaRepository<Usuario , Integer> {
-
     public Optional<Usuario> findByNombres(String nombres);
     public Boolean existsByNombres(String nombres);
 

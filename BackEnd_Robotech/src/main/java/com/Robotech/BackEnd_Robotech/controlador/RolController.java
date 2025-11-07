@@ -23,14 +23,13 @@ public class RolController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarRol(@RequestBody Rol rol) {
         try {
-            // Llama al servicio, que encripta la contraseña, valida el DNI/Correo/Nombre y asigna el Rol.
+
             Rol nuevoRol = rolServicio.agregarRol(rol);
 
             // Retorna el objeto creado con el ID generado y un estado 201 CREATED.
             return new ResponseEntity<>(rol, HttpStatus.CREATED);
 
         } catch (Exception e) {
-            // Captura errores de validación del servicio (duplicados, rol no existe)
             // Retorna el mensaje de error y un estado 400 BAD REQUEST.
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

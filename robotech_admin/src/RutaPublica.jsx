@@ -1,18 +1,15 @@
 import React from 'react';
-import { useAuth } from './context/AuthContext'; // <-- 1. Importa el hook
+import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
-// Ya no recibe 'isAuth' como prop
 const RutaPublica = ({ children }) => {
   
-  const { usuario } = useAuth(); // 2. Lee el usuario desde el contexto
+  const { usuario } = useAuth(); // Lee el usuario desde el contexto
 
   if (usuario) {
-    // 3. Si SÍ hay usuario, redirige al panel (path="/*")
-    return <Navigate to="/" replace />; // (Asumiendo que "/" es tu ruta privada principal)
+    return <Navigate to="/" replace />;
   }
-
-  // 4. Si NO hay usuario, muestra los hijos (<LoginPage />)
+  
   return children; 
 };
 export default RutaPublica;

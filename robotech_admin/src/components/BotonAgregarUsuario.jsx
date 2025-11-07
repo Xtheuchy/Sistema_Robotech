@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { usuarioServicio } from '../service/userService';
 
 function BotonAgregarUsuario({ enUsuarioAgregado }) {
-
-    // 1. Estado para controlar si el modal está abierto o cerrado
+    // 1. Estado para controlar si el modal
     const [modalAbierto, setModalAbierto] = useState(false);
 
     // 2. Estado para los datos del formulario
@@ -46,21 +45,17 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
 
     // 7. Manejador para enviar el formulario
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Evita que la página se recargue
+        e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            // Llama al servicio de registro (que creamos antes)
             await usuarioServicio.registrarUsuario(formData);
-
-            // Si tiene éxito
             alert('¡Usuario registrado con éxito!');
             cerrarModal();
             if (enUsuarioAgregado) {
                 enUsuarioAgregado();
             }
-
         } catch (err) {
             // Muestra el error que viene del backend
             setError(err.toString());
@@ -77,7 +72,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                 Registrar Nuevo Usuario
             </button>
 
-            {/* --- El Modal (solo se muestra si modalAbierto es true) --- */}
+            {/* --- El Modal -> solo se muestra si esta abierto (TRUE) --- */}
             {modalAbierto && (
                 <div className="fixed inset-0 z-50 bg-opacity-50 flex items-center justify-center p-4 bg-[#5e5e5e67]" onClick={cerrarModal}>
                     <div className=" bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
@@ -143,14 +138,13 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         required
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
                                     >
+                                        <option value="" disabled selected hidden>-- Selecciona un Rol --</option>
                                         <option value="Administrador">Administrador</option>
-                                        <option value="Participante">Participante</option>
                                         <option value="Juez">Juez</option>
-                                        <option value="Dueño de club">Dueño club</option>
                                     </select>
                                 </div>
 
-                                {/* Foto (URL) */}
+                                {/* Foto URL */}
                                 <div className="form-group mb-4">
                                     <label htmlFor="foto" className="block text-sm font-medium text-gray-700 mb-1">Foto (URL):</label>
                                     <input
@@ -181,7 +175,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                     <small className="text-xs text-gray-500 mt-1 block">{passwordTitle}</small>
                                 </div>
 
-                                {/* --- Botón de Enviar (Dentro del Modal) --- */}
+                                {/* --- Botón de Enviar--- */}
                                 <div className="form-actions">
                                     <button
                                         type="submit"

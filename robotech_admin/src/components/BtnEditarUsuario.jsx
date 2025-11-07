@@ -14,8 +14,6 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
         setError(null); // Limpia errores al cerrar
     };
 
-    // --- LÓGICA DEL MODAL ---
-
     // 1. Estado para los datos del formulario
     const [formData, setFormData] = useState({
         nombres: '',
@@ -29,7 +27,6 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // 3. Efecto para pre-cargar el formulario CADA VEZ que el modal se abre
     useEffect(() => {
         // Solo carga los datos si el modal está abierto y tenemos un usuario
         if (modalAbierto && usuario) {
@@ -41,9 +38,9 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                 foto: usuario.foto || ''
             });
         }
-    }, [modalAbierto, usuario]); // Depende de 'modalAbierto'
+    }, [modalAbierto, usuario]);
 
-    // 4. Manejador para actualizar el estado del formulario
+    // 3. Manejador para actualizar el estado del formulario
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -52,7 +49,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
         }));
     };
 
-    // 5. Manejador para enviar el formulario
+    // 4. Manejar el envio del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -60,8 +57,8 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
 
         try {
             await usuarioServicio.actualizarUsuario(usuario.id, formData);
-            cerrarModal(); // Cierra el modal
-            onUsuarioActualizado(); // Llama a la función del padre para refrescar la lista
+            cerrarModal(); 
+            onUsuarioActualizado(); //Recarga la pagina
 
         } catch (err) {
             setError(err.toString());
@@ -80,7 +77,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                 Editar
             </button>
 
-            {/* --- El Modal (renderizado condicional) --- */}
+            {/* --- El Modal --- */}
             {modalAbierto && (
                 <div className="modal-overlay fixed inset-0 z-50 bg-[#2525254e] bg-opacity-50 flex items-center justify-center p-4" onClick={cerrarModal}>
                     <div className="modal-content bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
@@ -88,7 +85,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                         <button className="modal-close absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold bg-gray-100 hover:bg-gray-200 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200" onClick={cerrarModal}>&times;</button>
 
                         <div className="p-6">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-6">Editar Usuario (ID: {usuario.id})</h2>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-6">Editar Usuario</h2>
 
                             <form onSubmit={handleSubmit}>
                                 {/* Nombres */}
@@ -96,7 +93,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                     <label htmlFor={`nombres-edit-${usuario.id}`} className="block text-sm font-medium text-gray-700 mb-1">Nombres:</label>
                                     <input
                                         type="text"
-                                        id={`nombres-edit-${usuario.id}`} // ID único
+                                        id={`nombres-edit-${usuario.id}`} 
                                         name="nombres"
                                         value={formData.nombres}
                                         onChange={handleInputChange}
@@ -140,15 +137,11 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         id={`rol-edit-${usuario.id}`}
                                         name="rol"
                                         value={formData.rol}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
+                                        onChange={handleInputChange}                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
                                     >
                                         <option value="" disabled selected hidden>-- Selecciona un Rol --</option>
-                                        <option value="Participante">Participante</option>
                                         <option value="Administrador">Administrador</option>
                                         <option value="Juez">Juez</option>
-                                        <option value="Dueño de club">Dueño club</option>
                                     </select>
                                 </div>
 

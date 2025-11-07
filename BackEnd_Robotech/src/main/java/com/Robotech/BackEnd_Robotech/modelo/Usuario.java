@@ -45,7 +45,6 @@ public class Usuario {
         this.password = password;
         this.rol = rol;
      }
-
      // Constructor para registro CON foto
      public Usuario(String nombres, String correo, String dni, String password, String foto, Rol rol) {
         this.nombres = nombres;
