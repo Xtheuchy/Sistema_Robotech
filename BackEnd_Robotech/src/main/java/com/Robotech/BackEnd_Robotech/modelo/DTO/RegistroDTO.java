@@ -14,4 +14,5 @@ public class RegistroDTO{
     private String dni;
     private String foto;
     private String password;
+    private String estado;
 }

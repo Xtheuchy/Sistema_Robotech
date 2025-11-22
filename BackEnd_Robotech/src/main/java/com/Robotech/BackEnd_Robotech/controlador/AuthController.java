@@ -24,9 +24,11 @@ public class AuthController{
             if (usuarioValidado == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
             }
-
             if (!usuarioServiceImp.verificarPassword(usuarioLoginDTO.getPassword(), usuarioValidado.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
+            }
+            if (!usuarioValidado.getEstado().equalsIgnoreCase("activo")){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("¡Su cuenta no esta activo!");
             }
             UsuarioDTO usuarioDTO = new UsuarioDTO(
                     usuarioValidado.getId(),
@@ -34,7 +36,8 @@ public class AuthController{
                     usuarioValidado.getCorreo(),
                     usuarioValidado.getRol().getNombre(),
                     usuarioValidado.getDni(),
-                    usuarioValidado.getFoto()
+                    usuarioValidado.getFoto(),
+                    usuarioValidado.getEstado()
             );
             return ResponseEntity.ok(usuarioDTO);
         } catch (Exception e) {

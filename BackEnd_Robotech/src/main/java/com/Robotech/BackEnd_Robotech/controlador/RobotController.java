@@ -1,0 +1,54 @@
+package com.Robotech.BackEnd_Robotech.controlador;
+
+import com.Robotech.BackEnd_Robotech.modelo.Categoria;
+import com.Robotech.BackEnd_Robotech.modelo.Competidor;
+import com.Robotech.BackEnd_Robotech.modelo.DTO.RegistroRobotDTO;
+import com.Robotech.BackEnd_Robotech.modelo.Robot;
+import com.Robotech.BackEnd_Robotech.servicios.implementacion.CategoriaServiceImp;
+import com.Robotech.BackEnd_Robotech.servicios.implementacion.CompetidorServiceImp;
+import com.Robotech.BackEnd_Robotech.servicios.implementacion.RobotServiceImp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("api/robot")
+@CrossOrigin(origins = "*")
+public class RobotController {
+    private RobotServiceImp robotService;
+    private CompetidorServiceImp competidorService;
+    private CategoriaServiceImp categoriaService;
+    private List<Robot> robots;
+    private Robot robot;
+    @Autowired
+    public RobotController(RobotServiceImp robotService,CompetidorServiceImp competidorService,CategoriaServiceImp categoriaService){
+        this.robotService = robotService;
+        this.competidorService = competidorService;
+        this.categoriaService = categoriaService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Robot>> listarRobots() throws Exception {
+        robots = robotService.listarRobots();
+        return ResponseEntity.ok(robots);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<List<Robot>> listarRobotPorCompetidor(@PathVariable int id) throws Exception{
+        Competidor competidor = competidorService.buscarPorId(id);
+        robots = robotService.listarPorCompetidor(competidor);
+        return ResponseEntity.ok(robots);
+    }
+    @PostMapping("/registrar/{id}")
+    public ResponseEntity<?> agregarRobot(@PathVariable int id, @RequestBody RegistroRobotDTO registroRobotDTO) throws Exception {
+        Categoria categoria = categoriaService.buscarPorNombre(registroRobotDTO.getCategoria());
+        robot = new Robot(
+                registroRobotDTO.getNombre(),
+                registroRobotDTO.getFoto(),
+                categoria);
+        robot = robotService.agregarRobot(robot,id);
+        return ResponseEntity.ok(robot);
+    }
+
+}

@@ -32,7 +32,7 @@ public class UsuarioServiceImp implements IUsuarioServicio {
     public Usuario agregarUsuario(Usuario usuario) throws Exception{
         // 1. Validaciones: Verificar si ya existe un nombre, correo o DNI.
         if (usuarioRepositorio.existsByNombres(usuario.getNombres())) {
-            throw new Exception("Error: El nombre de usuario '" + usuario.getNombres() + "' ya está en uso.");
+            throw new IllegalArgumentException("Error: El nombre de usuario '" + usuario.getNombres() + "' ya está en uso.");
         }
         if (usuarioRepositorio.existsByCorreo(usuario.getCorreo())) {
             throw new Exception("Error: El correo electrónico '" + usuario.getCorreo() + "' ya está en uso.");
@@ -60,7 +60,6 @@ public class UsuarioServiceImp implements IUsuarioServicio {
     }
     @Override
     public Usuario actualizarUsuario(Integer id, Usuario usuarioActualizado) throws Exception {
-
         // 1. Buscar al usuario existente en la BD
         // Usamos .orElseThrow() para detenernos aquí si el ID no existe.
         Usuario usuarioExistente = usuarioRepositorio.findById(id)
@@ -68,7 +67,6 @@ public class UsuarioServiceImp implements IUsuarioServicio {
 
         // 2. Manejo de la Contraseña
         if (usuarioActualizado.getPassword() != null && !usuarioActualizado.getPassword().isEmpty()) {
-
             usuarioExistente.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
         }
 

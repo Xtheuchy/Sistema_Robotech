@@ -1,18 +1,17 @@
 package com.Robotech.BackEnd_Robotech.modelo.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class UsuarioDTO {
+public class RegistroClubDTO {
     private int id;
     private String nombres;
     private String correo;
-    private String rol;
     private String dni;
     private String foto;
-    private String estado;
+    private String password;
+    private String nombreClub;
+    private String direccion_fiscal;
+    private String telefono;
+    private String logo;
 }

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @Entity
 @NoArgsConstructor
 @Table(name = "usuarios", uniqueConstraints = {
@@ -19,8 +18,8 @@ public class Usuario {
      @GeneratedValue(strategy = GenerationType.IDENTITY)
      private int id;
 
-     @ManyToOne(fetch = FetchType.EAGER) // EAGER: Carga el rol junto con el usuario
-     @JoinColumn(name = "rol_id", nullable = false) // Define la columna de clave foránea
+     @ManyToOne
+     @JoinColumn(name = "rol_id", nullable = false, columnDefinition = "INT") // Define la columna de clave foránea
      private Rol rol;
 
      @Column(nullable = false, length = 50)
@@ -38,12 +37,16 @@ public class Usuario {
      @Column
      private String foto;
 
-     public Usuario(String nombres, String correo, String dni, String password, Rol rol) {
+     @Column(nullable = false, length = 15)
+     private String estado;
+
+     public Usuario(String nombres, String correo, String dni, String password, Rol rol,String estado) {
         this.nombres = nombres;
         this.correo = correo;
         this.dni = dni;
         this.password = password;
         this.rol = rol;
+        this.estado = estado;
      }
      // Constructor para registro CON foto
      public Usuario(String nombres, String correo, String dni, String password, String foto, Rol rol) {
@@ -53,5 +56,15 @@ public class Usuario {
         this.password = password;
         this.foto = foto;
         this.rol = rol;
+     }
+     //Constructor con todos los atributos
+     public Usuario(String nombres, String correo, String dni, String password, String foto, Rol roldb, String estado) {
+         this.nombres = nombres;
+         this.correo = correo;
+         this.dni = dni;
+         this.password = password;
+         this.foto = foto;
+         this.rol = roldb;
+         this.estado = estado;
      }
 }

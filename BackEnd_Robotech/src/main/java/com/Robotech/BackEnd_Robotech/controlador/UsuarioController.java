@@ -29,6 +29,7 @@ public class UsuarioController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarUsuario(@RequestBody RegistroDTO registroDTO) {
         try {
+
             Rol roldb = rolServicio.obtenerPorNombre(registroDTO.getRol());
             Usuario usuario = new Usuario(
                     registroDTO.getNombres(),
@@ -36,7 +37,8 @@ public class UsuarioController {
                     registroDTO.getDni(),
                     registroDTO.getPassword(),
                     registroDTO.getFoto(),
-                    roldb
+                    roldb,
+                    registroDTO.getEstado()
                     );
             Usuario nuevoUsuario = usuarioServicio.agregarUsuario(usuario);
 
@@ -76,7 +78,8 @@ public class UsuarioController {
                         usuario.getCorreo(),
                         usuario.getRol().getNombre(),
                         usuario.getDni(),
-                        usuario.getFoto()
+                        usuario.getFoto(),
+                        usuario.getEstado()
                 ))
                 .toList();
         // Retornar la respuesta
