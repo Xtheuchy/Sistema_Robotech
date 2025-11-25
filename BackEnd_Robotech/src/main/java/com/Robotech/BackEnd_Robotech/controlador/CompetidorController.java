@@ -10,7 +10,12 @@ import com.Robotech.BackEnd_Robotech.servicios.implementacion.CompetidorServiceI
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.IdentificadorServiceImp;
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.RolServiceImp;
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.UsuarioServiceImp;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IIdentificadorServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRolServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,29 +23,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/competidor")
 @CrossOrigin(origins = "*")
 public class CompetidorController {
-    private CompetidorServiceImp competidorService;
-    private IdentificadorServiceImp identificadorService;
-    private RolServiceImp rolService;
-    private UsuarioServiceImp usuarioService;
-    private ICompetidorRepositorio competidorRepositorio;
+    private final ICompetidorServicio competidorService;
+    private final IIdentificadorServicio identificadorService;
+    private final IRolServicio rolService;
+    private final IUsuarioServicio usuarioService;
     @Autowired
-    public CompetidorController(ICompetidorRepositorio competidorRepositorio,UsuarioServiceImp usuarioService,RolServiceImp rolService,CompetidorServiceImp competidorService, IdentificadorServiceImp identificadorService){
+    public CompetidorController(ICompetidorServicio competidorService,IUsuarioServicio usuarioService,IRolServicio rolService,IIdentificadorServicio identificadorService){
         this.competidorService = competidorService;
         this.identificadorService = identificadorService;
         this.rolService = rolService;
         this.usuarioService = usuarioService;
-        this.competidorRepositorio = competidorRepositorio;
     }
+
     @PostMapping("/Registrar")
     public ResponseEntity<?> registrarCompetidor(@RequestBody RegistroCompetidorDTO competidorDTO) throws Exception{
         try{
-            if(competidorDTO.getCodigoUnico() == null){
-
+            if (competidorDTO.getCodigoUnico() == null || competidorDTO.getCodigoUnico().isEmpty()) {
+                return new ResponseEntity<>("El código único es obligatorio para registrarse.", HttpStatus.BAD_REQUEST);
             }
             Rol rol = rolService.obtenerPorNombre("Competidor");
             Identificador identificador = identificadorService.buscarIdentificador(competidorDTO.getCodigoUnico());
             if (identificador.getClub().getEstado().equalsIgnoreCase("PENDIENTE")){
-                return ResponseEntity.badRequest().body("¡El club esta inactivo!");
+                return ResponseEntity.badRequest().body("El club está inactivo, no se puede registrar");
             }
             if (identificador.getCompetidor() == null){
                 Usuario usuario = new Usuario(
@@ -52,8 +56,8 @@ public class CompetidorController {
                         rol,
                         "ACTIVO"
                 );
-                if (competidorRepositorio.existsByApodo(competidorDTO.getApodo())){
-                    return ResponseEntity.badRequest().body("¡Existe este apodo!");
+                if (competidorService.verificarApodo(competidorDTO.getApodo())){
+                    return ResponseEntity.badRequest().body("El apodo ya está en uso, por favor elige otro.");
                 }
                 Usuario usuario1 = usuarioService.agregarUsuario(usuario);
                 Competidor competidor = new Competidor(competidorDTO.getApodo(),usuario1);
@@ -62,10 +66,10 @@ public class CompetidorController {
                 Identificador identificador1 = identificadorService.editarIdentificador(identificador);
                 return ResponseEntity.ok(identificador1);
             }else {
-                return ResponseEntity.badRequest().body("¡El código ya fue usado!");
+                return ResponseEntity.badRequest().body("El código único ya ha sido utilizado.");
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
 

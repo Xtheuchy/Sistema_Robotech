@@ -29,7 +29,6 @@ public class UsuarioController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarUsuario(@RequestBody RegistroDTO registroDTO) {
         try {
-
             Rol roldb = rolServicio.obtenerPorNombre(registroDTO.getRol());
             Usuario usuario = new Usuario(
                     registroDTO.getNombres(),
@@ -39,7 +38,7 @@ public class UsuarioController {
                     registroDTO.getFoto(),
                     roldb,
                     registroDTO.getEstado()
-                    );
+            );
             Usuario nuevoUsuario = usuarioServicio.agregarUsuario(usuario);
 
             // Retorna el objeto creado con el ID generado y un estado 201 CREATED.

@@ -28,6 +28,11 @@ public class CategoriaServiceImp implements ICategoriaServicio {
     }
 
     @Override
+    public boolean verificarNombre(String nombre) throws Exception {
+        return categoriaRepositorio.existsByNombre(nombre);
+    }
+
+    @Override
     public Categoria buscarPorId(int id) throws Exception {
         return null;
     }

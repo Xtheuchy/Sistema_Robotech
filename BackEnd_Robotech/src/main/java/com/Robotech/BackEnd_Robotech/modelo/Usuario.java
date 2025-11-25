@@ -1,14 +1,12 @@
 package com.Robotech.BackEnd_Robotech.modelo;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
 @Table(name = "usuarios", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "nombres"),
         @UniqueConstraint(columnNames = "correo"),
         @UniqueConstraint(columnNames = "dni")
 })

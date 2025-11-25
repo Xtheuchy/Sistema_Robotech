@@ -30,21 +30,23 @@ public class UsuarioServiceImp implements IUsuarioServicio {
     }
     @Override
     public Usuario agregarUsuario(Usuario usuario) throws Exception{
-        // 1. Validaciones: Verificar si ya existe un nombre, correo o DNI.
-        if (usuarioRepositorio.existsByNombres(usuario.getNombres())) {
-            throw new IllegalArgumentException("Error: El nombre de usuario '" + usuario.getNombres() + "' ya está en uso.");
-        }
+        // 1. Validaciones: Verificar si ya existe un correo o DNI.
         if (usuarioRepositorio.existsByCorreo(usuario.getCorreo())) {
             throw new Exception("Error: El correo electrónico '" + usuario.getCorreo() + "' ya está en uso.");
         }
         if (usuarioRepositorio.existsByDni(usuario.getDni())) {
             throw new Exception("Error: El DNI '" + usuario.getDni() + "' ya está registrado.");
         }
-        // 2. Encriptar la contraseña
-        // Se toma la contraseña en texto plano y se reemplaza por el hash
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        // 3. Guardar el usuario en la base de datos
-        return usuarioRepositorio.save(usuario);
+        boolean validado = validarCorreo(usuario.getCorreo());
+        if (validado){
+            // 2. Encriptar la contraseña
+            // Se toma la contraseña en texto plano y se reemplaza por el hash
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            // 3. Guardar el usuario en la base de datos
+            return usuarioRepositorio.save(usuario);
+        }else {
+            throw  new Exception("El correo debe terminar con '@robotech.com'.");
+        }
     }
     @Override
     public Usuario obtenerUsuarioPorId(Integer id) throws Exception {
@@ -64,12 +66,10 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         // Usamos .orElseThrow() para detenernos aquí si el ID no existe.
         Usuario usuarioExistente = usuarioRepositorio.findById(id)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + id));
-
         // 2. Manejo de la Contraseña
         if (usuarioActualizado.getPassword() != null && !usuarioActualizado.getPassword().isEmpty()) {
             usuarioExistente.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
         }
-
         // 3. Validar Duplicados nombre
         // Revisamos si el nuevo nombre ya existe Y si pertenece a un ID
         Optional<Usuario> usuarioPorNombre = usuarioRepositorio.findByNombres(usuarioActualizado.getNombres());
@@ -115,5 +115,11 @@ public class UsuarioServiceImp implements IUsuarioServicio {
     @Override
     public boolean verificarPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    @Override
+    public boolean validarCorreo(String correo) {
+        String patron = "^[A-Za-z0-9._%+-]+@robotech\\.com$";
+        return correo!=null && correo.matches(patron);
     }
 }

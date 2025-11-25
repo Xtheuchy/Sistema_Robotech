@@ -7,6 +7,9 @@ import com.Robotech.BackEnd_Robotech.modelo.Robot;
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.CategoriaServiceImp;
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.CompetidorServiceImp;
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.RobotServiceImp;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRobotServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +20,13 @@ import java.util.List;
 @RequestMapping("api/robot")
 @CrossOrigin(origins = "*")
 public class RobotController {
-    private RobotServiceImp robotService;
-    private CompetidorServiceImp competidorService;
-    private CategoriaServiceImp categoriaService;
+    private final IRobotServicio robotService;
+    private final ICompetidorServicio competidorService;
+    private final ICategoriaServicio categoriaService;
     private List<Robot> robots;
     private Robot robot;
     @Autowired
-    public RobotController(RobotServiceImp robotService,CompetidorServiceImp competidorService,CategoriaServiceImp categoriaService){
+    public RobotController(IRobotServicio robotService,ICompetidorServicio competidorService,ICategoriaServicio categoriaService){
         this.robotService = robotService;
         this.competidorService = competidorService;
         this.categoriaService = categoriaService;

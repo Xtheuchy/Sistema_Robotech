@@ -6,6 +6,7 @@ import com.Robotech.BackEnd_Robotech.modelo.Identificador;
 import com.Robotech.BackEnd_Robotech.modelo.Rol;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.*;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,14 @@ import java.util.List;
 @RequestMapping("api/club")
 @CrossOrigin(origins = "*")
 public class ClubController {
-    private ClubServiceImp clubService;
-    private CompetidorServiceImp competidorService;
-    private UsuarioServiceImp usuarioService;
-    private RolServiceImp rolService;
-    private IdentificadorServiceImp identificadorService;
+    private final IClubServicio clubService;
+    private final ICompetidorServicio competidorService;
+    private final IUsuarioServicio usuarioService;
+    private final IRolServicio rolService;
+    private final IIdentificadorServicio identificadorService;
 
     @Autowired
-    public ClubController(IdentificadorServiceImp identificadorService, ClubServiceImp clubService,CompetidorServiceImp competidorService,RolServiceImp rolService,UsuarioServiceImp usuarioService){
+    public ClubController(IIdentificadorServicio identificadorService, IClubServicio clubService, ICompetidorServicio competidorService, IRolServicio rolService, IUsuarioServicio usuarioService){
         this.clubService = clubService;
         this.competidorService = competidorService;
         this.usuarioService = usuarioService;
@@ -76,25 +77,37 @@ public class ClubController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/{clubId}/validacion/{accion}")
-    public ResponseEntity<String> validarClub(@PathVariable int clubId, @PathVariable String accion){
+    @PutMapping("/{clubId}/validacion/{accion}")
+    public ResponseEntity<String> validarClub(@PathVariable int clubId, @PathVariable String accion) {
         try {
+            // Buscar el club por ID
             Club club = clubService.buscarPorID(clubId);
-            if (club == null){
+
+            // Si no se encuentra el club, devolver 404 Not Found
+            if (club == null) {
                 return new ResponseEntity<>("Club no encontrado", HttpStatus.NOT_FOUND);
             }
-            if (!"permitir".equals(accion)){
-                return new ResponseEntity<>("Club Rechazado correctamente",HttpStatus.FORBIDDEN);
+
+            // Verificar la acción (permitir o rechazar)
+            if (!"permitir".equals(accion)) {
+                return new ResponseEntity<>("Club Rechazado correctamente", HttpStatus.FORBIDDEN);
             }
+
+            // Cambiar el estado del club y del usuario asociado
             club.setEstado("ACTIVO");
             club.getUsuario().setEstado("ACTIVO");
+
+            // Registrar el club actualizado
             clubService.registrarClub(club);
 
+            // Devolver una respuesta exitosa
             return ResponseEntity.ok("Club Activo Correctamente");
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // En caso de error, devolver un mensaje de error con código 400 (Bad Request)
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
 
 
 }

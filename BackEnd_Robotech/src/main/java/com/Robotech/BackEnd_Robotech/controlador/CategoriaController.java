@@ -2,6 +2,7 @@ package com.Robotech.BackEnd_Robotech.controlador;
 
 import com.Robotech.BackEnd_Robotech.modelo.Categoria;
 import com.Robotech.BackEnd_Robotech.servicios.implementacion.CategoriaServiceImp;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class CategoriaController {
     @Autowired
-    private CategoriaServiceImp categoriaService;
+    private ICategoriaServicio categoriaService;
     List<Categoria> categorias;
     Categoria categoria;
     @GetMapping

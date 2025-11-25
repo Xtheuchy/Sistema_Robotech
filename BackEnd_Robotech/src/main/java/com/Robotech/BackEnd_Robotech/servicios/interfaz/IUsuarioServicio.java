@@ -13,4 +13,5 @@ public interface IUsuarioServicio {
     public Usuario actualizarUsuario(Integer id, Usuario usuario)throws Exception ;
     public Usuario obtenerUsuarioPorCorreo(String correo) throws Exception;
     public boolean verificarPassword(String rawPassword, String encodedPassword);
+    public boolean validarCorreo(String correo);
 }

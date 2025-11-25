@@ -9,4 +9,5 @@ public interface ICompetidorServicio {
     public Competidor registrarCompetidor(Competidor competidor) throws Exception;
     public void eliminarPorId(int id) throws Exception;
     public Competidor buscarPorId(int id) throws Exception;
+    public boolean verificarApodo(String apodo) throws Exception;
 }

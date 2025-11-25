@@ -36,4 +36,9 @@ public class CompetidorServiceImp implements ICompetidorServicio {
         return competidorRepositorio.findById(id)
                 .orElseThrow(()-> new Exception("Competidor no encontrado "+ id));
     }
+
+    @Override
+    public boolean verificarApodo(String apodo) throws Exception {
+        return competidorRepositorio.existsByApodo(apodo);
+    }
 }
