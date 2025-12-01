@@ -20,7 +20,8 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
         correo: '',
         rol: '',
         dni: '',
-        foto: ''
+        foto: '',
+        estado: '',
     });
 
     // 2. Estados para la carga y errores
@@ -33,9 +34,10 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
             setFormData({
                 nombres: usuario.nombres || '',
                 correo: usuario.correo || '',
-                rol: usuario.rolNombre || '',
+                rol: usuario.rol || '',
                 dni: usuario.dni || '',
-                foto: usuario.foto || ''
+                foto: usuario.foto || '',
+                estado: usuario.estado || ''
             });
         }
     }, [modalAbierto, usuario]);
@@ -57,7 +59,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
 
         try {
             await usuarioServicio.actualizarUsuario(usuario.id, formData);
-            cerrarModal(); 
+            cerrarModal();
             onUsuarioActualizado(); //Recarga la pagina
 
         } catch (err) {
@@ -93,7 +95,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                     <label htmlFor={`nombres-edit-${usuario.id}`} className="block text-sm font-medium text-gray-700 mb-1">Nombres:</label>
                                     <input
                                         type="text"
-                                        id={`nombres-edit-${usuario.id}`} 
+                                        id={`nombres-edit-${usuario.id}`}
                                         name="nombres"
                                         value={formData.nombres}
                                         onChange={handleInputChange}
@@ -137,7 +139,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         id={`rol-edit-${usuario.id}`}
                                         name="rol"
                                         value={formData.rol}
-                                        onChange={handleInputChange}                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
+                                        onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
                                     >
                                         <option value="" disabled selected hidden>-- Selecciona un Rol --</option>
                                         <option value="Administrador">Administrador</option>
@@ -158,7 +160,21 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                                     />
                                 </div>
-
+                                {/* Estado */}
+                                <div className="form-group mb-4">
+                                    <label htmlFor={`estado-edit-${usuario.id}`} className="block text-sm font-medium text-gray-700 mb-1">Estado:</label>
+                                    <select
+                                        id={`estado-edit-${usuario.id}`}
+                                        name="estado"
+                                        value={formData.estado}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
+                                    >
+                                        <option value="" disabled selected hidden>-- Selecciona un Estado --</option>
+                                        <option value="ACTIVO">Activo</option>
+                                        <option value="PENDIENTE">Pendiente</option>
+                                    </select>
+                                </div>
                                 {/* Botón de Enviar */}
                                 <div className="form-actions">
                                     <button type="submit" className="boton-submit w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled={loading}>

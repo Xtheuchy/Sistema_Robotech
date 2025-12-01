@@ -4,6 +4,7 @@ import Layout from './layout/Layout';
 
 import Inicio from './pages/Inicio'; 
 import Usuarios from './pages/Usuarios';
+import Torneos from './pages/Torneos';
 import NotFoundPage from './pages/NotFoundPage';
 
 
@@ -13,6 +14,7 @@ const AppPrivada = () => {
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path='/usuarios' element={<Usuarios/>}/>
+        <Route path='/torneos' element={<Torneos/>}/>
 
         {/* ...todas las demás rutas de tu panel... */}
         {/* Un 404 para rutas DENTRO del panel que no existan */}

@@ -1,4 +1,4 @@
-package com.Robotech.BackEnd_Robotech.modelo.DTO;
+package com.Robotech.BackEnd_Robotech.DTO;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

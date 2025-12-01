@@ -1,7 +1,7 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
-import com.Robotech.BackEnd_Robotech.modelo.DTO.RegistroDTO;
-import com.Robotech.BackEnd_Robotech.modelo.DTO.UsuarioDTO;
+import com.Robotech.BackEnd_Robotech.DTO.RegistroDTO;
+import com.Robotech.BackEnd_Robotech.DTO.UsuarioDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Rol;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRolServicio;
@@ -84,7 +84,22 @@ public class UsuarioController {
         // Retornar la respuesta
         return ResponseEntity.ok(usuariosDTO);
     }
-
+    @GetMapping("/listar")
+    public ResponseEntity<?> listarAdminyJuez() throws Exception{
+        List<Usuario> usuarios = usuarioServicio.listarAdministradoryJuez();
+        List<UsuarioDTO> usuariosDTO = usuarios.stream()
+                .map(usuario -> new UsuarioDTO(
+                        usuario.getId(),
+                        usuario.getNombres(),
+                        usuario.getCorreo(),
+                        usuario.getRol().getNombre(),
+                        usuario.getDni(),
+                        usuario.getFoto(),
+                        usuario.getEstado()
+                ))
+                .toList();
+        return ResponseEntity.ok(usuariosDTO);
+    }
     // --- 4. OBTENER USUARIO POR ID (GET) ---
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Integer id) {

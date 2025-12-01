@@ -12,7 +12,8 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
         rol: '',
         dni: '',
         foto: '',
-        password: ''
+        password: '',
+        estado: ''
     };
     const [formData, setFormData] = useState(initialState);
 
@@ -76,7 +77,6 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
             {modalAbierto && (
                 <div className="fixed inset-0 z-50 bg-opacity-50 flex items-center justify-center p-4 bg-[#5e5e5e67]" onClick={cerrarModal}>
                     <div className=" bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-
                         <button className="modal-close absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-4xl font-bold bg-gray-100 hover:bg-gray-200 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200" onClick={cerrarModal}>
                             &times;
                         </button>
@@ -173,6 +173,22 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                                     />
                                     <small className="text-xs text-gray-500 mt-1 block">{passwordTitle}</small>
+                                </div>
+                                {/* Estado */}
+                                <div className="form-group mb-4">
+                                    <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">Estado:</label>
+                                    <select
+                                        id="estado"
+                                        name="estado"
+                                        value={formData.estado}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
+                                    >
+                                        <option value="" disabled selected hidden>-- Selecciona un Estado --</option>
+                                        <option value="ACTIVO">Activo</option>
+                                        <option value="PENDIENTE">Pendiente</option>
+                                    </select>
                                 </div>
 
                                 {/* --- Botón de Enviar--- */}

@@ -9,6 +9,7 @@ public interface ITorneoServicio {
     public List<Torneo> listarTorneosPublicos() throws Exception;
     public List<Torneo> listarTorneosBorrador() throws Exception;
     public Torneo agregarTorneo(Torneo torneo) throws Exception;
+    public Torneo modificarTorneo(Torneo torneo) throws Exception;
     public Torneo modificarEstado(int id, String nuevoEstado) throws Exception;
     public void eliminarPorId(int id) throws Exception;
     public Torneo obtenerPorId(int id) throws Exception;

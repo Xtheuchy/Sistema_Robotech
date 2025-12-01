@@ -1,15 +1,10 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
 import com.Robotech.BackEnd_Robotech.modelo.Competidor;
-import com.Robotech.BackEnd_Robotech.modelo.DTO.RegistroCompetidorDTO;
+import com.Robotech.BackEnd_Robotech.DTO.RegistroCompetidorDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
 import com.Robotech.BackEnd_Robotech.modelo.Rol;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
-import com.Robotech.BackEnd_Robotech.repositorio.ICompetidorRepositorio;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.CompetidorServiceImp;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.IdentificadorServiceImp;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.RolServiceImp;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.UsuarioServiceImp;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IIdentificadorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRolServicio;
@@ -35,6 +30,7 @@ public class CompetidorController {
         this.usuarioService = usuarioService;
     }
 
+    //Registrar competidor
     @PostMapping("/Registrar")
     public ResponseEntity<?> registrarCompetidor(@RequestBody RegistroCompetidorDTO competidorDTO) throws Exception{
         try{
@@ -72,6 +68,5 @@ public class CompetidorController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
-
 
 }

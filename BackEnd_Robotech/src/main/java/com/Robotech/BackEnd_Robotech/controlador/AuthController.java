@@ -1,8 +1,11 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
-import com.Robotech.BackEnd_Robotech.modelo.DTO.LoginDTO;
-import com.Robotech.BackEnd_Robotech.modelo.DTO.UsuarioDTO;
+import com.Robotech.BackEnd_Robotech.DTO.CompetidorDTO;
+import com.Robotech.BackEnd_Robotech.DTO.LoginDTO;
+import com.Robotech.BackEnd_Robotech.DTO.UsuarioDTO;
+import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,8 +16,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
 public class AuthController{
+    private final IUsuarioServicio usuarioServicio;
+    private final ICompetidorServicio competidorServicio;
+
     @Autowired
-    private IUsuarioServicio usuarioServicio;
+    public AuthController(IUsuarioServicio usuarioServicio,ICompetidorServicio competidorServicio){
+        this.usuarioServicio = usuarioServicio;
+        this.competidorServicio = competidorServicio;
+    }
 
     // Login para la pagina admin
     @PostMapping("/login/admin")
@@ -50,7 +59,7 @@ public class AuthController{
         }
     }
 
-    // Login para la pagina cliente
+    // Login para la pagina cliente (Juez y competidores)
     @PostMapping("/login/cliente")
     public ResponseEntity<?> loginCliente(@RequestBody LoginDTO usuarioLoginDTO) {
         try {
@@ -65,16 +74,30 @@ public class AuthController{
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("¡Su cuenta no está activa!");
             }
             if (!(usuarioValidado.getRol().getNombre().equalsIgnoreCase("Juez") || usuarioValidado.getRol().getNombre().equalsIgnoreCase("Administrador"))){
-                UsuarioDTO usuarioDTO = new UsuarioDTO(
-                        usuarioValidado.getId(),
-                        usuarioValidado.getNombres(),
-                        usuarioValidado.getCorreo(),
-                        usuarioValidado.getRol().getNombre(),
-                        usuarioValidado.getDni(),
-                        usuarioValidado.getFoto(),
-                        usuarioValidado.getEstado()
-                );
-                return ResponseEntity.ok(usuarioDTO);
+                if (usuarioValidado.getRol().getNombre().equalsIgnoreCase("Competidor")){
+                    Competidor competidor = competidorServicio.buscarCompetidorPorUsuario(usuarioValidado);
+                    CompetidorDTO competidorDTO = new CompetidorDTO(
+                            competidor.getId(),
+                            competidor.getApodo(),
+                            competidor.getUsuario().getNombres(),
+                            competidor.getUsuario().getCorreo(),
+                            competidor.getUsuario().getRol().getNombre(),
+                            competidor.getUsuario().getDni(),
+                            competidor.getUsuario().getFoto(),
+                            competidor.getUsuario().getEstado());
+                    return ResponseEntity.ok(competidorDTO);
+                }else {
+                    UsuarioDTO usuarioDTO = new UsuarioDTO(
+                            usuarioValidado.getId(),
+                            usuarioValidado.getNombres(),
+                            usuarioValidado.getCorreo(),
+                            usuarioValidado.getRol().getNombre(),
+                            usuarioValidado.getDni(),
+                            usuarioValidado.getFoto(),
+                            usuarioValidado.getEstado()
+                    );
+                    return ResponseEntity.ok(usuarioDTO);
+                }
             }else {
                 return new ResponseEntity<>("El acceso está restringido a clubes y competidores.", HttpStatus.UNAUTHORIZED);
             }

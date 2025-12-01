@@ -1,0 +1,50 @@
+import axios from "axios";
+
+//URL api torneo
+const API_URL = "http://localhost:8080/api/torneo";
+
+//1. Registrar torneo
+const registrarTorneo = async (torneo) => {
+    try {
+        const response = await axios.post(`${API_URL}/registrar`, torneo);
+        return response.data; // Retorna el Usuario creado
+    } catch (error) {
+        throw error.response?.data || error.message || 'Error al registrar torneo';
+    }
+};
+
+//2. Listar torneos publicos
+const listarTorneoPublico = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/publico`);
+        return response.data; // Retorna el array [UsuarioDTO, ...]
+    } catch (error) {
+        throw error.response?.data || error.message || 'Error al listar Torneos publicos';
+    }
+};
+//3. Listar torneos borrador
+const listarTorneoBorrador = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/borrador`);
+        return response.data; // Retorna el array [UsuarioDTO, ...]
+    } catch (error) {
+        throw error.response?.data || error.message || 'Error al listar Torneos borradores';
+    }
+};
+//4. modificar estado de torneo
+const actualizarEstado = async (id, nuevoEstado) =>{
+    try{
+        const response = await axios.put(`${API_URL}/estado/${id}`, nuevoEstado);
+        return response.data;
+    }catch(error){
+        throw error.response?.data || error.message || 'Error al actualizar estado del torneo';
+    }
+}
+
+//Exportamos todas las funciones como un objeto
+export const torneoServicio = {
+    registrarTorneo,
+    listarTorneoPublico,
+    listarTorneoBorrador,
+    actualizarEstado
+}

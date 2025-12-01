@@ -24,6 +24,6 @@ public class RolServiceImp implements IRolServicio {
     @Override
     public Rol obtenerPorNombre(String nombre) throws Exception {
         return rolRepositorio.findByNombre(nombre)
-                .orElseThrow(()->new Exception("Nombre no encontrado "+ nombre));
+                .orElseThrow(()->new Exception("Nombre de Rol no encontrado "+ nombre));
     }
 }

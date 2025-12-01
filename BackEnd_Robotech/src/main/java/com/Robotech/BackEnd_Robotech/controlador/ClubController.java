@@ -1,11 +1,10 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
 import com.Robotech.BackEnd_Robotech.modelo.Club;
-import com.Robotech.BackEnd_Robotech.modelo.DTO.RegistroClubDTO;
+import com.Robotech.BackEnd_Robotech.DTO.RegistroClubDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
 import com.Robotech.BackEnd_Robotech.modelo.Rol;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.*;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +35,15 @@ public class ClubController {
     public ResponseEntity<List<Club>> listarClubes() throws Exception {
         List<Club> clubes = clubService.listarClubes();
         return ResponseEntity.ok(clubes);
+    }
+
+    @GetMapping("/integrantes/{id}")
+    public ResponseEntity<?> listarIntegrantesDeClub(@PathVariable int id){
+        try {
+            return ResponseEntity.ok(competidorService.listarCompetidorPorClub(id));
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarClub(@RequestBody RegistroClubDTO registroClubDTO){

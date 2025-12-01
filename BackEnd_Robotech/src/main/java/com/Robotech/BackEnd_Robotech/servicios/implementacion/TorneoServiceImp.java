@@ -53,6 +53,11 @@ public class TorneoServiceImp implements ITorneoServicio {
     }
 
     @Override
+    public Torneo modificarTorneo(Torneo torneo) throws Exception {
+        return torneoRepositorio.save(torneo);
+    }
+
+    @Override
     public Torneo modificarEstado(int id, String nuevoEstado) throws Exception {
         Torneo torneo;
         torneo = obtenerPorId(id);
@@ -68,6 +73,6 @@ public class TorneoServiceImp implements ITorneoServicio {
 
     @Override
     public Torneo obtenerPorId(int id) throws Exception {
-        return torneoRepositorio.findById(id).orElseThrow(() -> new Exception("Torneo con id " + id + "no encontrado"));
+        return torneoRepositorio.findById(id).orElseThrow(() -> new Exception("Torneo con id " + id + " no encontrado"));
     }
 }

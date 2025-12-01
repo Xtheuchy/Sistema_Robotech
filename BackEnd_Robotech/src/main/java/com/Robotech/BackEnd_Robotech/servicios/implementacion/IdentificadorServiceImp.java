@@ -1,11 +1,13 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
+import com.Robotech.BackEnd_Robotech.modelo.Club;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
 import com.Robotech.BackEnd_Robotech.repositorio.IIdentificadorRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IIdentificadorServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,5 +31,10 @@ public class IdentificadorServiceImp implements IIdentificadorServicio {
     @Override
     public Identificador editarIdentificador(Identificador identificador) throws Exception {
         return identificadorRepositorio.save(identificador);
+    }
+
+    @Override
+    public List<Identificador> listarIdentificadorPorClub(Club club) throws Exception {
+        return identificadorRepositorio.findAllByClub(club);
     }
 }

@@ -10,7 +10,7 @@ const API_URL = 'http://localhost:8080/api/usuarios';
 
 const listarUsuarios = async () => {
     try {
-        const response = await axios.get(API_URL);
+        const response = await axios.get(`${API_URL}/listar`);
         return response.data; // Retorna el array [UsuarioDTO, ...]
     } catch (error) {
         throw error.response?.data || error.message || 'Error al listar usuarios';
@@ -61,7 +61,6 @@ const actualizarUsuario = async (id, usuario) => {
  */
 const eliminarUsuario = async (id) => {
     try {
-
         await axios.delete(`${API_URL}/${id}`);
     } catch (error) {
         throw error.response?.data || error.message || 'Error al eliminar usuario';

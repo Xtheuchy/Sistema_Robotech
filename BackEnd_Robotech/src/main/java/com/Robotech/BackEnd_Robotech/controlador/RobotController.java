@@ -2,11 +2,8 @@ package com.Robotech.BackEnd_Robotech.controlador;
 
 import com.Robotech.BackEnd_Robotech.modelo.Categoria;
 import com.Robotech.BackEnd_Robotech.modelo.Competidor;
-import com.Robotech.BackEnd_Robotech.modelo.DTO.RegistroRobotDTO;
+import com.Robotech.BackEnd_Robotech.DTO.RegistroRobotDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Robot;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.CategoriaServiceImp;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.CompetidorServiceImp;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.RobotServiceImp;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRobotServicio;

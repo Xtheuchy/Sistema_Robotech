@@ -9,7 +9,7 @@ const Layout = ({children}) =>{
             />
             <div className="w-4/5 h-full flex flex-col">
                 <Header
-                className="bg-gray-100 flex justify-between items-center p-2 border-b border-gray-600"
+                className="bg-gray-100 flex justify-between items-center p-2 pr-10 border-b border-gray-600"
                 />
                 <main className="flex-1 overflow-y-auto p-1">
                     {children}

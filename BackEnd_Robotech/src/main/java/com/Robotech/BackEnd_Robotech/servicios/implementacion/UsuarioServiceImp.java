@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UsuarioServiceImp implements IUsuarioServicio {
@@ -37,15 +40,29 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         if (usuarioRepositorio.existsByDni(usuario.getDni())) {
             throw new Exception("Error: El DNI '" + usuario.getDni() + "' ya está registrado.");
         }
-        boolean validado = validarCorreo(usuario.getCorreo());
-        if (validado){
+        boolean correoValidado = validarCorreo(usuario.getCorreo());
+        boolean passwordValidado = validarPassword(usuario.getPassword());
+        boolean dniValidado = validarDni(usuario.getDni());
+        if (correoValidado && passwordValidado && dniValidado) {
             // 2. Encriptar la contraseña
-            // Se toma la contraseña en texto plano y se reemplaza por el hash
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             // 3. Guardar el usuario en la base de datos
             return usuarioRepositorio.save(usuario);
-        }else {
-            throw  new Exception("El correo debe terminar con '@robotech.com'.");
+        } else {
+            StringBuilder mensajeError = new StringBuilder();
+
+            if (!correoValidado) {
+                mensajeError.append("El correo debe terminar con '@robotech.com'.\n");
+            }
+            if (!passwordValidado) {
+                mensajeError.append("La contraseña debe tener al menos 8 caracteres, contener letras mayúsculas, minúsculas, números y caracteres especiales.\n");
+            }
+            if (!dniValidado) {
+                mensajeError.append("El DNI debe tener exactamente 8 caracteres numéricos.\n");
+            }
+
+            // Lanza una excepción con el mensaje de error acumulado
+            throw new Exception(mensajeError.toString());
         }
     }
     @Override
@@ -70,30 +87,24 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         if (usuarioActualizado.getPassword() != null && !usuarioActualizado.getPassword().isEmpty()) {
             usuarioExistente.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
         }
-        // 3. Validar Duplicados nombre
-        // Revisamos si el nuevo nombre ya existe Y si pertenece a un ID
-        Optional<Usuario> usuarioPorNombre = usuarioRepositorio.findByNombres(usuarioActualizado.getNombres());
-        if (usuarioPorNombre.isPresent() && usuarioPorNombre.get().getId() != id) {
-            throw new Exception("Error: El nombre de usuario '" + usuarioActualizado.getNombres() + "' ya está en uso por otro usuario.");
-        }
 
-        // 4. Validar Duplicados Correo
+        // 3. Validar Duplicados Correo
         Optional<Usuario> usuarioPorCorreo = usuarioRepositorio.findByCorreo(usuarioActualizado.getCorreo());
         if (usuarioPorCorreo.isPresent() && usuarioPorCorreo.get().getId() != id) {
             throw new Exception("Error: El correo '" + usuarioActualizado.getCorreo() + "' ya está en uso por otro usuario.");
         }
-        // 5. Validar Duplicados DNI
+        // 4. Validar Duplicados DNI
         Optional<Usuario> usuarioPorDni = usuarioRepositorio.findByDni(usuarioActualizado.getDni());
         if (usuarioPorDni.isPresent() && usuarioPorDni.get().getId() != id) {
             throw new Exception("Error: El DNI '" + usuarioActualizado.getDni() + "' ya está registrado por otro usuario.");
         }
-        // 6. Actualizar el resto de los campos
+        // 5. Actualizar el resto de los campos
         usuarioExistente.setNombres(usuarioActualizado.getNombres());
         usuarioExistente.setCorreo(usuarioActualizado.getCorreo());
         usuarioExistente.setDni(usuarioActualizado.getDni());
         usuarioExistente.setFoto(usuarioActualizado.getFoto());
 
-        // 7. Actualizar el Rol
+        // 6. Actualizar el Rol
         Rol rolEntidad = usuarioActualizado.getRol();
         if (rolEntidad == null || rolEntidad.getId() == 0) {
             throw new Exception("Error: Debe proporcionar un ID de rol válido (1, 2 o 3).");
@@ -102,8 +113,13 @@ public class UsuarioServiceImp implements IUsuarioServicio {
                 .orElseThrow(() -> new Exception("Error: El ID de Rol " + rolEntidad.getId() + " no existe."));
         // Asigna el nuevo rol
         usuarioExistente.setRol(rolBD);
-        // 8. Guardar la entidad actualizada en la BD
-        return usuarioRepositorio.save(usuarioExistente);
+        boolean validado = validarCorreo(usuarioExistente.getCorreo());
+        if (validado){
+            // 7. Guardar la entidad actualizada en la BD
+            return usuarioRepositorio.save(usuarioExistente);
+        }else {
+            throw  new Exception("El correo debe terminar con '@robotech.com'.");
+        }
     }
 
     @Override
@@ -122,4 +138,38 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         String patron = "^[A-Za-z0-9._%+-]+@robotech\\.com$";
         return correo!=null && correo.matches(patron);
     }
+
+    @Override
+    public List<Usuario> listarAdministradoryJuez() throws Exception {
+        List<String> roles = Arrays.asList("Administrador", "Juez");
+        return usuarioRepositorio.findUsuariosByRol(roles);
+    }
+
+    @Override
+    public boolean validarPassword(String password) throws Exception {
+        // Expresión regular para validar los requisitos de la contraseña
+        String regex = "^(?=.*[0-9])"         // Debe contener al menos un número
+                + "(?=.*[a-z])"        // Debe contener al menos una letra minúscula
+                + "(?=.*[A-Z])"        // Debe contener al menos una letra mayúscula
+                + "(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])" // Debe contener al menos un carácter especial
+                + ".{8,16}$";          // Longitud de 8 a 16 caracteres
+
+        // Crear el patrón con la expresión regular
+        Pattern pattern = Pattern.compile(regex);
+
+        // Validar la contraseña
+        Matcher matcher = pattern.matcher(password);
+
+        // Retornar verdadero si la contraseña cumple con la expresión regular
+        return matcher.matches();
+    }
+
+    @Override
+    public boolean validarDni(String dni) {
+        if (dni != null && dni.length() == 8) {
+            return true;  // El DNI es válido
+        }
+        return false;  // El DNI no es válido
+    }
+
 }

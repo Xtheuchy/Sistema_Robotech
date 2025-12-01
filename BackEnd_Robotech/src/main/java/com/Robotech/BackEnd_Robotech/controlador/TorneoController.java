@@ -1,7 +1,8 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
 import com.Robotech.BackEnd_Robotech.modelo.Categoria;
-import com.Robotech.BackEnd_Robotech.modelo.DTO.RegistroTorneoDTO;
+import com.Robotech.BackEnd_Robotech.DTO.RegistroTorneoDTO;
+import com.Robotech.BackEnd_Robotech.DTO.TorneoDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Sede;
 import com.Robotech.BackEnd_Robotech.modelo.Torneo;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -31,6 +34,7 @@ public class TorneoController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarTorneo(@RequestBody RegistroTorneoDTO torneoDTO) throws Exception {
         try{
+            Torneo torneo;
             if ((torneoDTO.getCategoria() == null || torneoDTO.getCategoria().isEmpty())
                     || (torneoDTO.getSede() == null || torneoDTO.getSede().isEmpty())) {
                 return ResponseEntity.badRequest().body("El nombre de la categoría o sede no puede estar vacío");
@@ -47,7 +51,8 @@ public class TorneoController {
             Categoria categoria = categoriaServicio.buscarPorNombre(torneoDTO.getCategoria());
             Sede sede = sedeServicio.buscarPorNombre(torneoDTO.getSede());
 
-            Torneo torneo = new Torneo(
+            torneo = new Torneo(
+                    torneoDTO.getDescripcion_torneo(),
                     categoria,
                     torneoDTO.getNombre_torneo(),
                     torneoDTO.getFoto(),
@@ -56,13 +61,28 @@ public class TorneoController {
                     torneoDTO.getFecha_final(),
                     torneoDTO.getEstado(),
                     sede);
-            return ResponseEntity.ok(torneoServicio.agregarTorneo(torneo));
+            torneo = torneoServicio.agregarTorneo(torneo);
+            TorneoDTO torneoR = new TorneoDTO(
+                    torneo.getId(),
+                    torneo.getNombre(),
+                    torneo.getDescripcion(),
+                    torneo.getFoto(),
+                    torneo.getCantidad(),
+                    torneo.getFechaInicio(),
+                    torneo.getFechaFinal(),
+                    torneo.getEstado(),
+                    torneo.getCreado_en(),
+                    torneo.getCategoria().getNombre(),
+                    torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
+                    torneo.getSede().getDireccion());
+            return ResponseEntity.ok(torneoR);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
-    @PutMapping("/estado/{id}")
-    public ResponseEntity<?> actualizarEstado(@PathVariable int id, @RequestBody String nuevoEstado){
+    //Modificar estado de torneo
+    @PutMapping("/torneo/{id}/nuevoEstado/{nuevoEstado}")
+    public ResponseEntity<?> actualizarEstado(@PathVariable int id, @PathVariable String nuevoEstado){
         try {
             Torneo torneo = torneoServicio.modificarEstado(id,nuevoEstado);
             return ResponseEntity.ok(torneo);
@@ -70,14 +90,113 @@ public class TorneoController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
+    //Modificar Torneo
+    @PutMapping("/modificar")
+    public ResponseEntity<?> actualizarTorneo(@RequestBody RegistroTorneoDTO torneoDTO) throws Exception{
+        try {
+            Torneo torneo;
+            if (torneoDTO.getId() == 0){
+                return ResponseEntity.badRequest().body("El torneo debe tener un id para modficar");
+            }
+            if ((torneoDTO.getCategoria() == null || torneoDTO.getCategoria().isEmpty())
+                    || (torneoDTO.getSede() == null || torneoDTO.getSede().isEmpty())) {
+                return ResponseEntity.badRequest().body("El nombre de la categoría o sede no puede estar vacío");
+            }
+            // Verificación de existencia de la categoría
+            if (!categoriaServicio.verificarNombre(torneoDTO.getCategoria())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La categoría no existe");
+            }
+
+            // Verificación de existencia de la sede
+            if (!sedeServicio.verificarNombreSede(torneoDTO.getSede())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La sede no existe");
+            }
+            Categoria categoria = categoriaServicio.buscarPorNombre(torneoDTO.getCategoria());
+            Sede sede = sedeServicio.buscarPorNombre(torneoDTO.getSede());
+
+            torneo = torneoServicio.obtenerPorId(torneoDTO.getId());
+            torneo.setId(torneoDTO.getId());
+            torneo.setNombre(torneoDTO.getNombre_torneo());
+            torneo.setFoto(torneoDTO.getFoto());
+            torneo.setCantidad(torneoDTO.getCantidad());
+            torneo.setCategoria(categoria);
+            torneo.setSede(sede);
+            torneo.setFechaInicio(torneoDTO.getFecha_inicio());
+            torneo.setFechaFinal(torneoDTO.getFecha_final());
+            torneo.setDescripcion(torneoDTO.getDescripcion_torneo());
+
+            torneo = torneoServicio.modificarTorneo(torneo);
+            TorneoDTO torneoM = new TorneoDTO(
+                    torneo.getId(),
+                    torneo.getNombre(),
+                    torneo.getDescripcion(),
+                    torneo.getFoto(),
+                    torneo.getCantidad(),
+                    torneo.getFechaInicio(),
+                    torneo.getFechaFinal(),
+                    torneo.getEstado(),
+                    torneo.getCreado_en(),
+                    torneo.getCategoria().getNombre(),
+                    torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
+                    torneo.getSede().getDireccion());
+
+            return ResponseEntity.ok(torneoM);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+        }
+    }
+
+
     //Listar torneos  publicos
     @GetMapping("/publico")
     public ResponseEntity<?> listarTorneoPublico() throws Exception {
-        return ResponseEntity.ok(torneoServicio.listarTorneosPublicos());
+        List<Torneo> torneos = torneoServicio.listarTorneosPublicos();
+
+        List<TorneoDTO> torneoList = torneos.stream()
+                .map(torneo -> new TorneoDTO(
+                        torneo.getId(),
+                        torneo.getNombre(),
+                        torneo.getDescripcion(),
+                        torneo.getFoto(),
+                        torneo.getCantidad(),
+                        torneo.getFechaInicio(),
+                        torneo.getFechaFinal(),
+                        torneo.getEstado(),
+                        torneo.getCreado_en(),
+                        torneo.getCategoria().getNombre(),
+                        torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
+                        torneo.getSede().getDireccion()
+                ))
+                .toList();
+        if (torneoList.isEmpty()){
+            return ResponseEntity.badRequest().body("No hay torneos Publicados");
+        }
+        return ResponseEntity.ok(torneoList);
     }
     //Listar torneos con estado borrador
     @GetMapping("/borrador")
     public ResponseEntity<?> listarTorneoBorrador() throws Exception {
-        return ResponseEntity.ok(torneoServicio.listarTorneosBorrador());
+        List<Torneo> torneos = torneoServicio.listarTorneosBorrador();
+
+        List<TorneoDTO> torneoList = torneos.stream()
+                .map(torneo -> new TorneoDTO(
+                        torneo.getId(),
+                        torneo.getNombre(),
+                        torneo.getDescripcion(),
+                        torneo.getFoto(),
+                        torneo.getCantidad(),
+                        torneo.getFechaInicio(),
+                        torneo.getFechaFinal(),
+                        torneo.getEstado(),
+                        torneo.getCreado_en(),
+                        torneo.getCategoria().getNombre(),
+                        torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
+                        torneo.getSede().getDireccion()
+                ))
+                .toList();
+        if (torneoList.isEmpty()){
+            return ResponseEntity.badRequest().body("No hay torneos creados");
+        }
+        return ResponseEntity.ok(torneoList);
     }
 }

@@ -1,6 +1,7 @@
 package com.Robotech.BackEnd_Robotech.modelo;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +20,7 @@ public class Torneo {
     @JoinColumn(name = "categoria_id", nullable = false, columnDefinition = "INT")
     private Categoria categoria;
     private String nombre;
+    private String descripcion;
     private String foto;
     private int cantidad;
     private LocalDate fechaInicio;
@@ -29,9 +31,10 @@ public class Torneo {
     private Sede sede;
     private LocalDate creado_en;
 
-    public Torneo(Categoria categoria,String nombre,String foto,int cantidad,LocalDate fecha_inicio,LocalDate fecha_final,String estado,Sede sede){
+    public Torneo(String descripcion,Categoria categoria,String nombre,String foto,int cantidad,LocalDate fecha_inicio,LocalDate fecha_final,String estado,Sede sede){
         this.categoria = categoria;
         this.nombre = nombre;
+        this.descripcion = descripcion;
         this.foto = foto;
         this.cantidad = cantidad;
         this.fechaInicio = fecha_inicio;
