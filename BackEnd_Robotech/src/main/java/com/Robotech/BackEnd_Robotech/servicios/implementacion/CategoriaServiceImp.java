@@ -23,6 +23,11 @@ public class CategoriaServiceImp implements ICategoriaServicio {
     }
 
     @Override
+    public Categoria modificarCategoria(Categoria categoria) throws Exception {
+        return categoriaRepositorio.save(categoria);
+    }
+
+    @Override
     public Categoria buscarPorNombre(String categoria) throws Exception {
         return categoriaRepositorio.findByNombre(categoria);
     }
@@ -34,10 +39,12 @@ public class CategoriaServiceImp implements ICategoriaServicio {
 
     @Override
     public Categoria buscarPorId(int id) throws Exception {
-        return null;
+        return categoriaRepositorio.findById(id)
+                .orElseThrow(() -> new Exception("Categoria no encontrado con ID: " + id));
     }
 
     @Override
     public void eliminarPorId(int id) throws Exception {
+        categoriaRepositorio.deleteById(id);
     }
 }

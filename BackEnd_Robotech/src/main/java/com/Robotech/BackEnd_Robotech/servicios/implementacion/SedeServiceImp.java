@@ -36,4 +36,15 @@ public class SedeServiceImp implements ISedeServicio {
     public Sede buscarPorNombre(String nombre) throws Exception {
         return sedeRepositorio.findByNombreSede(nombre);
     }
+
+    @Override
+    public Sede modificarSede(Sede sede) throws Exception {
+        return sedeRepositorio.save(sede);
+    }
+
+    @Override
+    public Sede buscarPorId(int id) throws Exception {
+        return sedeRepositorio.findById(id)
+                .orElseThrow(() -> new Exception("Sede no encontrado con ID: " + id));
+    }
 }

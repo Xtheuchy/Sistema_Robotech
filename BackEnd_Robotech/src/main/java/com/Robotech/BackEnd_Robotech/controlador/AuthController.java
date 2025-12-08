@@ -25,7 +25,7 @@ public class AuthController{
         this.competidorServicio = competidorServicio;
     }
 
-    // Login para la pagina admin
+    //Login para la pagina admin
     @PostMapping("/login/admin")
     public ResponseEntity<?> loginAdmin(@RequestBody LoginDTO usuarioLoginDTO) {
         try {
@@ -53,13 +53,12 @@ public class AuthController{
             }else {
                 return new ResponseEntity<>("El acceso está restringido a administradores y jueces.", HttpStatus.UNAUTHORIZED);
             }
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor: " + e.getMessage());
         }
     }
 
-    // Login para la pagina cliente (Juez y competidores)
+    // Login para la pagina cliente (Dueño de club y competidores)
     @PostMapping("/login/cliente")
     public ResponseEntity<?> loginCliente(@RequestBody LoginDTO usuarioLoginDTO) {
         try {
@@ -101,11 +100,9 @@ public class AuthController{
             }else {
                 return new ResponseEntity<>("El acceso está restringido a clubes y competidores.", HttpStatus.UNAUTHORIZED);
             }
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor: " + e.getMessage());
         }
     }
-
 }
 

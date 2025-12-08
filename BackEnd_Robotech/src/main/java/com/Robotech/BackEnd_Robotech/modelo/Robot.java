@@ -18,11 +18,11 @@ public class Robot {
     private String foto;
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id", nullable = false, columnDefinition = "INT") // Define la columna de clave foránea
+    @JoinColumn(name = "categoria_id", nullable = false, columnDefinition = "INT")
     private Categoria categoria;
 
     @ManyToOne
-    @JoinColumn(name = "competidor_id", nullable = false, columnDefinition = "INT") // Define la columna de clave foránea
+    @JoinColumn(name = "competidor_id", nullable = false, columnDefinition = "INT")
     private Competidor competidor;
 
     public Robot(String nombre, String foto, Categoria categoria){

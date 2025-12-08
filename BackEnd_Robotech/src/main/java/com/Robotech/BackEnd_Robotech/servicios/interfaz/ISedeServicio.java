@@ -10,4 +10,6 @@ public interface ISedeServicio {
     public void eliminarPorId(int id) throws Exception;
     public boolean verificarNombreSede(String sede) throws Exception;
     public Sede buscarPorNombre(String nombre) throws Exception;
+    public Sede modificarSede(Sede sede) throws Exception;
+    public Sede buscarPorId(int id) throws Exception;
 }

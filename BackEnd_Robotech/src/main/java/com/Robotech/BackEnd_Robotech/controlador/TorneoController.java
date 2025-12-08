@@ -111,21 +111,9 @@ public class TorneoController {
             if (!sedeServicio.verificarNombreSede(torneoDTO.getSede())) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La sede no existe");
             }
-            Categoria categoria = categoriaServicio.buscarPorNombre(torneoDTO.getCategoria());
-            Sede sede = sedeServicio.buscarPorNombre(torneoDTO.getSede());
 
-            torneo = torneoServicio.obtenerPorId(torneoDTO.getId());
-            torneo.setId(torneoDTO.getId());
-            torneo.setNombre(torneoDTO.getNombre_torneo());
-            torneo.setFoto(torneoDTO.getFoto());
-            torneo.setCantidad(torneoDTO.getCantidad());
-            torneo.setCategoria(categoria);
-            torneo.setSede(sede);
-            torneo.setFechaInicio(torneoDTO.getFecha_inicio());
-            torneo.setFechaFinal(torneoDTO.getFecha_final());
-            torneo.setDescripcion(torneoDTO.getDescripcion_torneo());
 
-            torneo = torneoServicio.modificarTorneo(torneo);
+            torneo = torneoServicio.modificarTorneo(torneoDTO);
             TorneoDTO torneoM = new TorneoDTO(
                     torneo.getId(),
                     torneo.getNombre(),
@@ -138,40 +126,105 @@ public class TorneoController {
                     torneo.getCreado_en(),
                     torneo.getCategoria().getNombre(),
                     torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
-                    torneo.getSede().getDireccion());
+                    torneo.getSede().getDireccion()
+            );
 
             return ResponseEntity.ok(torneoM);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminarTorneoPorId(@PathVariable int id) throws Exception {
+        try {
+            torneoServicio.eliminarPorId(id);
+            return ResponseEntity.ok("Eliminado correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }
+    //Obtener torneo por id
+    @GetMapping("/torneoId/{id}")
+    public ResponseEntity<?> obtenerTorneoPorId(@PathVariable int id){
+        try{
+            Torneo torneo = torneoServicio.obtenerPorId(id);
+            TorneoDTO torneoDTO = new TorneoDTO(
+                    torneo.getId(),
+                    torneo.getNombre(),
+                    torneo.getDescripcion(),
+                    torneo.getFoto(),
+                    torneo.getCantidad(),
+                    torneo.getFechaInicio(),
+                    torneo.getFechaFinal(),
+                    torneo.getEstado(),
+                    torneo.getCreado_en(),
+                    torneo.getCategoria().getNombre(),
+                    torneo.getCategoria().getDescripcion(),
+                    torneo.getSede().getNombreSede(),
+                    torneo.getSede().getDireccion()
+            );
+            return ResponseEntity.ok(torneoDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    //Listar todos los torneos
+    @GetMapping("/torneos")
+    public ResponseEntity<?> listarTorneos()throws Exception{
+        try{
+            List<Torneo> torneos = torneoServicio.listarTorneos();
+
+            List<TorneoDTO> torneoList = torneos.stream()
+                    .map(torneo -> new TorneoDTO(
+                            torneo.getId(),
+                            torneo.getNombre(),
+                            torneo.getDescripcion(),
+                            torneo.getFoto(),
+                            torneo.getCantidad(),
+                            torneo.getFechaInicio(),
+                            torneo.getFechaFinal(),
+                            torneo.getEstado(),
+                            torneo.getCreado_en(),
+                            torneo.getCategoria().getNombre(),
+                            torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
+                            torneo.getSede().getDireccion()
+                    ))
+                    .toList();
+            return ResponseEntity.ok(torneoList);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 
     //Listar torneos  publicos
     @GetMapping("/publico")
     public ResponseEntity<?> listarTorneoPublico() throws Exception {
-        List<Torneo> torneos = torneoServicio.listarTorneosPublicos();
+        try{
+            List<Torneo> torneos = torneoServicio.listarTorneosPublicos();
 
-        List<TorneoDTO> torneoList = torneos.stream()
-                .map(torneo -> new TorneoDTO(
-                        torneo.getId(),
-                        torneo.getNombre(),
-                        torneo.getDescripcion(),
-                        torneo.getFoto(),
-                        torneo.getCantidad(),
-                        torneo.getFechaInicio(),
-                        torneo.getFechaFinal(),
-                        torneo.getEstado(),
-                        torneo.getCreado_en(),
-                        torneo.getCategoria().getNombre(),
-                        torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
-                        torneo.getSede().getDireccion()
-                ))
-                .toList();
-        if (torneoList.isEmpty()){
-            return ResponseEntity.badRequest().body("No hay torneos Publicados");
+            List<TorneoDTO> torneoList = torneos.stream()
+                    .map(torneo -> new TorneoDTO(
+                            torneo.getId(),
+                            torneo.getNombre(),
+                            torneo.getDescripcion(),
+                            torneo.getFoto(),
+                            torneo.getCantidad(),
+                            torneo.getFechaInicio(),
+                            torneo.getFechaFinal(),
+                            torneo.getEstado(),
+                            torneo.getCreado_en(),
+                            torneo.getCategoria().getNombre(),
+                            torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
+                            torneo.getSede().getDireccion()
+                    ))
+                    .toList();
+            return ResponseEntity.ok(torneoList);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return ResponseEntity.ok(torneoList);
     }
     //Listar torneos con estado borrador
     @GetMapping("/borrador")

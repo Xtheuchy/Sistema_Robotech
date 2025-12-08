@@ -1,0 +1,208 @@
+import React, { useEffect, useState } from 'react';
+import { sedeServicio } from '../service/sedeService';
+
+const Sedes = () => {
+    const [sedes, setSedes] = useState([]);
+    const [cargando, setCargando] = useState(false);
+    const [busqueda, setBusqueda] = useState('');
+
+    // Estados del Modal
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [modoEdicion, setModoEdicion] = useState(false);
+    const [idEnEdicion, setIdEnEdicion] = useState(null);
+
+    const [form, setForm] = useState({
+        nombreSede: '',
+        direccion: '',
+        capacidad: 0
+    });
+
+    const cargarSedes = async () => {
+        setCargando(true);
+        try {
+            const data = await sedeServicio.listarSedes();
+            setSedes(data);
+        } catch (err) {
+            console.error("Error cargando sedes:", err);
+        } finally {
+            setCargando(false);
+        }
+    };
+
+    useEffect(() => { cargarSedes(); }, []);
+
+    const sedesFiltradas = sedes.filter(sede => 
+        sede.nombreSede.toLowerCase().includes(busqueda.toLowerCase()) ||
+        sede.direccion.toLowerCase().includes(busqueda.toLowerCase())
+    );
+
+    const abrirModalCrear = () => {
+        setForm({ nombreSede: '', direccion: '', capacidad: 0 });
+        setModoEdicion(false); setIdEnEdicion(null); setModalAbierto(true);
+    };
+
+    const abrirModalEditar = (sede) => {
+        setForm({ nombreSede: sede.nombreSede, direccion: sede.direccion, capacidad: sede.capacidad });
+        setModoEdicion(true); setIdEnEdicion(sede.id); setModalAbierto(true);
+    };
+
+    const cerrarModal = () => { setModalAbierto(false); setForm({ nombreSede: '', direccion: '', capacidad: 0 }); };
+    const handleChange = (e) => { setForm({ ...form, [e.target.name]: e.target.value }); };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (modoEdicion) {
+                await sedeServicio.actualizarSede(idEnEdicion, form);
+                setSedes(sedes.map(s => s.id === idEnEdicion ? { ...s, ...form } : s));
+            } else {
+                const nuevaSede = await sedeServicio.registrarSede(form);
+                setSedes([...sedes, nuevaSede || { ...form, id: Date.now() }]);
+            }
+            cerrarModal();
+        } catch (error) { 
+            alert("Error al procesar la solicitud" + error);
+         }
+    };
+
+    const handleEliminar = async (id) => {
+        if (window.confirm('¿Seguro que deseas eliminar esta sede?')) {
+            try {
+                await sedeServicio.eliminarSede(id);
+                setSedes(sedes.filter(s => s.id !== id));
+            } catch (error) { console.error(error); }
+        }
+    };
+
+    return (
+        // CAMBIO 1: Agregué 'py-10' para bajarlo y un contenedor gris de fondo
+        <div className="font-sans">
+            
+            {/* CAMBIO 2: 'max-w-4xl' lo hace más angosto (antes era 7xl). bg-white crea la tarjeta. */}
+            <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+
+                {/* --- ENCABEZADO --- */}
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-6">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                            <i className="fa-solid fa-building text-blue-600"></i> 
+                            Sedes
+                        </h2>
+                    </div>
+
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <div className="relative w-full sm:w-56">
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i className="fa-solid fa-search text-xs"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                placeholder="Buscar..." 
+                                value={busqueda}
+                                onChange={(e) => setBusqueda(e.target.value)}
+                                className="w-full py-2 pl-9 pr-4 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                            />
+                        </div>
+                        
+                        <button onClick={abrirModalCrear} className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition-colors text-sm font-medium whitespace-nowrap">
+                            <i className="fa-solid fa-plus mr-2"></i>
+                            Nuevo
+                        </button>
+                    </div>
+                </div>
+
+                {/* --- TABLA --- */}
+                <div className="overflow-hidden border border-gray-100 rounded-lg">
+                    {cargando ? (
+                        <div className="p-8 text-center text-gray-500 text-sm">
+                            <i className="fa-solid fa-circle-notch fa-spin mr-2"></i> Cargando...
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse text-sm">
+                                <thead className="bg-gray-50 text-gray-600 font-semibold">
+                                    <tr>
+                                        <th className="p-3 border-b">Nombre</th>
+                                        <th className="p-3 border-b">Dirección</th>
+                                        <th className="p-3 border-b text-center">Cap.</th>
+                                        <th className="p-3 border-b text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {sedesFiltradas.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="4" className="p-6 text-center text-gray-400">
+                                                Sin resultados.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        sedesFiltradas.map((sede) => (
+                                            <tr key={sede.id} className="hover:bg-blue-50/30 transition-colors">
+                                                <td className="p-3 font-medium text-gray-700">{sede.nombreSede}</td>
+                                                
+                                                {/* Truncado para que no se anche mucho */}
+                                                <td className="p-3 text-gray-500 truncate max-w-[150px]" title={sede.direccion}>
+                                                    {sede.direccion}
+                                                </td>
+
+                                                <td className="p-3 text-center">
+                                                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">
+                                                        {sede.capacidad}
+                                                    </span>
+                                                </td>
+                                                <td className="p-3 flex justify-end gap-2">
+                                                    <button onClick={() => abrirModalEditar(sede)} className="text-gray-400 cursor-pointer  hover:text-blue-600 transition-colors">
+                                                        <i className="fa-solid fa-pen"></i>
+                                                    </button>
+                                                    <button onClick={() => handleEliminar(sede.id)} className="text-gray-400 cursor-pointer  hover:text-red-500 transition-colors">
+                                                        <i className="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* --- MODAL (Compacto) --- */}
+            {modalAbierto && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up">
+                        <div className="px-5 py-3 bg-gray-50 border-b flex justify-between items-center">
+                            <h3 className="font-bold text-gray-700">
+                                {modoEdicion ? 'Editar Sede' : 'Nueva Sede'}
+                            </h3>
+                            <button onClick={cerrarModal} className="text-gray-400 cursor-pointer hover:text-gray-600">
+                                <i className="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                        <form onSubmit={handleSubmit} className="p-5 space-y-3">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">NOMBRE</label>
+                                <input type="text" name="nombreSede" value={form.nombreSede} onChange={handleChange} className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="Ej: Sede Central" required />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">DIRECCIÓN</label>
+                                <input type="text" name="direccion" value={form.direccion} onChange={handleChange} className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="Ej: Av. Perú 123" required />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">CAPACIDAD</label>
+                                <input type="number" name="capacidad" value={form.capacidad} onChange={handleChange} className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm" min="1" required />
+                            </div>
+                            <div className="flex justify-end gap-2 mt-4">
+                                <button type="button" onClick={cerrarModal} className="cursor-pointer px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded">Cancelar</button>
+                                <button type="submit" className="cursor-pointer px-3 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default Sedes;

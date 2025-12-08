@@ -1,7 +1,15 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
+import com.Robotech.BackEnd_Robotech.DTO.RegistroTorneoDTO;
+import com.Robotech.BackEnd_Robotech.modelo.Categoria;
+import com.Robotech.BackEnd_Robotech.modelo.Inscripcion;
+import com.Robotech.BackEnd_Robotech.modelo.Sede;
 import com.Robotech.BackEnd_Robotech.modelo.Torneo;
+import com.Robotech.BackEnd_Robotech.repositorio.IInscripcionRepositorio;
 import com.Robotech.BackEnd_Robotech.repositorio.ITorneoRepositorio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IInscripcionServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.ISedeServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ITorneoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,9 +19,17 @@ import java.util.List;
 
 @Service
 public class TorneoServiceImp implements ITorneoServicio {
+    private final ITorneoRepositorio torneoRepositorio;
+    private final ICategoriaServicio categoriaServicio;
+    private final ISedeServicio sedeServicio;
+    private final IInscripcionRepositorio inscripcionRepositorio;
     @Autowired
-    private ITorneoRepositorio torneoRepositorio;
-
+    public TorneoServiceImp(IInscripcionRepositorio inscripcionRepositorio,ISedeServicio sedeServicio,ICategoriaServicio categoriaServicio,ITorneoRepositorio torneoRepositorio){
+        this.torneoRepositorio = torneoRepositorio;
+        this.categoriaServicio = categoriaServicio;
+        this.sedeServicio = sedeServicio;
+        this.inscripcionRepositorio = inscripcionRepositorio;
+    }
     @Override
     public List<Torneo> listarTorneos() throws Exception {
         return torneoRepositorio.findAll();
@@ -53,7 +69,30 @@ public class TorneoServiceImp implements ITorneoServicio {
     }
 
     @Override
-    public Torneo modificarTorneo(Torneo torneo) throws Exception {
+    public Torneo modificarTorneo(RegistroTorneoDTO torneoDTO) throws Exception {
+        Categoria categoria = categoriaServicio.buscarPorNombre(torneoDTO.getCategoria());
+        Sede sede = sedeServicio.buscarPorNombre(torneoDTO.getSede());
+
+        Torneo torneo = obtenerPorId(torneoDTO.getId());
+        if (torneo.getEstado().equalsIgnoreCase("borrador")){
+            torneo.setNombre(torneoDTO.getNombre_torneo());
+            torneo.setFoto(torneoDTO.getFoto());
+            torneo.setCantidad(torneoDTO.getCantidad());
+            torneo.setCategoria(categoria);
+            torneo.setSede(sede);
+            torneo.setFechaInicio(torneoDTO.getFecha_inicio());
+            torneo.setFechaFinal(torneoDTO.getFecha_final());
+            torneo.setDescripcion(torneoDTO.getDescripcion_torneo());
+            torneo.setEstado(torneoDTO.getEstado());
+        }else{
+            throw new Exception("El estado del torneo es : " + torneo.getEstado() + " no puede modificarse");
+        }
+
+        // Validación: Verificar que la fecha final no sea antes de la fecha de inicio
+        if (torneo.getFechaFinal().isBefore(torneo.getFechaInicio())) {
+            throw new Exception("La fecha final no puede ser anterior a la fecha de inicio.");
+        }
+
         return torneoRepositorio.save(torneo);
     }
 
@@ -68,7 +107,13 @@ public class TorneoServiceImp implements ITorneoServicio {
 
     @Override
     public void eliminarPorId(int id) throws Exception {
-        torneoRepositorio.deleteById(id);
+        Torneo torneo = obtenerPorId(id);
+        List<Inscripcion> inscripcions = inscripcionRepositorio.findAlldByTorneo(torneo);
+        if (inscripcions == null || inscripcions.isEmpty()){
+            torneoRepositorio.deleteById(id);
+        }else {
+            throw new Exception("El torneo ya tiene inscripciones no puede eliminarse!!");
+        }
     }
 
     @Override

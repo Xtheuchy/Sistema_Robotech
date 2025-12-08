@@ -17,7 +17,6 @@ public class Competidor {
 
     private String apodo;
 
-    //Revisar
     @OneToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id",columnDefinition = "INT")
     private Usuario usuario;

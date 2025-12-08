@@ -27,7 +27,10 @@ const AsideBar = ({ className }) => {
                         <Link className='block p-3' to="/torneos"><i class="fa-solid fa-trophy"></i> Torneos</Link>
                     </li>
                     <li className='cursor-pointer hover:bg-sky-200 transition-all rounded-lg'>
-                        <Link className='block p-3' to="/torneos"><i class="fa-solid fa-trophy"></i> Torneos</Link>
+                        <Link className='block p-3' to="/clubes"><i class="fa-solid fa-user-group"></i> Clubes</Link>
+                    </li>
+                    <li className='cursor-pointer hover:bg-sky-200 transition-all rounded-lg'>
+                        <Link className='block p-3' to="/organizacion"><i class="fa-solid fa-gear"></i> Organización</Link>
                     </li>
                     <li onClick={handleLogout} className='cursor-pointer hover:bg-sky-200 hover:text-red-500 transition-all rounded-lg'>
                         <Link className='block p-3'><i class="fa-solid fa-square-xmark"></i> Cerrar sesión</Link>

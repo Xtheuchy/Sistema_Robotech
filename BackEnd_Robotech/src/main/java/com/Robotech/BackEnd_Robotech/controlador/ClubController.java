@@ -1,5 +1,7 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
+import com.Robotech.BackEnd_Robotech.DTO.ClubDTO;
+import com.Robotech.BackEnd_Robotech.DTO.UsuarioDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Club;
 import com.Robotech.BackEnd_Robotech.DTO.RegistroClubDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
@@ -31,10 +33,25 @@ public class ClubController {
         this.rolService = rolService;
         this.identificadorService = identificadorService;
     }
+
     @GetMapping
-    public ResponseEntity<List<Club>> listarClubes() throws Exception {
+    public ResponseEntity<?> listarClubes() throws Exception {
         List<Club> clubes = clubService.listarClubes();
-        return ResponseEntity.ok(clubes);
+        List<ClubDTO> clubs = clubes.stream()
+                .map(club -> new ClubDTO(
+                        club.getId(),
+                        club.getUsuario().getNombres(),
+                        club.getUsuario().getFoto(),
+                        club.getUsuario().getCorreo(),
+                        club.getTelefono(),
+                        club.getNombre(),
+                        club.getDireccion_fiscal(),
+                        club.getLogo(),
+                        club.getEstado(),
+                        club.getCreado_en()
+                ))
+                .toList();
+        return ResponseEntity.ok(clubs);
     }
 
     @GetMapping("/integrantes/{id}")
@@ -58,16 +75,7 @@ public class ClubController {
                     rol,
                     "PENDIENTE"
             );
-            Usuario usuarioClub = usuarioService.agregarUsuario(usuario);
-            Club club = new Club(
-                    usuarioClub,
-                    registroClubDTO.getNombreClub(),
-                    registroClubDTO.getDireccion_fiscal(),
-                    registroClubDTO.getTelefono(),
-                    registroClubDTO.getLogo(),
-                    "PENDIENTE"
-            );
-            Club clubRegistrado = clubService.registrarClub(club);
+            Club clubRegistrado = clubService.registrarClub(registroClubDTO, usuario);
             return new ResponseEntity<>(clubRegistrado, HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -104,9 +112,8 @@ public class ClubController {
             // Cambiar el estado del club y del usuario asociado
             club.setEstado("ACTIVO");
             club.getUsuario().setEstado("ACTIVO");
-
             // Registrar el club actualizado
-            clubService.registrarClub(club);
+            clubService.modificarClub(club);
 
             // Devolver una respuesta exitosa
             return ResponseEntity.ok("Club Activo Correctamente");

@@ -40,8 +40,13 @@ public class InscripcionServiceImp implements IInscripcionServicio {
     public Inscripcion agregarInscripcion(RegistroInscripcionDTO inscripcionDTO) throws Exception {
         Competidor competidor = competidorServicio.buscarPorId(inscripcionDTO.getCompetidorId());
         Torneo torneo = torneoServicio.obtenerPorId(inscripcionDTO.getTorneoId());
-        Inscripcion inscripcion = new Inscripcion(torneo,competidor);
-        return inscripcionRepositorio.save(inscripcion);
+        List<Inscripcion> inscripcions = listarInscripcionPorTorneo(inscripcionDTO.getTorneoId());
+        if (!(inscripcions.size() == torneo.getCantidad())){
+            Inscripcion inscripcion = new Inscripcion(torneo,competidor);
+            return inscripcionRepositorio.save(inscripcion);
+        }else {
+            throw new Exception("El torneo ha alcanzado el número máximo de inscripciones.");
+        }
     }
 
     @Override

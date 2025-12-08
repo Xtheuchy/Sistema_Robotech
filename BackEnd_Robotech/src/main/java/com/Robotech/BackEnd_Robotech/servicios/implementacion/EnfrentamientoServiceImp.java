@@ -29,17 +29,28 @@ public class EnfrentamientoServiceImp implements IEnfrentamientoServicio {
 
     @Override
     public void generarEnfrentamientos(int torneoId) throws Exception {
-        // Paso 1: Obtener competidores por torneo
-        List<Competidor> competidores = obtenerCompetidoresPorTorneo(torneoId);
+        Torneo torneo = torneoServicio.obtenerPorId(torneoId);
+        List<Competidor> competidores;
+        List<Enfrentamiento> combates = enfrentamientoRepositorio.findAllByTorneo(torneo);
+        competidores = obtenerCompetidoresPorTorneo(torneoId);
+        if ((combates == null || combates.isEmpty()) && (competidores.size() == torneo.getCantidad())){
+            // Paso 1: Obtener competidores por torneo
+            competidores = obtenerCompetidoresPorTorneo(torneoId);
 
-        // Paso 2: Aleatorizar los competidores
-        List<Competidor> competidoresAleatorios = mezclarCompetidoresAleatoriamente(competidores);
+            // Paso 2: Aleatorizar los competidores
+            List<Competidor> competidoresAleatorios = mezclarCompetidoresAleatoriamente(competidores);
 
-        // Paso 3: Crear los enfrentamientos para la primera ronda
-        List<Enfrentamiento> enfrentamientos = crearEnfrentamientos(competidoresAleatorios, torneoId, 1);
+            // Paso 3: Crear los enfrentamientos para la primera ronda
+            List<Enfrentamiento> enfrentamientos = crearEnfrentamientos(competidoresAleatorios, torneoId, 1);
 
-        // Paso 4: Registrar los enfrentamientos
-        registrarEnfrentamientos(enfrentamientos);
+            // Paso 4: Registrar los enfrentamientos
+            registrarEnfrentamientos(enfrentamientos);
+        }else {
+            if (competidores.size() < torneo.getCantidad()){
+                throw new Exception("No hay suficientes competidores para este torneo.");
+            }
+            throw new Exception("Ya se han generado enfrentamientos para este torneo.");
+        }
     }
 
     private List<Competidor> obtenerCompetidoresPorTorneo(int torneoId) throws Exception {
@@ -122,8 +133,7 @@ public class EnfrentamientoServiceImp implements IEnfrentamientoServicio {
         // Obtener los ganadores de la ronda actual
         List<Competidor> ganadores = obtenerGanadores(enfrentamientos);
         if (ganadores.size() == 1){
-            torneo.setEstado("Finalizado");
-            torneoServicio.modificarTorneo(torneo);
+            torneoServicio.modificarEstado(torneo.getId(),"Finalizado");
             throw new Exception("El ganador del torneo es: " + ganadores.getFirst().getApodo());
         }
         // Crear los enfrentamientos para la siguiente ronda
@@ -133,6 +143,12 @@ public class EnfrentamientoServiceImp implements IEnfrentamientoServicio {
 
         // Registrar los nuevos enfrentamientos para la siguiente ronda
         registrarEnfrentamientos(nuevosEnfrentamientos);
+    }
+
+    @Override
+    public List<Enfrentamiento> obtenerEnfrentamientoPorTorneo(int torneoId) throws Exception {
+        Torneo torneo = torneoServicio.obtenerPorId(torneoId);
+        return enfrentamientoRepositorio.findAllByTorneo(torneo);
     }
 
     private List<Competidor> obtenerGanadores(List<Enfrentamiento> enfrentamientos) {

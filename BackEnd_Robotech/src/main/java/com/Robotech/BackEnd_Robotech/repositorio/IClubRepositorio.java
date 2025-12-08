@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 
 public interface IClubRepositorio extends JpaRepository<Club, Integer> {
+    public Boolean existsByTelefono(String Telefono);
 }

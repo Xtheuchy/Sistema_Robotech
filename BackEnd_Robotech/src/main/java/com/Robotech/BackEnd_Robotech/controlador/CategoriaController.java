@@ -17,11 +17,18 @@ public class CategoriaController {
     private ICategoriaServicio categoriaService;
     List<Categoria> categorias;
     Categoria categoria;
+
     @GetMapping
-    public ResponseEntity<List<Categoria>> listarCategorias() throws Exception{
-        categorias = categoriaService.listarCategoria();
-        return ResponseEntity.ok(categorias);
+    public ResponseEntity<?> listarCategorias() throws Exception{
+        try {
+            categorias = categoriaService.listarCategoria();
+            return ResponseEntity.ok(categorias);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+
     }
+
     @PostMapping("/registrar")
     public ResponseEntity<Categoria> agregarCategoria(@RequestBody Categoria categoria) throws Exception {
         categoria = new Categoria(
@@ -29,5 +36,28 @@ public class CategoriaController {
                 categoria.getDescripcion());
         categoria = categoriaService.agregarCategoria(categoria);
         return ResponseEntity.ok(categoria);
+    }
+    //Modificar sede
+    @PutMapping("/modificar/{id}")
+    public ResponseEntity<?> modificarCategoria(@PathVariable int id, @RequestBody Categoria cat){
+        try {
+            categoria = categoriaService.buscarPorId(id);
+            categoria.setNombre(cat.getNombre());
+            categoria.setDescripcion(cat.getDescripcion());
+            return ResponseEntity.ok(categoriaService.modificarCategoria(categoria));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    //Eliminar sede
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<String> eliminarCategoria(@PathVariable int id){
+        try{
+            categoriaService.eliminarPorId(id);
+            return ResponseEntity.ok("¡Eliminado correctamente!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 }
