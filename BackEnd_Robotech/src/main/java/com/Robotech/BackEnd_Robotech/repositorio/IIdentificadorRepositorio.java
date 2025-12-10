@@ -14,4 +14,5 @@ public interface IIdentificadorRepositorio extends JpaRepository<Identificador, 
     public Optional<Identificador> findById(String id);
     public List<Identificador> findAllByClub(Club club);
     public Identificador findByCompetidor(Competidor competidor);
+    public List<Identificador> findByClub(Club club);
 }

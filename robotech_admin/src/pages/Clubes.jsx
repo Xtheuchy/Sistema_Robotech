@@ -74,7 +74,7 @@ const Clubes = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 md:p-8 font-sans">
+        <div className="min-h-screen md:p-8 font-sans">
             <div className="max-w-7xl mx-auto">
 
                 {/* Header Mejorado */}

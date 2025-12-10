@@ -39,7 +39,7 @@ public class InscripcionController {
 
     //Registrar Inscripciones
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarInscripcion(@RequestBody RegistroInscripcionDTO inscripcionDTO){
+    public ResponseEntity<?> registrarInscripcion(@RequestBody RegistroInscripcionDTO inscripcionDTO) throws Exception{
         try {
             return ResponseEntity.ok(inscripcionServicio.agregarInscripcion(inscripcionDTO));
         }catch (Exception e){
