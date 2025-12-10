@@ -34,7 +34,6 @@ public class CompetidorServiceImp implements ICompetidorServicio {
     @Override
     public Competidor registrarCompetidor(Competidor competidor) throws Exception {
         if (competidorRepositorio.existsByApodo(competidor.getApodo())){
-            throw new IllegalArgumentException("El Apodo de competidor 'LoboSolitario' ya está en uso.");
         }
         return competidorRepositorio.save(competidor);
     }
@@ -64,9 +63,6 @@ public class CompetidorServiceImp implements ICompetidorServicio {
     public List<CompetidorDTO> listarCompetidorPorClub(int clubId) throws Exception {
         Club club = clubServicio.buscarPorID(clubId);
         List<Identificador> identificadores = identificadorServicio.listarIdentificadorPorClub(club);
-        if (identificadores == null || identificadores.isEmpty()){
-            throw new Exception("No hay integrantes en el club!!");
-        }else {
             return identificadores.stream()
                     .filter(identificador -> identificador.getCompetidor() != null) // Filtro para asegurar que el competidor no sea null
                     .map(identificador -> new CompetidorDTO(
@@ -80,6 +76,11 @@ public class CompetidorServiceImp implements ICompetidorServicio {
                             identificador.getCompetidor().getUsuario().getEstado()
                     ))
                     .toList();
-        }
+    }
+
+    @Override
+    public void modificarPuntoDeCompetidor(Competidor competidor, int cantidad) throws Exception {
+        competidor.setPuntos(competidor.getPuntos()+cantidad);
+        competidorRepositorio.save(competidor);
     }
 }

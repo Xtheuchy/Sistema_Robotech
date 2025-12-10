@@ -14,4 +14,5 @@ public interface ICompetidorServicio {
     public boolean verificarApodo(String apodo) throws Exception;
     public Competidor buscarCompetidorPorUsuario(Usuario usuario) throws Exception;
     public List<CompetidorDTO> listarCompetidorPorClub(int id) throws Exception;
+    public void modificarPuntoDeCompetidor(Competidor competidor, int cantidad) throws Exception;
 }

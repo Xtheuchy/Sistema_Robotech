@@ -51,6 +51,5 @@ public class InscripcionServiceImp implements IInscripcionServicio {
 
     @Override
     public void eliminarInscripcionPorId(int id) throws Exception {
-
     }
 }

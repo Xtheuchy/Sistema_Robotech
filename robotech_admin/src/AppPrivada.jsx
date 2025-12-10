@@ -10,6 +10,7 @@ import DetalleTorneo from './pages/DetalleTorneo';
 import TorneoBracket from './pages/TorneoBracket';
 import Clubes from './pages/Clubes';
 import Organizacion from './pages/Organizacion';
+import DetalleClub from './pages/DetalleClub';
 
 
 const AppPrivada = () => {
@@ -23,6 +24,7 @@ const AppPrivada = () => {
         <Route path='/TorneoBracket/:torneoId' element={<TorneoBracket/>}/>
         <Route path='/clubes' element={<Clubes/>}/>
         <Route path='/organizacion' element={<Organizacion/>}/>
+        <Route path='/DetalleClub/:clubId' element={<DetalleClub/>}/>
         {/* ...todas las demás rutas de tu panel... */}
         {/* Un 404 para rutas DENTRO del panel que no existan */}
 

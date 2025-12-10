@@ -14,6 +14,40 @@ const listarClubes = async () =>{
     }
 }
 
+//Obtener club por id
+const obtenerClubPorId = async(id) =>{
+    try {
+        const response = await axios.get(`${URL_API}/obtenerClub/${id}`);
+        return response.data
+    } catch (error) {
+        throw error.response?.data || error.message || 'Error al obtener club';
+    }
+}
+//Listar integrantes del club
+const listarIntegrantes = async (id) =>{
+    try{
+        const response = await axios.get(`${URL_API}/integrantes/${id}`);
+        return response.data
+    }catch (error){
+        throw error.response?.data || error.message || 'Error al obtener integrantes del club';
+    }
+}
+
+//Validar club
+const validarClub = async (validacion) =>{
+    try{
+        const response = await axios.put(`${URL_API}/validacion`, validacion)
+        return response.data
+    }catch (error){
+        throw error.response?.data || error.message || 'Error al validar club';
+    }
+}
+
+
+
 export const clubServicio={
-    listarClubes
+    listarClubes,
+    obtenerClubPorId,
+    listarIntegrantes,
+    validarClub
 }

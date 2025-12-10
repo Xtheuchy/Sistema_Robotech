@@ -1,5 +1,6 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
+import com.Robotech.BackEnd_Robotech.DTO.ClubDTO;
 import com.Robotech.BackEnd_Robotech.DTO.RegistroClubDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Club;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
@@ -59,7 +60,7 @@ public class ClubServiceImp implements IClubServicio {
 
     @Override
     public void eliminarPorId(int id) throws Exception {
-        clubRepositorio.findById(id);
+        clubRepositorio.deleteById(id);
     }
 
     @Override
@@ -69,7 +70,33 @@ public class ClubServiceImp implements IClubServicio {
     }
 
     @Override
+    public ClubDTO obtenerPorId(int id) throws Exception {
+        Club club = clubRepositorio.findById(id)
+                .orElseThrow(()->new Exception("Club con id: "+ id +" no encontrado "));
+        return new ClubDTO(club.getId(),
+                club.getUsuario().getNombres(),
+                club.getUsuario().getFoto(),
+                club.getUsuario().getCorreo(),
+                club.getTelefono(),
+                club.getNombre(),
+                club.getDireccion_fiscal(),
+                club.getLogo(),
+                club.getEstado(),
+                club.getCreado_en());
+    }
+
+    @Override
+    public Club obtenerPorUsuario(Usuario usuario) throws Exception {
+        return clubRepositorio.findByUsuario(usuario);
+    }
+    @Override
     public Club modificarClub(Club club) throws Exception {
         return clubRepositorio.save(club);
+    }
+
+    @Override
+    public void modificarPuntoDeClub(Club club, int cantidad) {
+        club.setPuntos(club.getPuntos()+cantidad);
+        clubRepositorio.save(club);
     }
 }

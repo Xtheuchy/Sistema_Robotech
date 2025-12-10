@@ -2,11 +2,9 @@ package com.Robotech.BackEnd_Robotech.controlador;
 
 import com.Robotech.BackEnd_Robotech.DTO.ClubDTO;
 import com.Robotech.BackEnd_Robotech.DTO.UsuarioDTO;
-import com.Robotech.BackEnd_Robotech.modelo.Club;
+import com.Robotech.BackEnd_Robotech.DTO.ValidarClubDTO;
+import com.Robotech.BackEnd_Robotech.modelo.*;
 import com.Robotech.BackEnd_Robotech.DTO.RegistroClubDTO;
-import com.Robotech.BackEnd_Robotech.modelo.Identificador;
-import com.Robotech.BackEnd_Robotech.modelo.Rol;
-import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,14 +22,16 @@ public class ClubController {
     private final IUsuarioServicio usuarioService;
     private final IRolServicio rolService;
     private final IIdentificadorServicio identificadorService;
+    private final IMensajeServicio mensajeServicio;
 
     @Autowired
-    public ClubController(IIdentificadorServicio identificadorService, IClubServicio clubService, ICompetidorServicio competidorService, IRolServicio rolService, IUsuarioServicio usuarioService){
+    public ClubController(IMensajeServicio mensajeServicio,IIdentificadorServicio identificadorService, IClubServicio clubService, ICompetidorServicio competidorService, IRolServicio rolService, IUsuarioServicio usuarioService){
         this.clubService = clubService;
         this.competidorService = competidorService;
         this.usuarioService = usuarioService;
         this.rolService = rolService;
         this.identificadorService = identificadorService;
+        this.mensajeServicio = mensajeServicio;
     }
 
     @GetMapping
@@ -52,6 +52,14 @@ public class ClubController {
                 ))
                 .toList();
         return ResponseEntity.ok(clubs);
+    }
+    @GetMapping("/obtenerClub/{id}")
+    public ResponseEntity<?> obtenerClub(@PathVariable int id){
+        try{
+            return ResponseEntity.ok(clubService.obtenerPorId(id));
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/integrantes/{id}")
@@ -93,11 +101,12 @@ public class ClubController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/{clubId}/validacion/{accion}")
-    public ResponseEntity<String> validarClub(@PathVariable int clubId, @PathVariable String accion) {
+    @PutMapping("/validacion")
+    public ResponseEntity<String> validarClub(@RequestBody ValidarClubDTO validarClubDTO) {
         try {
+            Mensaje mensaje;
             // Buscar el club por ID
-            Club club = clubService.buscarPorID(clubId);
+            Club club = clubService.buscarPorID(validarClubDTO.getId());
 
             // Si no se encuentra el club, devolver 404 Not Found
             if (club == null) {
@@ -105,13 +114,24 @@ public class ClubController {
             }
 
             // Verificar la acción (permitir o rechazar)
-            if (!"permitir".equals(accion)) {
-                return new ResponseEntity<>("Club Rechazado correctamente", HttpStatus.FORBIDDEN);
+            if (!"permitir".equals(validarClubDTO.getAccion())) {
+                if (validarClubDTO.getMensaje() == null || validarClubDTO.getMensaje().isEmpty()){
+                    return new ResponseEntity<>("Necesitar ingresar la razón por la cual se rechaza el club",HttpStatus.BAD_REQUEST);
+                }
+                mensaje = mensajeServicio.registrarMensaje(
+                        new Mensaje(
+                        club.getUsuario(),
+                        validarClubDTO.getMensaje()));
+                club.setEstado("RECHAZADO");
+                club.getUsuario().setEstado("RECHAZADO");
+                clubService.modificarClub(club);
+                return new ResponseEntity<>("Club Rechazado correctamente.", HttpStatus.ACCEPTED);
             }
 
             // Cambiar el estado del club y del usuario asociado
             club.setEstado("ACTIVO");
             club.getUsuario().setEstado("ACTIVO");
+
             // Registrar el club actualizado
             clubService.modificarClub(club);
 

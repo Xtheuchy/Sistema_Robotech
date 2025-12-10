@@ -16,6 +16,7 @@ public class Competidor {
     private int id;
 
     private String apodo;
+    private int puntos;
 
     @OneToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id",columnDefinition = "INT")

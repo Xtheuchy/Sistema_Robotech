@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { clubServicio } from '../service/clubService';
+import { Link } from 'react-router-dom';
 
 const Clubes = () => {
     const [clubs, setClubs] = useState([]);
@@ -29,19 +30,41 @@ const Clubes = () => {
     const formatDate = (dateString) => {
         if (!dateString) return "Fecha no disponible";
         const date = new Date(dateString);
-        // Corregimos la diferencia horaria sumando el offset en minutos
-        // Esto evita que se reste un día por la zona horaria UTC vs Local
         const dateLocal = new Date(date.valueOf() + date.getTimezoneOffset() * 60000);
 
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return dateLocal.toLocaleDateString('es-ES', options);
     };
 
-    const handleDecision = (id, newStatus, reason = "") => {
-        setClubs(prev => prev.map(club =>
-            club.id === id ? { ...club, estado: newStatus, motivoRechazo: reason } : club
-        ));
-        closeModal();
+    // --- NUEVA LÓGICA DE DECISIÓN CONECTADA AL BACKEND ---
+    const handleDecision = async (id, newStatus, reason = "") => {
+        try {
+            
+            // 1. Definir la acción para el Backend ('permitir' o 'rechazar')
+            const accionApi = newStatus === 'ACTIVO' ? 'permitir' : 'rechazar';
+
+            // 2. Construir el objeto JSON requerido
+            const validacionPayload = {
+                id: id,
+                accion: accionApi,
+                mensaje: reason // Si es aprobar, reason llega vacío por defecto
+            };
+
+            // 3. Llamar al servicio
+            await clubServicio.validarClub(validacionPayload);
+
+            // 4. Si el backend responde OK, actualizamos el estado local visualmente
+            setClubs(prev => prev.map(club =>
+                club.id === id ? { ...club, estado: newStatus, motivoRechazo: reason } : club
+            ));
+
+            // 5. Cerrar el modal
+            closeModal();
+
+        } catch (error) {
+            console.error("Error al validar el club:", error);
+            alert("Ocurrió un error al procesar la solicitud. Intente nuevamente.");
+        }
     };
 
     const closeModal = () => {
@@ -58,7 +81,6 @@ const Clubes = () => {
                 <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Administración de Clubes</h1>
-                        <p className="text-gray-500 mt-1 text-sm">Gestiona el acceso y revisión de las solicitudes.</p>
                     </div>
                     <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm text-gray-600">
                         <i className="fa-solid fa-calendar-day mr-2 text-blue-500"></i>
@@ -151,14 +173,14 @@ const Clubes = () => {
                                                 className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group"
                                             >
                                                 Ver Ficha <i className="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
-                                            </button> 
+                                            </button>
                                             :
-                                            <button
-                                                onClick={() => setSelectedClub(club)}
+                                            <Link
+                                                to={`/DetalleClub/${club.id}`}
                                                 className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group"
                                             >
                                                 Ver detalle <i className="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
-                                            </button>
+                                            </Link>
                                     }
 
                                 </div>

@@ -2,9 +2,8 @@ package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
 import com.Robotech.BackEnd_Robotech.modelo.*;
 import com.Robotech.BackEnd_Robotech.repositorio.IEnfrentamientoRepositorio;
-import com.Robotech.BackEnd_Robotech.servicios.interfaz.IEnfrentamientoServicio;
-import com.Robotech.BackEnd_Robotech.servicios.interfaz.IInscripcionServicio;
-import com.Robotech.BackEnd_Robotech.servicios.interfaz.ITorneoServicio;
+import com.Robotech.BackEnd_Robotech.repositorio.IIdentificadorRepositorio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +14,25 @@ import java.util.stream.Collectors;
 public class EnfrentamientoServiceImp implements IEnfrentamientoServicio {
 
     private final IInscripcionServicio inscripcionServicio;
+    private final IClubServicio clubServicio;
+    private final ICompetidorServicio competidorServicio;
     private final IEnfrentamientoRepositorio enfrentamientoRepositorio;
+    private final IIdentificadorRepositorio identificadorRepositorio;
     private final ITorneoServicio torneoServicio;
 
     @Autowired
-    public EnfrentamientoServiceImp(IInscripcionServicio inscripcionServicio,
+    public EnfrentamientoServiceImp(IClubServicio clubServicio,
+                                    ICompetidorServicio competidorServicio,
+                                    IIdentificadorRepositorio identificadorRepositorio,
+                                    IInscripcionServicio inscripcionServicio,
                                     IEnfrentamientoRepositorio enfrentamientoRepositorio,
                                     ITorneoServicio torneoServicio) {
         this.inscripcionServicio = inscripcionServicio;
         this.enfrentamientoRepositorio = enfrentamientoRepositorio;
         this.torneoServicio = torneoServicio;
+        this.identificadorRepositorio = identificadorRepositorio;
+        this.clubServicio = clubServicio;
+        this.competidorServicio = competidorServicio;
     }
 
     @Override
@@ -99,16 +107,31 @@ public class EnfrentamientoServiceImp implements IEnfrentamientoServicio {
         // Asignar los puntajes
         enfrentamiento.setPuntaje_1(puntaje1);
         enfrentamiento.setPuntaje_2(puntaje2);
-
+        actualizarPuntajes(enfrentamiento.getCompetidor1(),puntaje1);
+        actualizarPuntajes(enfrentamiento.getCompetidor2(),puntaje2);
         // Determinar el ganador
         Competidor ganador = determinarGanador(enfrentamiento);
         if (ganador != null) {
             enfrentamiento.setGanador(ganador);
         }
-
         enfrentamiento.setEstado("FINALIZADO");  // Marcar el enfrentamiento como finalizado
 
         enfrentamientoRepositorio.save(enfrentamiento);
+    }
+    private void actualizarPuntajes(Competidor competidor, int puntaje) throws Exception {
+        if (competidor == null) return;
+        // 1. Sumar puntos al competidor (Siempre se hace)
+        competidorServicio.modificarPuntoDeCompetidor(competidor, puntaje);
+        // 2. Sumar puntos al Club (Solo si existe la relación en la tabla intermedia)
+        Identificador identificador = identificadorRepositorio.findByCompetidor(competidor);
+        // Verificamos que exista el identificador y que tenga un club asociado
+        if (identificador != null && identificador.getClub() != null) {
+            Club club = identificador.getClub();
+            // Calculamos el 30% (o el porcentaje que definas)
+            int puntosParaElClub = (int) Math.round(puntaje * 0.3);
+
+            clubServicio.modificarPuntoDeClub(club, puntosParaElClub);
+        }
     }
 
     private Competidor determinarGanador(Enfrentamiento enfrentamiento) {
