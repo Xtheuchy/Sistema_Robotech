@@ -67,11 +67,26 @@ const eliminarUsuario = async (id) => {
     }
 };
 
+/**
+ 6. Listar jueces
+ */
+const listarJueces = async () =>{
+    try {
+        const response = await axios.get(`${API_URL}/jueces`);
+        return response.data
+    } catch (error) {
+        throw error.response?.data || error.message || 'Error al listar jueces';
+    }
+}
+
+
+
 // Exportamos todas las funciones como un objeto
 export const usuarioServicio = {
     listarUsuarios,
     obtenerUsuarioPorId,
     registrarUsuario,
     actualizarUsuario,
-    eliminarUsuario
+    eliminarUsuario,
+    listarJueces
 };

@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { categoriaServicio } from '../service/categoriaService';
 
 const Categorias = () => {
-  // --- ESTADOS ---
+  // estados para manejar la lista y la ui
   const [categorias, setCategorias] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [busqueda, setBusqueda] = useState('');
 
-  // Modal y Formulario
+  // estados para el modal y el formulario
   const [modalOpen, setModalOpen] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [form, setForm] = useState({ nombre: '', descripcion: '' });
 
-  // --- CARGA DE DATOS ---
+  // trae las categorias del backend
   const cargarDatos = async () => {
     setCargando(true);
     try {
@@ -26,21 +26,23 @@ const Categorias = () => {
     }
   };
 
+  // al ingresar a la pagina carga los datos necesarios
   useEffect(() => { cargarDatos(); }, []);
 
-  // --- FILTRO ---
+  // filtra la lista segun el buscador
   const datosFiltrados = categorias.filter(item =>
     item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
     (item.descripcion && item.descripcion.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
-  // --- MANEJADORES ---
+  // prepara el formulario para crear
   const handleOpenCreate = () => {
     setForm({ nombre: '', descripcion: '' });
     setModoEdicion(false);
     setModalOpen(true);
   };
 
+  // carga los datos para editar
   const handleOpenEdit = (item) => {
     setForm({ nombre: item.nombre, descripcion: item.descripcion });
     setModoEdicion(true);
@@ -48,6 +50,7 @@ const Categorias = () => {
     setModalOpen(true);
   };
 
+  // envia el formulario para guardar o editar
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -60,30 +63,29 @@ const Categorias = () => {
       }
       setModalOpen(false);
     } catch (error) {
-      alert("Error al guardar "+ error);
+      alert("Error al guardar " + error);
     }
   };
 
+  // elimina la categoria tras confirmar
   const handleDelete = async (id) => {
     if (window.confirm("¿Seguro que deseas eliminar?")) {
       try {
         await categoriaServicio.eliminarCategoria(id);
         setCategorias(categorias.filter(c => c.id !== id));
       } catch (error) {
-        alert("Error al eliminar "+  error);
+        alert("Error al eliminar " + error);
       }
     }
   };
 
   return (
-    // CONTENEDOR PRINCIPAL: Centrado y con margen superior (py-10)
-    <div className="font-sans">
+    <main className="font-sans">
 
-      {/* TARJETA BLANCA: Más angosta (max-w-4xl) */}
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      <section className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
 
-        {/* --- HEADER --- */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-6">
+        {/* cabecera con titulo y acciones */}
+        <header className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <i className="fa-solid fa-layer-group text-blue-600"></i>
@@ -92,7 +94,7 @@ const Categorias = () => {
           </div>
 
           <div className="flex gap-2 w-full sm:w-auto">
-            {/* Buscador */}
+            {/* buscador */}
             <div className="relative w-full sm:w-56">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                 <i className="fa-solid fa-search text-xs"></i>
@@ -106,18 +108,18 @@ const Categorias = () => {
               />
             </div>
 
-            {/* Botón Nuevo */}
+            {/* boton nuevo */}
             <button
               onClick={handleOpenCreate}
               className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition-colors text-sm font-medium whitespace-nowrap"
             >
               <i className="fa-solid fa-plus mr-2"></i>
-              Nueva
+              Nuevo
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* --- TABLA --- */}
+        {/* tabla de resultados */}
         <div className="overflow-hidden border border-gray-100 rounded-lg">
           {cargando ? (
             <div className="p-8 text-center text-gray-500 text-sm">
@@ -147,7 +149,6 @@ const Categorias = () => {
                           {cat.nombre}
                         </td>
 
-                        {/* TRUNCADO DE TEXTO: max-w-[200px] evita que se ensanche mucho */}
                         <td className="p-3 text-gray-500 truncate max-w-[200px]" title={cat.descripcion}>
                           {cat.descripcion || '-'}
                         </td>
@@ -176,15 +177,14 @@ const Categorias = () => {
             </div>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* --- MODAL SIMPLE Y CENTRADO --- */}
+      {/* modal del formulario */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up">
+          <article className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up">
 
-            {/* Modal Header */}
-            <div className="px-5 py-3 bg-gray-50 border-b flex justify-between items-center">
+            <header className="px-5 py-3 bg-gray-50 border-b flex justify-between items-center">
               <h3 className="font-bold text-gray-700 flex items-center gap-2">
                 <i className={`fa-solid ${modoEdicion ? 'fa-pen' : 'fa-plus'} text-blue-600 text-xs`}></i>
                 {modoEdicion ? 'Editar Categoría' : 'Nueva Categoría'}
@@ -192,7 +192,7 @@ const Categorias = () => {
               <button onClick={() => setModalOpen(false)} className="cursor-pointer text-gray-400 hover:text-gray-600">
                 <i className="fa-solid fa-times"></i>
               </button>
-            </div>
+            </header>
 
             <form onSubmit={handleSubmit} className="p-5 space-y-3">
               <div>
@@ -242,11 +242,11 @@ const Categorias = () => {
                 </button>
               </div>
             </form>
-          </div>
+          </article>
         </div>
       )}
 
-    </div>
+    </main>
   );
 };
 

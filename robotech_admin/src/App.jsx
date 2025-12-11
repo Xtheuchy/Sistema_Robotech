@@ -3,30 +3,27 @@ import RutaProtegida from './RutaProtegida';
 import AppPrivada from './AppPrivada';
 import LoginPage from './pages/LoginPage';
 import RutaPublica from './RutaPublica';
-
 import { Routes, Route } from 'react-router-dom';
 
 const App = () => {
   return (
     <Routes>
-      {/* --- RUTAS PÚBLICAS --- */}
-      {/* (Protegidas por RutaPublica para que un usuario 
-           logueado no vea el login) */}
-
+      {/* rutas de acceso publico */}
       <Route
         path="/login"
         element={
+          // bloquea el acceso si el usuario ya tiene sesion activa
           <RutaPublica>
-            <LoginPage/> 
+            <LoginPage />
           </RutaPublica>
         }
       />
-      
-      {/* --- RUTAS PRIVADAS --- */}
-      {/* protegido por RutaProtegida -> solo se muestra para usuarios que iniciaron sesión */}
+
+      {/* rutas protegidas de la aplicacion */}
       <Route
         path="/*"
         element={
+          // verifica credenciales antes de mostrar el contenido privado
           <RutaProtegida>
             <AppPrivada />
           </RutaProtegida>
@@ -35,5 +32,4 @@ const App = () => {
     </Routes>
   );
 }
-
 export default App;

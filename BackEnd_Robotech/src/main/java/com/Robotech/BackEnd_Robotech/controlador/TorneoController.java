@@ -5,9 +5,11 @@ import com.Robotech.BackEnd_Robotech.DTO.RegistroTorneoDTO;
 import com.Robotech.BackEnd_Robotech.DTO.TorneoDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Sede;
 import com.Robotech.BackEnd_Robotech.modelo.Torneo;
+import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ISedeServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ITorneoServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +25,14 @@ public class TorneoController {
     private final ITorneoServicio torneoServicio;
     private final ICategoriaServicio categoriaServicio;
     private final ISedeServicio sedeServicio;
+    private final IUsuarioServicio usuarioServicio;
 
     @Autowired
-    public TorneoController(ITorneoServicio torneoServicio, ICategoriaServicio categoriaServicio,ISedeServicio sedeServicio) {
+    public TorneoController(IUsuarioServicio usuarioServicio,ITorneoServicio torneoServicio, ICategoriaServicio categoriaServicio,ISedeServicio sedeServicio) {
         this.torneoServicio = torneoServicio;
         this.categoriaServicio = categoriaServicio;
         this.sedeServicio = sedeServicio;
+        this.usuarioServicio = usuarioServicio;
     }
     //Registro de Torneos
     @PostMapping("/registrar")
@@ -50,8 +54,10 @@ public class TorneoController {
             }
             Categoria categoria = categoriaServicio.buscarPorNombre(torneoDTO.getCategoria());
             Sede sede = sedeServicio.buscarPorNombre(torneoDTO.getSede());
+            Usuario juez = usuarioServicio.obtenerUsuarioPorCorreo(torneoDTO.getCorreoJuez());
 
             torneo = new Torneo(
+                    juez,
                     torneoDTO.getDescripcion_torneo(),
                     categoria,
                     torneoDTO.getNombre_torneo(),
@@ -60,7 +66,8 @@ public class TorneoController {
                     torneoDTO.getFecha_inicio(),
                     torneoDTO.getFecha_final(),
                     torneoDTO.getEstado(),
-                    sede);
+                    sede
+            );
             torneo = torneoServicio.agregarTorneo(torneo);
             TorneoDTO torneoR = new TorneoDTO(
                     torneo.getId(),
@@ -74,7 +81,9 @@ public class TorneoController {
                     torneo.getCreado_en(),
                     torneo.getCategoria().getNombre(),
                     torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
-                    torneo.getSede().getDireccion());
+                    torneo.getSede().getDireccion(),
+                    torneo.getJuez().getNombres(),
+                    torneo.getJuez().getCorreo());
             return ResponseEntity.ok(torneoR);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
@@ -112,7 +121,6 @@ public class TorneoController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La sede no existe");
             }
 
-
             torneo = torneoServicio.modificarTorneo(torneoDTO);
             TorneoDTO torneoM = new TorneoDTO(
                     torneo.getId(),
@@ -126,7 +134,9 @@ public class TorneoController {
                     torneo.getCreado_en(),
                     torneo.getCategoria().getNombre(),
                     torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
-                    torneo.getSede().getDireccion()
+                    torneo.getSede().getDireccion(),
+                    torneo.getJuez().getNombres(),
+                    torneo.getJuez().getCorreo()
             );
 
             return ResponseEntity.ok(torneoM);
@@ -162,13 +172,16 @@ public class TorneoController {
                     torneo.getCategoria().getNombre(),
                     torneo.getCategoria().getDescripcion(),
                     torneo.getSede().getNombreSede(),
-                    torneo.getSede().getDireccion()
+                    torneo.getSede().getDireccion(),
+                    torneo.getJuez().getNombres(),
+                    torneo.getJuez().getCorreo()
             );
             return ResponseEntity.ok(torneoDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
     //Listar todos los torneos
     @GetMapping("/torneos")
     public ResponseEntity<?> listarTorneos()throws Exception{
@@ -188,7 +201,9 @@ public class TorneoController {
                             torneo.getCreado_en(),
                             torneo.getCategoria().getNombre(),
                             torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
-                            torneo.getSede().getDireccion()
+                            torneo.getSede().getDireccion(),
+                            torneo.getJuez().getNombres(),
+                            torneo.getJuez().getCorreo()
                     ))
                     .toList();
             return ResponseEntity.ok(torneoList);
@@ -218,7 +233,9 @@ public class TorneoController {
                             torneo.getCreado_en(),
                             torneo.getCategoria().getNombre(),
                             torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
-                            torneo.getSede().getDireccion()
+                            torneo.getSede().getDireccion(),
+                            torneo.getJuez().getNombres(),
+                            torneo.getJuez().getCorreo()
                     ))
                     .toList();
             return ResponseEntity.ok(torneoList);
@@ -244,7 +261,9 @@ public class TorneoController {
                         torneo.getCreado_en(),
                         torneo.getCategoria().getNombre(),
                         torneo.getCategoria().getDescripcion(),torneo.getSede().getNombreSede(),
-                        torneo.getSede().getDireccion()
+                        torneo.getSede().getDireccion(),
+                        torneo.getJuez().getNombres(),
+                        torneo.getJuez().getCorreo()
                 ))
                 .toList();
         if (torneoList.isEmpty()){

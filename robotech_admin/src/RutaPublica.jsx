@@ -9,7 +9,6 @@ const RutaPublica = ({ children }) => {
   if (usuario) {
     return <Navigate to="/" replace />;
   }
-  
   return children; 
 };
 export default RutaPublica;

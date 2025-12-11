@@ -5,17 +5,18 @@ import BotonAgregarUsuario from './BotonAgregarUsuario';
 import BtnEditarUsuario from './BtnEditarUsuario';
 
 function ListaUsuarios() {
-    // 1. Estado para la lista original
+    // estado para guardar todos los usuarios que vienen del backend
     const [usuariosOriginales, setUsuariosOriginales] = useState([]);
 
-    // 2. Estados para los filtros
+    // estados para manejar la busqueda y el filtro de rol
     const [terminoBusqueda, setTerminoBusqueda] = useState('');
     const [filtroRol, setFiltroRol] = useState('TODOS');
 
-    // 3. Estados de carga y error
+    // estados para controlar la carga y errores
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // trae la lista de usuarios desde la base de datos
     const cargarUsuarios = async () => {
         try {
             setLoading(true);
@@ -29,17 +30,18 @@ function ListaUsuarios() {
         }
     };
 
-    // Carga inicial
+    // al montar el componente carga los datos necesarios
     useEffect(() => {
         cargarUsuarios();
     }, []);
 
-    // 4. Derivar la lista de roles únicos
+    // extrae los roles unicos para llenar el select
     const rolesUnicos = useMemo(() => {
         const roles = new Set(usuariosOriginales.map(user => user.rol));
         return ['TODOS', ...roles];
     }, [usuariosOriginales]);
 
+    // elimina al usuario despues de confirmar
     const handleEliminar = async (id, nombre) => {
         if (window.confirm(`¿Estás seguro de que deseas eliminar a ${nombre}?`)) {
             try {
@@ -53,16 +55,14 @@ function ListaUsuarios() {
         }
     };
 
-    // 5. Derivar la lista filtrada
+    // filtra la lista en tiempo real segun lo que escriba el usuario
     const usuariosFiltrados = useMemo(() => {
         let usuariosTemp = [...usuariosOriginales];
 
-        // Aplicar filtro de Rol
         if (filtroRol !== 'TODOS') {
             usuariosTemp = usuariosTemp.filter(user => user.rol === filtroRol);
         }
 
-        // Aplicar filtro de Búsqueda
         if (terminoBusqueda.trim() !== '') {
             const busquedaLower = terminoBusqueda.toLowerCase();
             usuariosTemp = usuariosTemp.filter(user =>
@@ -75,9 +75,6 @@ function ListaUsuarios() {
 
     }, [usuariosOriginales, filtroRol, terminoBusqueda]);
 
-    // --- Renderizado ---
-
-    // Diseño visual para Loading
     if (loading) return (
         <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -85,7 +82,6 @@ function ListaUsuarios() {
         </div>
     );
 
-    // Diseño visual para Error
     if (error) return (
         <div className="mx-auto max-w-4xl mt-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-r shadow-sm">
             <div className="flex">
@@ -102,21 +98,24 @@ function ListaUsuarios() {
     );
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <main className=" mx-auto px-4 sm:px-6 lg:px-8">
 
-            {/* Encabezado Principal */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Gestión de Usuarios</h1>
-                <p className="mt-2 text-sm text-gray-600">Administra el acceso y los roles de los usuarios registrados.</p>
-            </div>
+            <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Gestión de usuarios</h1>
+                </div>
+                <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm text-gray-600">
+                    <i className="fa-solid fa-calendar-day mr-2 text-blue-500"></i>
+                    Hoy: {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </div>
+            </header>
 
-            {/* --- CONTROLES DE FILTRO (Estilo Card) --- */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 transition-shadow hover:shadow-md">
+            {/* seccion de filtros y controles */}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 transition-shadow hover:shadow-md">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
 
-                    {/* Grupo de Filtros */}
                     <div className="flex flex-col md:flex-row gap-4 grow">
-                        {/* Filtro de Búsqueda */}
+                        {/* filtro de busqueda */}
                         <div className="grow max-w-md">
                             <label htmlFor="busqueda" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                                 Buscar Usuario
@@ -138,7 +137,7 @@ function ListaUsuarios() {
                             </div>
                         </div>
 
-                        {/* Filtro de Rol */}
+                        {/* filtro de rol */}
                         <div className="w-full md:w-64">
                             <label htmlFor="filtroRol" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                                 Filtrar por Rol
@@ -156,7 +155,6 @@ function ListaUsuarios() {
                                         </option>
                                     ))}
                                 </select>
-                                {/* Flecha customizada para el select */}
                                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
                                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -166,15 +164,15 @@ function ListaUsuarios() {
                         </div>
                     </div>
 
-                    {/* Botón Agregar */}
+                    {/* boton para agregar usuario */}
                     <div className="shrink-0">
                         <BotonAgregarUsuario enUsuarioAgregado={cargarUsuarios} />
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* --- LISTA DE USUARIOS (Tabla Estilizada) --- */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            {/* tabla de resultados */}
+            <section className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead>
@@ -198,7 +196,6 @@ function ListaUsuarios() {
                                 <tr key={user.id} className="hover:bg-blue-50/40 transition-colors duration-200 group">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
-                                            {/* Avatar genérico decorativo */}
                                             <div className="shrink-0 h-10 w-10 bg-linear-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
                                                 {user.nombres.charAt(0).toUpperCase()}
                                             </div>
@@ -215,8 +212,8 @@ function ListaUsuarios() {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${user.rol === 'ADMIN'
-                                                ? 'bg-purple-100 text-purple-800 border-purple-200'
-                                                : 'bg-blue-100 text-blue-800 border-blue-200'
+                                            ? 'bg-purple-100 text-purple-800 border-purple-200'
+                                            : 'bg-blue-100 text-blue-800 border-blue-200'
                                             }`}>
                                             <span className={`w-1.5 h-1.5 mr-1.5 rounded-full ${user.rol === 'ADMIN' ? 'bg-purple-400' : 'bg-blue-400'
                                                 }`}></span>
@@ -231,7 +228,7 @@ function ListaUsuarios() {
                                             />
                                             <button
                                                 onClick={() => handleEliminar(user.id, user.nombres)}
-                                                className="group/btn relative p-2 text-gray-400 hover:text-red-600 transition-colors rounded-full hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                                className="cursor-pointer group/btn relative p-2 text-gray-400 hover:text-red-600 transition-colors rounded-full hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                                                 title="Eliminar usuario"
                                             >
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +243,7 @@ function ListaUsuarios() {
                     </table>
                 </div>
 
-                {/* Mensaje Sin Resultados */}
+                {/* mensaje si no hay resultados */}
                 {usuariosFiltrados.length === 0 && !loading && (
                     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
                         <div className="bg-gray-50 p-4 rounded-full mb-4">
@@ -266,12 +263,12 @@ function ListaUsuarios() {
                         </button>
                     </div>
                 )}
-            </div>
+            </section>
 
-            <div className="mt-4 text-right">
+            <footer className="mt-4 text-right">
                 <p className="text-xs text-gray-400">Total mostrados: {usuariosFiltrados.length}</p>
-            </div>
-        </div>
+            </footer>
+        </main>
     );
 }
 

@@ -25,7 +25,6 @@ public class RolController {
         try {
 
             Rol nuevoRol = rolServicio.agregarRol(rol);
-
             // Retorna el objeto creado con el ID generado y un estado 201 CREATED.
             return new ResponseEntity<>(rol, HttpStatus.CREATED);
 

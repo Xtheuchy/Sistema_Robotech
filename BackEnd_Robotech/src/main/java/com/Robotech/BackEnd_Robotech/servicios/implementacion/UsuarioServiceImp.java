@@ -65,6 +65,7 @@ public class UsuarioServiceImp implements IUsuarioServicio {
             throw new Exception(mensajeError.toString());
         }
     }
+
     @Override
     public Usuario obtenerUsuarioPorId(Integer id) throws Exception {
         return usuarioRepositorio.findById(id)
@@ -170,6 +171,12 @@ public class UsuarioServiceImp implements IUsuarioServicio {
             return true;  // El DNI es válido
         }
         return false;  // El DNI no es válido
+    }
+
+    @Override
+    public List<Usuario> listarJueces() throws Exception {
+        Rol rol = rolRepositorio.findByNombre("Juez");
+        return usuarioRepositorio.findAllByRol(rol);
     }
 
 }

@@ -25,4 +25,7 @@ public class TorneoDTO {
     //Sede
     private String nombreSede;
     private String direccionSede;
+    //Juez
+    private String nombreJuez;
+    private String correoJuez;
 }

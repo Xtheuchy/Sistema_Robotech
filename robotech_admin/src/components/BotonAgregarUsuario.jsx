@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { usuarioServicio } from '../service/userService';
 
 function BotonAgregarUsuario({ enUsuarioAgregado }) {
-    // 1. Estado para controlar si el modal está abierto
+    // estado para controlar si el modal esta abierto
     const [modalAbierto, setModalAbierto] = useState(false);
 
-    // 2. Estado para los datos del formulario
+    // estado inicial del formulario
     const initialState = {
         nombres: '',
         correo: '',
@@ -18,11 +18,10 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
     };
     const [formData, setFormData] = useState(initialState);
 
-    // 3. Estados para la carga y errores
+    // estados de carga y error
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // 4. Funciones para abrir y cerrar el modal
     const abrirModal = () => setModalAbierto(true);
 
     const cerrarModal = () => {
@@ -31,7 +30,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
         setError(null);
     };
 
-    // 5. Manejador para actualizar el estado del formulario
+    // actualiza el estado del formulario al escribir
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -40,11 +39,11 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
         }));
     };
 
-    // 6. Patrón Regex para la contraseña
+    // regex para validar la contraseña
     const passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[?&$]).{8,}$";
     const passwordTitle = "Debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y uno de estos símbolos: ? & $";
 
-    // 7. Manejador para enviar el formulario
+    // envia los datos al backend
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -66,10 +65,10 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
 
     return (
         <>
-            {/* --- El Botón que abre el modal --- */}
+            {/* boton principal para abrir el modal */}
             <button
                 onClick={abrirModal}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg focus:ring-4 focus:ring-blue-200"
+                className="cursor-pointer inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg focus:ring-4 focus:ring-blue-200"
             >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -77,42 +76,41 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                 <span>Nuevo Usuario</span>
             </button>
 
-            {/* --- El Modal --- */}
+            {/* modal overlay */}
             {modalAbierto && (
                 <div
                     className="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity"
                     onClick={cerrarModal}
                 >
-                    {/* Contenedor del Modal */}
-                    <div
+                    {/* contenedor del modal */}
+                    <article
                         className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative transform transition-all"
                         onClick={e => e.stopPropagation()}
                     >
 
-                        {/* Cabecera del Modal */}
-                        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
+                        {/* cabecera del modal */}
+                        <header className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
                             <div>
                                 <h2 className="text-xl font-bold text-gray-800">Registrar Nuevo Usuario</h2>
                                 <p className="text-sm text-gray-500 mt-1">Complete la información para dar de alta un usuario.</p>
                             </div>
                             <button
-                                className="text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-2 rounded-full transition-colors"
+                                className="cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-2 rounded-full transition-colors"
                                 onClick={cerrarModal}
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
-                        </div>
+                        </header>
 
-                        {/* Cuerpo del Formulario */}
+                        {/* cuerpo del formulario */}
                         <div className="p-8">
                             <form onSubmit={handleSubmit} className="space-y-6">
 
-                                {/* Grid de 2 columnas */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                    {/* Nombres (Ocupa las 2 columnas) */}
+                                    {/* nombres */}
                                     <div className="md:col-span-2">
                                         <label htmlFor="nombres" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Nombres Completos</label>
                                         <input
@@ -127,7 +125,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         />
                                     </div>
 
-                                    {/* Correo */}
+                                    {/* correo */}
                                     <div className="md:col-span-2">
                                         <label htmlFor="correo" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Correo Electrónico</label>
                                         <input
@@ -142,7 +140,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         />
                                     </div>
 
-                                    {/* DNI */}
+                                    {/* dni */}
                                     <div>
                                         <label htmlFor="dni" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">DNI / Documento</label>
                                         <input
@@ -156,7 +154,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         />
                                     </div>
 
-                                    {/* Rol */}
+                                    {/* rol */}
                                     <div>
                                         <label htmlFor="rol" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Rol Asignado</label>
                                         <select
@@ -173,7 +171,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         </select>
                                     </div>
 
-                                    {/* Password (Ocupa 2 columnas por la longitud del texto de ayuda) */}
+                                    {/* password */}
                                     <div className="md:col-span-2">
                                         <label htmlFor="password" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Contraseña</label>
                                         <div className="relative">
@@ -197,7 +195,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         <p className="mt-2 text-xs text-gray-500">{passwordTitle}</p>
                                     </div>
 
-                                    {/* Foto URL */}
+                                    {/* foto */}
                                     <div>
                                         <label htmlFor="foto" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">URL Foto (Opcional)</label>
                                         <input
@@ -211,7 +209,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                         />
                                     </div>
 
-                                    {/* Estado */}
+                                    {/* estado */}
                                     <div>
                                         <label htmlFor="estado" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado Inicial</label>
                                         <select
@@ -229,7 +227,7 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                     </div>
                                 </div>
 
-                                {/* Mensaje de Error */}
+                                {/* mensaje de error */}
                                 {error && (
                                     <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200 flex items-center gap-2" role="alert">
                                         <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path></svg>
@@ -237,19 +235,19 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                     </div>
                                 )}
 
-                                {/* Botones de Acción */}
+                                {/* botones de accion */}
                                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                                     <button
                                         type="button"
                                         onClick={cerrarModal}
-                                        className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-gray-200 transition-colors"
+                                        className="cursor-pointer px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-gray-200 transition-colors"
                                         disabled={loading}
                                     >
                                         Cancelar
                                     </button>
                                     <button
                                         type="submit"
-                                        className={`px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all shadow-md flex items-center justify-center min-w-[140px] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                        className={`cursor-pointer px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all shadow-md flex items-center justify-center min-w-[140px] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                         disabled={loading}
                                     >
                                         {loading ? (
@@ -264,11 +262,10 @@ function BotonAgregarUsuario({ enUsuarioAgregado }) {
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </article>
                 </div>
             )}
         </>
     );
 }
-
 export default BotonAgregarUsuario;

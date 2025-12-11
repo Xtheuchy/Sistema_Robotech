@@ -16,4 +16,5 @@ public class RegistroTorneoDTO {
     private LocalDate fecha_final;
     private String estado;
     private String sede;
+    private String correoJuez;
 }

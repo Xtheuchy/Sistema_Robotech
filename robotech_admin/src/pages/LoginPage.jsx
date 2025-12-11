@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { login as loginServicio } from '../service/authService';
 
 function LoginPage() {
+    // estados para manejar los inputs y la carga
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -13,6 +14,7 @@ function LoginPage() {
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    // envia las credenciales al backend para validar
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -21,13 +23,15 @@ function LoginPage() {
             const credencialesDTO = { correo, password };
             const usuarioData = await loginServicio(credencialesDTO);
             const rolUsuario = usuarioData.rol.toUpperCase();
-            
+
+            // verifica si el usuario tiene permisos de admin o juez
             if (rolUsuario !== 'ADMINISTRADOR' && rolUsuario !== 'JUEZ') {
                 setError("Acceso denegado. Solo administradores y jueces pueden ingresar.");
                 setLoading(false);
                 return;
             }
-            
+
+            // actualiza el estado global y redirige
             login(usuarioData);
             navigate('/');
         } catch (err) {
@@ -38,11 +42,11 @@ function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-100 to-slate-200 py-12 px-4 sm:px-6 lg:px-8 font-sans">
-            <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100 transition-all duration-300 hover:shadow-2xl">
-                
-                {/* Header del Formulario */}
-                <div className="text-center mb-8">
+        <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-100 to-slate-200 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+            <section className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100 transition-all duration-300 hover:shadow-2xl">
+
+                {/* cabecera del formulario */}
+                <header className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4 shadow-sm">
                         <i className="fa-solid fa-robot text-3xl"></i>
                     </div>
@@ -52,11 +56,11 @@ function LoginPage() {
                     <p className="mt-2 text-sm text-gray-500">
                         Portal de Administración y Jueces
                     </p>
-                </div>
+                </header>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    
-                    {/* Input Correo */}
+
+                    {/* input correo */}
                     <div>
                         <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                             Correo Electrónico
@@ -77,7 +81,7 @@ function LoginPage() {
                         </div>
                     </div>
 
-                    {/* Input Password */}
+                    {/* input password */}
                     <div>
                         <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
                             Contraseña
@@ -98,7 +102,7 @@ function LoginPage() {
                         </div>
                     </div>
 
-                    {/* Mensaje de Error */}
+                    {/* mensaje de error si falla la autenticacion */}
                     {error && (
                         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md animate-pulse">
                             <div className="flex">
@@ -112,15 +116,15 @@ function LoginPage() {
                         </div>
                     )}
 
-                    {/* Botón Submit */}
+                    {/* boton para enviar formulario */}
                     <button
                         type="submit"
                         disabled={loading}
                         className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg text-sm font-bold text-white shadow-md transition-all duration-200
-                        ${loading 
-                            ? 'bg-blue-400 cursor-not-allowed' 
-                            : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5'
-                        }`}
+                        ${loading
+                                ? 'bg-blue-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5'
+                            }`}
                     >
                         {loading ? (
                             <>
@@ -135,13 +139,13 @@ function LoginPage() {
                         )}
                     </button>
                 </form>
-                
-                {/* Footer simple (opcional) */}
-                <div className="mt-6 text-center text-xs text-gray-400">
+
+                {/* footer con derechos reservados */}
+                <footer className="mt-6 text-center text-xs text-gray-400">
                     &copy; {new Date().getFullYear()} Robotech Systems. Todos los derechos reservados.
-                </div>
-            </div>
-        </div>
+                </footer>
+            </section>
+        </main>
     );
 }
 

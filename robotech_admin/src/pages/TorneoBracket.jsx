@@ -4,21 +4,22 @@ import { enfrentamientoServicio } from '../service/enfrentamientoService';
 import Swal from 'sweetalert2';
 
 const TorneoBracketAdmin = () => {
+    // obtengo el id del torneo de la url
     const { torneoId } = useParams();
 
-    // --- ESTADOS ---
+    // estados para manejar la data y la carga
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [error, setError] = useState(null);
 
-    // --- ESTADOS PARA EL FORMULARIO (MODAL) ---
+    // estados para manejar el modal de edicion
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMatch, setSelectedMatch] = useState(null);
     const [enfrentamientoDTO, setEnfrentamientoDTO] = useState({ puntaje1: 0, puntaje2: 0 });
     const [saving, setSaving] = useState(false);
 
-    // --- 1. CARGA DE DATOS ---
+    // carga los datos del bracket desde el backend
     const fetchBracketData = async () => {
         if (!torneoId) return;
         try {
@@ -32,12 +33,13 @@ const TorneoBracketAdmin = () => {
         }
     };
 
+    // ejecuta la carga al montar el componente
     useEffect(() => {
         setLoading(true);
         fetchBracketData();
     }, [torneoId]);
 
-    // --- 2. AGRUPACIÓN POR RONDAS ---
+    // agrupa los partidos por ronda para poder dibujarlos en columnas
     const rondas = useMemo(() => {
         if (!matches || matches.length === 0) return [];
         const roundsMap = {};
@@ -52,7 +54,7 @@ const TorneoBracketAdmin = () => {
 
     const rondaActual = rondas.length;
 
-    // --- 3. GENERAR SIGUIENTE RONDA ---
+    // logica para generar la siguiente ronda automaticamente
     const handleGenerarRonda = async () => {
         if (rondaActual === 0) {
             return Swal.fire({
@@ -93,7 +95,7 @@ const TorneoBracketAdmin = () => {
         }
     };
 
-    // --- 4. MANEJO DEL FORMULARIO ---
+    // abre el modal con la info del partido seleccionado
     const handleOpenEdit = (match) => {
         setSelectedMatch(match);
         setEnfrentamientoDTO({
@@ -113,6 +115,7 @@ const TorneoBracketAdmin = () => {
         setEnfrentamientoDTO(prev => ({ ...prev, [name]: parseInt(value) || 0 }));
     };
 
+    // guarda el resultado del partido y actualiza el bracket
     const handleSaveResult = async (e) => {
         e.preventDefault();
         if (!selectedMatch) return;
@@ -136,12 +139,17 @@ const TorneoBracketAdmin = () => {
     if (error) return <div className="p-10 text-center text-red-500 font-medium">{error}</div>;
 
     return (
-        <div className="w-full bg-slate-900 p-6 min-h-[600px] rounded-xl border border-slate-800 shadow-sm overflow-x-auto relative">
-            <Link to={`/DetalleTorneo/${torneoId}`} className="bg-slate-800 p-2 rounded text-xs text-slate-400 border border-slate-700 hover:text-white transition-colors inline-block mb-4">
-                <i className="fa-solid fa-arrow-left mr-1"></i> Volver
-            </Link>
+        <main className="w-full bg-slate-900 p-6 min-h-[600px] rounded-xl border border-slate-800 shadow-sm overflow-x-auto relative">
 
-            <div className="flex items-center justify-between mb-8 border-b border-slate-800 pb-4 gap-4 flex-wrap">
+            {/* navegacion superior */}
+            <nav>
+                <Link to={`/DetalleTorneo/${torneoId}`} className="bg-slate-800 p-2 rounded text-xs text-slate-400 border border-slate-700 hover:text-white transition-colors inline-block mb-4">
+                    <i className="fa-solid fa-arrow-left mr-1"></i> Volver
+                </Link>
+            </nav>
+
+            {/* cabecera con titulo y acciones */}
+            <header className="flex items-center justify-between mb-8 border-b border-slate-800 pb-4 gap-4 flex-wrap">
                 <div>
                     <h2 className="text-xl font-bold text-white">Gestión de Torneo</h2>
                     <p className="text-sm text-slate-400">Torneo #{torneoId} <span className="mx-2">•</span> Ronda Actual: <span className="text-blue-400 font-bold">{rondaActual}</span></p>
@@ -153,15 +161,12 @@ const TorneoBracketAdmin = () => {
                 >
                     {generating ? 'Procesando...' : <><span className="mr-2">⚡</span> Generar Siguiente Ronda</>}
                 </button>
-            </div>
+            </header>
 
-            {/* BRACKET */}
-            <div className="flex flex-row gap-12 pb-4 min-w-max">
+            {/* area visual del bracket */}
+            <section className="flex flex-row gap-12 pb-4 min-w-max">
                 {rondas.map((matchesRonda, roundIndex) => {
                     const isLastRound = roundIndex === rondas.length - 1;
-
-                    // --- CAMBIO 1: LOGICA DEL TÍTULO GRAN FINAL ---
-                    // Solo es "Gran Final" si es la última ronda mostrada Y tiene exactamente 1 partido.
                     const isFinalMatch = matchesRonda.length === 1;
 
                     return (
@@ -170,12 +175,14 @@ const TorneoBracketAdmin = () => {
                                 <span className={`
                                     text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border 
                                     ${isFinalMatch
-                                        ? 'bg-amber-900/30 text-amber-500 border-amber-700/50' // Estilo Dorado para Final
-                                        : 'bg-slate-800 text-slate-300 border-slate-700'} // Estilo Normal
+                                        ? 'bg-amber-900/30 text-amber-500 border-amber-700/50'
+                                        : 'bg-slate-800 text-slate-300 border-slate-700'} 
                                 `}>
                                     {isFinalMatch ? '🏆 Gran Final' : `Ronda ${roundIndex + 1}`}
                                 </span>
                             </div>
+
+                            {/* lista de partidos de la ronda */}
                             <div className="flex flex-col grow justify-around gap-6">
                                 {matchesRonda.map((match) => (
                                     <AdminMatchCard
@@ -189,16 +196,17 @@ const TorneoBracketAdmin = () => {
                         </div>
                     );
                 })}
-            </div>
+            </section>
 
-            {/* MODAL */}
+            {/* modal para ingresar resultados */}
             {isModalOpen && selectedMatch && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-                    <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
-                        <div className="bg-slate-900 px-6 py-4 border-b border-slate-700 flex justify-between items-center">
+                    <article className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
+                        <header className="bg-slate-900 px-6 py-4 border-b border-slate-700 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-white">Registrar Resultado</h3>
                             <button onClick={handleCloseModal} className="text-slate-400 cursor-pointer hover:text-white">✕</button>
-                        </div>
+                        </header>
+
                         <form onSubmit={handleSaveResult} className="p-6">
                             <div className="flex items-center justify-between gap-4 mb-6">
                                 <div className="text-center flex-1">
@@ -216,19 +224,18 @@ const TorneoBracketAdmin = () => {
                                 <button type="submit" disabled={saving} className="px-6 py-2 rounded cursor-pointer bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm shadow-lg transition-all disabled:opacity-50 flex items-center gap-2">{saving ? 'Guardando...' : 'Confirmar Resultado'}</button>
                             </div>
                         </form>
-                    </div>
+                    </article>
                 </div>
             )}
-        </div>
+        </main>
     );
 };
 
-// --- TARJETA ---
+// componente visual para cada tarjeta de partido
 const AdminMatchCard = ({ match, hasConnector, onEdit }) => {
     const winner = match.apodoGanador;
 
-    // --- CAMBIO 2: LÓGICA DE FINALIZADO ---
-    // Si hay un ganador (el apodo no es null ni vacío), el partido está terminado.
+    // determina si el partido ya tiene un ganador
     const isFinished = Boolean(winner);
 
     const isC1Winner = isFinished && winner === match.c1_apodo;
@@ -237,15 +244,14 @@ const AdminMatchCard = ({ match, hasConnector, onEdit }) => {
     const isC2Loser = isFinished && !isC2Winner;
 
     return (
-        <div className="relative flex items-center">
+        <article className="relative flex items-center">
             <div className={`
                 w-full rounded-lg border shadow-lg overflow-hidden flex flex-col relative transition-colors
                 ${isFinished ? 'bg-slate-800/80 border-slate-800' : 'bg-slate-800 border-slate-700 hover:border-slate-600'}
             `}>
                 <div className="flex justify-between items-center bg-slate-900/50 px-3 py-2 border-b border-slate-700/50 min-h-10">
 
-                    {/* --- AQUÍ SE OCULTA EL BOTÓN --- */}
-                    {/* Solo mostramos el botón si NO ha finalizado (no hay ganador aun) */}
+                    {/* muestra el boton de ingreso solo si no ha finalizado */}
                     {!isFinished && (
                         <button
                             onClick={onEdit}
@@ -255,7 +261,7 @@ const AdminMatchCard = ({ match, hasConnector, onEdit }) => {
                         </button>
                     )}
 
-                    {/* Mostrar un texto pequeño de "Finalizado"*/}
+                    {/* etiqueta visual si esta finalizado */}
                     {isFinished && (
                         <span className="text-[10px] text-sky-500 font-bold border border-emerald-900/50 bg-emerald-900/20 px-2 py-0.5 rounded">
                             Finalizado
@@ -267,7 +273,7 @@ const AdminMatchCard = ({ match, hasConnector, onEdit }) => {
                 <PlayerRow apodo={match.c2_apodo} foto={match.c2_foto} score={match.puntaje2} isWinner={isC2Winner} isLoser={isC2Loser} />
             </div>
             {hasConnector && <div className="absolute right-0 top-1/2 w-8 h-0.5 bg-slate-600 translate-x-full z-0"></div>}
-        </div>
+        </article>
     );
 };
 

@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { sedeServicio } from '../service/sedeService';
 
 const Sedes = () => {
+    // estados principales de datos y ui
     const [sedes, setSedes] = useState([]);
     const [cargando, setCargando] = useState(false);
     const [busqueda, setBusqueda] = useState('');
 
-    // Estados del Modal
+    // estados para controlar el modal y el formulario
     const [modalAbierto, setModalAbierto] = useState(false);
     const [modoEdicion, setModoEdicion] = useState(false);
     const [idEnEdicion, setIdEnEdicion] = useState(null);
@@ -17,6 +18,7 @@ const Sedes = () => {
         capacidad: 0
     });
 
+    // trae la lista de sedes desde el backend
     const cargarSedes = async () => {
         setCargando(true);
         try {
@@ -29,18 +31,22 @@ const Sedes = () => {
         }
     };
 
+    // al ingresar a la pagina carga los datos necesarios
     useEffect(() => { cargarSedes(); }, []);
 
-    const sedesFiltradas = sedes.filter(sede => 
+    // filtra la lista visualmente segun el texto de busqueda
+    const sedesFiltradas = sedes.filter(sede =>
         sede.nombreSede.toLowerCase().includes(busqueda.toLowerCase()) ||
         sede.direccion.toLowerCase().includes(busqueda.toLowerCase())
     );
 
+    // prepara el estado para crear una nueva sede
     const abrirModalCrear = () => {
         setForm({ nombreSede: '', direccion: '', capacidad: 0 });
         setModoEdicion(false); setIdEnEdicion(null); setModalAbierto(true);
     };
 
+    // carga los datos de la sede seleccionada para editar
     const abrirModalEditar = (sede) => {
         setForm({ nombreSede: sede.nombreSede, direccion: sede.direccion, capacidad: sede.capacidad });
         setModoEdicion(true); setIdEnEdicion(sede.id); setModalAbierto(true);
@@ -49,6 +55,7 @@ const Sedes = () => {
     const cerrarModal = () => { setModalAbierto(false); setForm({ nombreSede: '', direccion: '', capacidad: 0 }); };
     const handleChange = (e) => { setForm({ ...form, [e.target.name]: e.target.value }); };
 
+    // envia el formulario para crear o actualizar
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -60,11 +67,12 @@ const Sedes = () => {
                 setSedes([...sedes, nuevaSede || { ...form, id: Date.now() }]);
             }
             cerrarModal();
-        } catch (error) { 
+        } catch (error) {
             alert("Error al procesar la solicitud" + error);
-         }
+        }
     };
 
+    // elimina la sede tras confirmacion
     const handleEliminar = async (id) => {
         if (window.confirm('¿Seguro que deseas eliminar esta sede?')) {
             try {
@@ -75,17 +83,15 @@ const Sedes = () => {
     };
 
     return (
-        // CAMBIO 1: Agregué 'py-10' para bajarlo y un contenedor gris de fondo
-        <div className="font-sans">
-            
-            {/* CAMBIO 2: 'max-w-4xl' lo hace más angosto (antes era 7xl). bg-white crea la tarjeta. */}
-            <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <main className="font-sans  min-h-screen">
 
-                {/* --- ENCABEZADO --- */}
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-6">
+            <section className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+
+                {/* cabecera con titulo y buscador */}
+                <header className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-100 pb-6">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                            <i className="fa-solid fa-building text-blue-600"></i> 
+                            <i className="fa-solid fa-building text-blue-600"></i>
                             Sedes
                         </h2>
                     </div>
@@ -95,23 +101,23 @@ const Sedes = () => {
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <i className="fa-solid fa-search text-xs"></i>
                             </span>
-                            <input 
-                                type="text" 
-                                placeholder="Buscar..." 
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
                                 value={busqueda}
                                 onChange={(e) => setBusqueda(e.target.value)}
                                 className="w-full py-2 pl-9 pr-4 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
                             />
                         </div>
-                        
+
                         <button onClick={abrirModalCrear} className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition-colors text-sm font-medium whitespace-nowrap">
                             <i className="fa-solid fa-plus mr-2"></i>
                             Nuevo
                         </button>
                     </div>
-                </div>
+                </header>
 
-                {/* --- TABLA --- */}
+                {/* tabla de resultados */}
                 <div className="overflow-hidden border border-gray-100 rounded-lg">
                     {cargando ? (
                         <div className="p-8 text-center text-gray-500 text-sm">
@@ -139,8 +145,7 @@ const Sedes = () => {
                                         sedesFiltradas.map((sede) => (
                                             <tr key={sede.id} className="hover:bg-blue-50/30 transition-colors">
                                                 <td className="p-3 font-medium text-gray-700">{sede.nombreSede}</td>
-                                                
-                                                {/* Truncado para que no se anche mucho */}
+
                                                 <td className="p-3 text-gray-500 truncate max-w-[150px]" title={sede.direccion}>
                                                     {sede.direccion}
                                                 </td>
@@ -166,20 +171,21 @@ const Sedes = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </section>
 
-            {/* --- MODAL (Compacto) --- */}
+            {/* modal de formulario */}
             {modalAbierto && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up">
-                        <div className="px-5 py-3 bg-gray-50 border-b flex justify-between items-center">
+                    <article className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up">
+                        <header className="px-5 py-3 bg-gray-50 border-b flex justify-between items-center">
                             <h3 className="font-bold text-gray-700">
                                 {modoEdicion ? 'Editar Sede' : 'Nueva Sede'}
                             </h3>
                             <button onClick={cerrarModal} className="text-gray-400 cursor-pointer hover:text-gray-600">
                                 <i className="fa-solid fa-times"></i>
                             </button>
-                        </div>
+                        </header>
+
                         <form onSubmit={handleSubmit} className="p-5 space-y-3">
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 mb-1">NOMBRE</label>
@@ -198,10 +204,10 @@ const Sedes = () => {
                                 <button type="submit" className="cursor-pointer px-3 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm">Guardar</button>
                             </div>
                         </form>
-                    </div>
+                    </article>
                 </div>
             )}
-        </div>
+        </main>
     );
 };
 

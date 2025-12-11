@@ -3,14 +3,16 @@ import { clubServicio } from '../service/clubService';
 import { Link } from 'react-router-dom';
 
 const Clubes = () => {
+    // estados para la lista de clubes y la navegacion
     const [clubs, setClubs] = useState([]);
     const [activeTab, setActiveTab] = useState('PENDIENTE');
     const [selectedClub, setSelectedClub] = useState(null);
 
-    // Estados para lógica de rechazo
+    // estados para controlar la logica de rechazo
     const [rejectionReason, setRejectionReason] = useState("");
     const [showRejectInput, setShowRejectInput] = useState(false);
 
+    // trae la lista de clubes desde el backend
     const cargarClubes = async () => {
         try {
             const data = await clubServicio.listarClubes();
@@ -20,13 +22,15 @@ const Clubes = () => {
         }
     };
 
+    // al ingresar a la pagina carga los datos necesarios
     useEffect(() => {
         cargarClubes();
     }, []);
 
+    // filtra la lista visual segun la pestaña activa
     const filteredClubs = clubs.filter(club => club.estado === activeTab);
 
-    // --- CORRECCIÓN DE FECHA ---
+    // da formato legible a la fecha
     const formatDate = (dateString) => {
         if (!dateString) return "Fecha no disponible";
         const date = new Date(dateString);
@@ -36,29 +40,29 @@ const Clubes = () => {
         return dateLocal.toLocaleDateString('es-ES', options);
     };
 
-    // --- NUEVA LÓGICA DE DECISIÓN CONECTADA AL BACKEND ---
+    // maneja la decision de aprobar o rechazar enviando a la api
     const handleDecision = async (id, newStatus, reason = "") => {
         try {
-            
-            // 1. Definir la acción para el Backend ('permitir' o 'rechazar')
+
+            // define la accion que espera el backend
             const accionApi = newStatus === 'ACTIVO' ? 'permitir' : 'rechazar';
 
-            // 2. Construir el objeto JSON requerido
+            // arma el json payload
             const validacionPayload = {
                 id: id,
                 accion: accionApi,
-                mensaje: reason // Si es aprobar, reason llega vacío por defecto
+                mensaje: reason
             };
 
-            // 3. Llamar al servicio
+            // llama al servicio de validacion
             await clubServicio.validarClub(validacionPayload);
 
-            // 4. Si el backend responde OK, actualizamos el estado local visualmente
+            // si responde ok actualiza el estado local visualmente
             setClubs(prev => prev.map(club =>
                 club.id === id ? { ...club, estado: newStatus, motivoRechazo: reason } : club
             ));
 
-            // 5. Cerrar el modal
+            // cierra el modal al terminar
             closeModal();
 
         } catch (error) {
@@ -76,8 +80,7 @@ const Clubes = () => {
     return (
         <div className="min-h-screen md:p-8 font-sans">
             <div className="max-w-7xl mx-auto">
-
-                {/* Header Mejorado */}
+                {/* encabezado principal */}
                 <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Administración de Clubes</h1>
@@ -88,11 +91,11 @@ const Clubes = () => {
                     </div>
                 </header>
 
-                {/* Tabs de Navegación Estilizados */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-1 mb-8 inline-flex flex-wrap w-full md:w-auto">
+                {/* navegacion por pestañas */}
+                <nav className="bg-white rounded-xl shadow-sm border border-gray-200 p-1 mb-8 inline-flex flex-wrap w-full md:w-auto">
                     <button
                         onClick={() => setActiveTab('PENDIENTE')}
-                        className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'PENDIENTE'
+                        className={`cursor-pointer flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'PENDIENTE'
                             ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-200'
                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                             }`}
@@ -108,7 +111,7 @@ const Clubes = () => {
 
                     <button
                         onClick={() => setActiveTab('ACTIVO')}
-                        className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'ACTIVO'
+                        className={`cursor-pointer flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'ACTIVO'
                             ? 'bg-green-50 text-green-700 shadow-sm ring-1 ring-green-200'
                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                             }`}
@@ -116,15 +119,15 @@ const Clubes = () => {
                         <i className="fa-solid fa-store"></i>
                         Clubes Activos
                     </button>
-                </div>
+                </nav>
 
-                {/* Grid de Tarjetas */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* area principal de contenido */}
+                <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredClubs.length > 0 ? (
                         filteredClubs.map((club) => (
-                            <div key={club.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full">
+                            <article key={club.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full">
 
-                                {/* Cuerpo de la tarjeta */}
+                                {/* cuerpo de la tarjeta */}
                                 <div className="p-5 flex gap-4 items-start flex-1">
                                     <div className="relative shrink-0">
                                         <img
@@ -161,8 +164,8 @@ const Clubes = () => {
                                     </div>
                                 </div>
 
-                                {/* Footer Tarjeta */}
-                                <div className="bg-gray-50/80 px-5 py-3 border-t border-gray-100 flex justify-between items-center mt-auto">
+                                {/* footer de la tarjeta con acciones */}
+                                <footer className="bg-gray-50/80 px-5 py-3 border-t border-gray-100 flex justify-between items-center mt-auto">
                                     <span className="text-xs font-medium text-gray-400">
                                         Reg: {formatDate(club.creado_en)}
                                     </span>
@@ -183,8 +186,8 @@ const Clubes = () => {
                                             </Link>
                                     }
 
-                                </div>
-                            </div>
+                                </footer>
+                            </article>
                         ))
                     ) : (
                         <div className="col-span-full py-20 flex flex-col items-center justify-center text-gray-400 bg-white rounded-xl border border-dashed border-gray-300">
@@ -194,15 +197,15 @@ const Clubes = () => {
                             <p className="font-medium">No hay clubes en esta sección</p>
                         </div>
                     )}
-                </div>
+                </main>
 
-                {/* ================= MODAL DE DETALLE ================= */}
+                {/* modal de detalle */}
                 {selectedClub && (
                     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-fade-in my-8">
+                        <article className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-fade-in my-8">
 
-                            {/* Header Modal */}
-                            <div className="bg-slate-800 text-white p-6 relative">
+                            {/* header del modal */}
+                            <header className="bg-slate-800 text-white p-6 relative">
                                 <button
                                     onClick={closeModal}
                                     className="absolute top-4 right-4 text-white/60 hover:text-white hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center transition-all"
@@ -220,9 +223,10 @@ const Clubes = () => {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </header>
 
-                            <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* cuerpo del modal */}
+                            <section className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Columna 1: Info Club */}
                                 <div>
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 pb-2 border-b border-gray-100">
@@ -275,9 +279,9 @@ const Clubes = () => {
                                         </a>
                                     </div>
                                 </div>
-                            </div>
+                            </section>
 
-                            {/* Footer Acciones */}
+                            {/* footer del modal con acciones */}
                             {selectedClub.estado === 'PENDIENTE' && (
                                 <footer className="p-6 bg-gray-50 border-t border-gray-100">
                                     {!showRejectInput ? (
@@ -331,7 +335,7 @@ const Clubes = () => {
                                 </div>
                             )}
 
-                        </div>
+                        </article>
                     </div>
                 )}
             </div>

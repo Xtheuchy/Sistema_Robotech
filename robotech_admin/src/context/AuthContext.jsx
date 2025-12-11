@@ -1,15 +1,16 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-// 1. Crear el Contexto
-// Este es el objeto que los componentes "consumirán"
+
+// crea el contexto vacio
 const AuthContext = createContext(null);
-// 2. Crear el Proveedor
+
 export const AuthProvider = ({ children }) => {
-  // 3. El estado global que guarda la info del usuario
+  // estado global para guardar la info del usuario
   const [usuario, setUsuario] = useState(null);
 
-  // Estado de carga para saber si ya revisamos localStorage
+  // estado para saber si estamos revisando el almacenamiento local
   const [cargando, setCargando] = useState(true);
-  // 4. Efecto para cargar el usuario desde localStorage al iniciar la app
+
+  // al iniciar la app revisa si hay una sesion guardada
   useEffect(() => {
     try {
       const usuarioGuardado = localStorage.getItem('usuario');
@@ -18,37 +19,35 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error al cargar usuario de localStorage", error);
-      localStorage.removeItem('usuario'); // Limpia si está corrupto
+      localStorage.removeItem('usuario'); // limpia si los datos estan corruptos
+    } finally {
+      // termina la carga independientemente del resultado
+      setCargando(false);
     }
-    // Una vez que terminamos de revisar, dejamos de cargar
-    setCargando(false); 
   }, []);
 
-  // 5. Función de Login (que usará tu LoginPage)
+  // funcion para iniciar sesion y persistir datos
   const login = (datosUsuario) => {
-    // Actualiza el estado global de React
     setUsuario(datosUsuario); 
-    // Guarda el usuario en localStorage para persistir la sesión
     localStorage.setItem('usuario', JSON.stringify(datosUsuario)); 
   };
 
-  // 6. Función de Logout (que usará tu Header o AsideBar)
+  // funcion para cerrar sesion y limpiar datos
   const logout = () => {
-    // Borra el estado global
     setUsuario(null); 
-    // Limpia el localStorage
     localStorage.removeItem('usuario'); 
   };
-  // 7. Creamos el valor que compartiremos con toda la app
+
+  // objeto con los valores que se compartiran
   const valor = {
-    usuario, // El objeto del usuario (o null)
+    usuario,
     login,
     logout
   };
   
-  // 8. Si aún estamos cargando (revisando localStorage), no mostramos nada
+  // si esta cargando no muestra la app para evitar parpadeos
   if (cargando) {
-    return null;
+    return null; // aqui podrias retornar un <LoadingSpinner /> si quisieras
   }
 
   return (
@@ -58,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-
+// hook personalizado para consumir el contexto facilmente
 export const useAuth = () => {
   const contexto = useContext(AuthContext);
   if (!contexto) {

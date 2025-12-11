@@ -2,20 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { usuarioServicio } from '../service/userService';
 
-// Recibe 2 props:
-// 1. usuario: El objeto de usuario (DTO) de esta fila
-// 2. onUsuarioActualizado: La función para refrescar la lista principal
+// este componente recibe el usuario a editar y la funcion para refrescar la lista
 function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
 
-    // --- LÓGICA DEL BOTÓN ---
+    // estados para controlar el modal
     const [modalAbierto, setModalAbierto] = useState(false);
     const abrirModal = () => setModalAbierto(true);
     const cerrarModal = () => {
         setModalAbierto(false);
-        setError(null); 
+        setError(null);
     };
 
-    // 1. Estado para los datos del formulario
+    // estado inicial del formulario
     const [formData, setFormData] = useState({
         nombres: '',
         correo: '',
@@ -25,12 +23,12 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
         estado: '',
     });
 
-    // 2. Estados para la carga y errores
+    // estados de carga y error
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // rellena el formulario cuando se abre el modal
     useEffect(() => {
-        // Solo carga los datos si el modal está abierto y tenemos un usuario
         if (modalAbierto && usuario) {
             setFormData({
                 nombres: usuario.nombres || '',
@@ -43,7 +41,6 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
         }
     }, [modalAbierto, usuario]);
 
-    // 3. Manejador para actualizar el estado del formulario
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -52,7 +49,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
         }));
     };
 
-    // 4. Manejar el envio del formulario
+    // envia los datos actualizados al backend
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -61,7 +58,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
         try {
             await usuarioServicio.actualizarUsuario(usuario.id, formData);
             cerrarModal();
-            onUsuarioActualizado(); //Recarga la pagina
+            onUsuarioActualizado(); // refresca la lista padre
 
         } catch (err) {
             setError(err.toString());
@@ -72,9 +69,9 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
 
     return (
         <>
-            {/* --- El Botón (Diseño Icono limpio para Tabla) --- */}
+            {/* boton de edicion para la tabla */}
             <button
-                className="group/btn relative p-2 text-gray-400 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="cursor-pointer group/btn relative p-2 text-gray-400 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 onClick={abrirModal}
                 title="Editar información"
             >
@@ -83,25 +80,25 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                 </svg>
             </button>
 
-            {/* --- El Modal --- */}
+            {/* modal de edicion */}
             {modalAbierto && (
-                <div 
-                    className="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity" 
+                <div
+                    className="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity"
                     onClick={cerrarModal}
                 >
-                    <div 
-                        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative transform transition-all" 
+                    <div
+                        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative transform transition-all"
                         onClick={e => e.stopPropagation()}
                     >
 
-                        {/* Cabecera */}
+                        {/* cabecera del modal */}
                         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
                             <div>
                                 <h2 className="text-xl font-bold text-gray-800">Editar Usuario</h2>
                                 <p className="text-sm text-gray-500 mt-1">Actualizando datos de <span className="font-semibold text-blue-600">{usuario.nombres}</span></p>
                             </div>
-                            <button 
-                                className="text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-2 rounded-full transition-colors" 
+                            <button
+                                className="cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-2 rounded-full transition-colors"
                                 onClick={cerrarModal}
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,13 +107,13 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                             </button>
                         </div>
 
-                        {/* Cuerpo del Formulario */}
+                        {/* cuerpo del formulario */}
                         <div className="p-8">
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    
-                                    {/* Nombres (Columna completa) */}
+
+                                    {/* nombres */}
                                     <div className="md:col-span-2">
                                         <label htmlFor={`nombres-edit-${usuario.id}`} className="text-left block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Nombres Completos</label>
                                         <input
@@ -130,7 +127,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         />
                                     </div>
 
-                                    {/* Correo (Columna completa) */}
+                                    {/* correo */}
                                     <div className="md:col-span-2">
                                         <label htmlFor={`correo-edit-${usuario.id}`} className="block text-xs text-left font-semibold text-gray-500 uppercase tracking-wide mb-2">Correo Electrónico</label>
                                         <input
@@ -144,7 +141,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         />
                                     </div>
 
-                                    {/* DNI */}
+                                    {/* dni */}
                                     <div>
                                         <label htmlFor={`dni-edit-${usuario.id}`} className="text-left block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">DNI</label>
                                         <input
@@ -158,7 +155,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         />
                                     </div>
 
-                                    {/* Rol */}
+                                    {/* rol */}
                                     <div>
                                         <label htmlFor={`rol-edit-${usuario.id}`} className="text-left block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Rol</label>
                                         <select
@@ -174,7 +171,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         </select>
                                     </div>
 
-                                    {/* Foto */}
+                                    {/* foto */}
                                     <div className="md:col-span-2">
                                         <label htmlFor={`foto-edit-${usuario.id}`} className="text-left block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Foto (URL)</label>
                                         <div className="flex gap-3">
@@ -187,7 +184,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                                 placeholder="https://..."
                                                 className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block focus:bg-white transition-colors"
                                             />
-                                            {/* Preview miniatura si hay URL */}
+                                            {/* preview miniatura si hay url */}
                                             {formData.foto && (
                                                 <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shadow-sm shrink-0">
                                                     <img src={formData.foto} alt="Preview" className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
@@ -196,7 +193,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                         </div>
                                     </div>
 
-                                    {/* Estado */}
+                                    {/* estado */}
                                     <div className="md:col-span-2">
                                         <label htmlFor={`estado-edit-${usuario.id}`} className="text-left block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado</label>
                                         <select
@@ -213,7 +210,7 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                     </div>
                                 </div>
 
-                                {/* Mensaje de Error */}
+                                {/* mensaje de error si falla */}
                                 {error && (
                                     <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200 flex items-center gap-2">
                                         <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path></svg>
@@ -221,19 +218,19 @@ function BtnEditarUsuario({ usuario, onUsuarioActualizado }) {
                                     </div>
                                 )}
 
-                                {/* Botones */}
+                                {/* botones de accion */}
                                 <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={cerrarModal}
-                                        className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-gray-200 transition-colors"
+                                        className="cursor-pointer px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-gray-200 transition-colors"
                                         disabled={loading}
                                     >
                                         Cancelar
                                     </button>
-                                    <button 
-                                        type="submit" 
-                                        className={`px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all shadow-md flex items-center justify-center min-w-[140px] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                    <button
+                                        type="submit"
+                                        className={`cursor-pointer px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all shadow-md flex items-center justify-center min-w-[140px] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                         disabled={loading}
                                     >
                                         {loading ? (

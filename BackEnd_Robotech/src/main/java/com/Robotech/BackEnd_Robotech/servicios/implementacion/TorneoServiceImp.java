@@ -39,7 +39,6 @@ public class TorneoServiceImp implements ITorneoServicio {
     public List<Torneo> listarTorneosPublicos() throws Exception {
         return torneoRepositorio.findAllByEstado("PUBLICO");
     }
-
     @Override
     public List<Torneo> listarTorneosBorrador() throws Exception {
         return torneoRepositorio.findAllByEstado("BORRADOR");

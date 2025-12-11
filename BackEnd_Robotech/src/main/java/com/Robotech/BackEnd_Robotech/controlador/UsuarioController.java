@@ -1,5 +1,6 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
+import com.Robotech.BackEnd_Robotech.DTO.JuezDTO;
 import com.Robotech.BackEnd_Robotech.DTO.RegistroDTO;
 import com.Robotech.BackEnd_Robotech.DTO.UsuarioDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Rol;
@@ -111,6 +112,25 @@ public class UsuarioController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/jueces")
+    public ResponseEntity<?> listarJueces(){
+        try {
+            List<Usuario> jueces = usuarioServicio.listarJueces();
+            List<JuezDTO> juezDTOList = jueces.stream()
+                    .map(juez -> new JuezDTO(
+                            juez.getNombres(),
+                            juez.getCorreo(),
+                            juez.getDni(),
+                            juez.getFoto()
+                    ))
+                    .toList();
+            return ResponseEntity.ok(juezDTOList);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
     // --- 5. ELIMINAR USUARIO POR ID (DELETE) ---
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id) {

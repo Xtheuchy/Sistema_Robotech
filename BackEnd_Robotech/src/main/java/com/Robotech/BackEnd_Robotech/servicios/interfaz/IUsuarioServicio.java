@@ -18,8 +18,11 @@ public interface IUsuarioServicio {
     public List<Usuario> listarAdministradoryJuez() throws Exception;
     //Valida si la contraseña es segura
     public boolean validarPassword(String password) throws Exception;
-
     //Validar DNI
     public boolean validarDni(String dni) throws Exception;
+
+    public List<Usuario> listarJueces() throws Exception;
+
+
 
 }
