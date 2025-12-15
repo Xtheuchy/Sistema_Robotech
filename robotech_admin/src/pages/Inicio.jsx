@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import { usuarioServicio } from '../service/userService';
+import { torneoServicio } from "../service/torneoService";
+import { clubServicio } from '../service/clubService';
+import { useAuth } from "../context/AuthContext";
 const Inicio = () => {
-    // datos estaticos para simular la informacion del dashboard
-    const stats = {
-        torneosActivos: 3,
-        clubesRegistrados: 12,
-        usuariosTotales: 145,
-        competidores: 89
-    };
+    const [torneosActivos, setTorneosActivos] = useState([]);
+    const [clubesRegistrados, setClubesRegistrados] = useState([]);
+    const [usuariosTotales, setUsuariosTotales] = useState([]);
+    const {usuario} = useAuth()
+    const cargarDatos = async () =>{
+        try {
+            const datosTorneo = await torneoServicio.listarTorneoPublico();
+            const datosClubes = await clubServicio.listarClubes();
+            const datosUsuarios = await usuarioServicio.listarTodosUsuarios();
+            setTorneosActivos(datosTorneo)
+            setClubesRegistrados(datosClubes)
+            setUsuariosTotales(datosUsuarios)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    useEffect(() => {
+        cargarDatos()
+    }, []);
 
     return (
         <main className="min-h-screen md:p-8 font-sans">
@@ -18,7 +33,7 @@ const Inicio = () => {
                 <header className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-800">
-                            ¡Hola, Administrador! <span className="text-2xl">👋</span>
+                            ¡Hola, {usuario.nombres}! <span className="text-2xl">👋</span>
                         </h1>
                         <p className="text-gray-500 text-sm mt-1">Aquí tienes un resumen de lo que pasa en Robotech hoy.</p>
                     </div>
@@ -39,18 +54,18 @@ const Inicio = () => {
                         </div>
                         <div>
                             <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Torneos Activos</p>
-                            <h2 className="text-3xl font-bold text-gray-800">{stats.torneosActivos}</h2>
+                            <h2 className="text-3xl font-bold text-gray-800">{torneosActivos.length}</h2>
                         </div>
                     </article>
 
                     {/* tarjeta clubes */}
                     <article className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
                         <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl">
-                            <i className="fa-solid fa-shield-halved"></i>
+                            <i class="fa-solid fa-hotel"></i>
                         </div>
                         <div>
                             <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Clubes Registrados</p>
-                            <h2 className="text-3xl font-bold text-gray-800">{stats.clubesRegistrados}</h2>
+                            <h2 className="text-3xl font-bold text-gray-800">{clubesRegistrados.length}</h2>
                         </div>
                     </article>
 
@@ -61,7 +76,7 @@ const Inicio = () => {
                         </div>
                         <div>
                             <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Usuarios Totales</p>
-                            <h2 className="text-3xl font-bold text-gray-800">{stats.usuariosTotales}</h2>
+                            <h2 className="text-3xl font-bold text-gray-800">{usuariosTotales.length}</h2>
                         </div>
                     </article>
                 </section>

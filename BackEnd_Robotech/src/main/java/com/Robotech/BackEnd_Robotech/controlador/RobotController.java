@@ -8,6 +8,7 @@ import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRobotServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,25 +31,36 @@ public class RobotController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Robot>> listarRobots() throws Exception {
-        robots = robotService.listarRobots();
-        return ResponseEntity.ok(robots);
+    public ResponseEntity<?> listarRobots() throws Exception {
+        try{
+            robots = robotService.listarRobots();
+            return ResponseEntity.ok(robots);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
     @GetMapping("/{id}")
-    public ResponseEntity<List<Robot>> listarRobotPorCompetidor(@PathVariable int id) throws Exception{
-        Competidor competidor = competidorService.buscarPorId(id);
-        robots = robotService.listarPorCompetidor(competidor);
-        return ResponseEntity.ok(robots);
+    public ResponseEntity<?> listarRobotPorCompetidor(@PathVariable int id) throws Exception{
+        try{
+            Competidor competidor = competidorService.buscarPorId(id);
+            robots = robotService.listarPorCompetidor(competidor);
+            return ResponseEntity.ok(robots);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
     @PostMapping("/registrar/{id}")
     public ResponseEntity<?> agregarRobot(@PathVariable int id, @RequestBody RegistroRobotDTO registroRobotDTO) throws Exception {
-        Categoria categoria = categoriaService.buscarPorNombre(registroRobotDTO.getCategoria());
-        robot = new Robot(
-                registroRobotDTO.getNombre(),
-                registroRobotDTO.getFoto(),
-                categoria);
-        robot = robotService.agregarRobot(robot,id);
-        return ResponseEntity.ok(robot);
+        try{
+            Categoria categoria = categoriaService.buscarPorNombre(registroRobotDTO.getCategoria());
+            robot = new Robot(
+                    registroRobotDTO.getNombre(),
+                    registroRobotDTO.getFoto(),
+                    categoria);
+            robot = robotService.agregarRobot(robot,id);
+            return ResponseEntity.ok(robot);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
-
 }

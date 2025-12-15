@@ -1,6 +1,7 @@
 package com.Robotech.BackEnd_Robotech.servicios.interfaz;
 
 import com.Robotech.BackEnd_Robotech.DTO.ClubDTO;
+import com.Robotech.BackEnd_Robotech.DTO.ModificarClubDTO;
 import com.Robotech.BackEnd_Robotech.DTO.RegistroClubDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Club;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
@@ -15,5 +16,6 @@ public interface IClubServicio {
     public ClubDTO obtenerPorId(int id) throws Exception;
     public Club obtenerPorUsuario(Usuario usuario) throws Exception;
     public Club modificarClub(Club club) throws Exception;
+    public Club moficarDatosClub(ModificarClubDTO modificarClubDTO) throws Exception;
     public void modificarPuntoDeClub(Club club, int cantidad);
 }

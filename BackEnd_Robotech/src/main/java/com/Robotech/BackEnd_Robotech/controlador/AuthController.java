@@ -86,6 +86,7 @@ public class AuthController{
                 String textoError = (ultimoMensaje != null)
                         ? "Su solicitud de registro fue rechazada, Razón: \n" + ultimoMensaje.getMensaje() + "\nPor favor, intente registrarse nuevamente."
                         : "¡Su cuenta no está activa!";
+
                 // Si existe un mensaje, eliminar el club y el usuario
                 if (ultimoMensaje != null) {
                     try {

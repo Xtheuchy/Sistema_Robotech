@@ -3,10 +3,7 @@ package com.Robotech.BackEnd_Robotech.modelo;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @Entity
@@ -22,6 +19,7 @@ public class Club {
     @OneToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id",columnDefinition = "INT")
     private Usuario usuario;
+
     private String nombre;
     private String direccion_fiscal;
     private String telefono;

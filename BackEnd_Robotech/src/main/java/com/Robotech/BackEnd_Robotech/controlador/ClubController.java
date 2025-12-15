@@ -1,10 +1,7 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
-import com.Robotech.BackEnd_Robotech.DTO.ClubDTO;
-import com.Robotech.BackEnd_Robotech.DTO.UsuarioDTO;
-import com.Robotech.BackEnd_Robotech.DTO.ValidarClubDTO;
+import com.Robotech.BackEnd_Robotech.DTO.*;
 import com.Robotech.BackEnd_Robotech.modelo.*;
-import com.Robotech.BackEnd_Robotech.DTO.RegistroClubDTO;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +31,34 @@ public class ClubController {
         this.mensajeServicio = mensajeServicio;
     }
 
+    //Obtener club por propietario
+    @GetMapping("/clubPropietario/{idPropietario}")
+    public ResponseEntity<?> obtenerClubPorPropietario(@PathVariable int idPropietario) throws Exception{
+        try {
+            Usuario usuario = usuarioService.obtenerUsuarioPorId(idPropietario);
+            if (!usuario.getRol().getNombre().equalsIgnoreCase("dueño de club")){
+                return ResponseEntity.badRequest().body("No tienes un club registrado!");
+            }
+            Club club = clubService.obtenerPorUsuario(usuario);
+            ClubDTO clubDTO = new ClubDTO(
+                    club.getId(),
+                    club.getUsuario().getNombres(),
+                    club.getUsuario().getFoto(),
+                    club.getUsuario().getCorreo(),
+                    club.getTelefono(),
+                    club.getNombre(),
+                    club.getDireccion_fiscal(),
+                    club.getLogo(),
+                    club.getEstado(),
+                    club.getCreado_en()
+            );
+            return ResponseEntity.ok(clubDTO);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //Listar clubes
     @GetMapping
     public ResponseEntity<?> listarClubes() throws Exception {
         List<Club> clubes = clubService.listarClubes();
@@ -53,6 +78,8 @@ public class ClubController {
                 .toList();
         return ResponseEntity.ok(clubs);
     }
+
+    //Obtener club por id
     @GetMapping("/obtenerClub/{id}")
     public ResponseEntity<?> obtenerClub(@PathVariable int id){
         try{
@@ -62,6 +89,7 @@ public class ClubController {
         }
     }
 
+    //obtener integrantes por id de club
     @GetMapping("/integrantes/{id}")
     public ResponseEntity<?> listarIntegrantesDeClub(@PathVariable int id){
         try {
@@ -70,6 +98,8 @@ public class ClubController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    //Registrar club
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarClub(@RequestBody RegistroClubDTO registroClubDTO){
         try {
@@ -90,6 +120,7 @@ public class ClubController {
         }
     }
 
+    //Generar codigo de invitación para competidores
     @PostMapping("/GenerarCodigo/{id}")
     public ResponseEntity<String> generarCodigoInvitacion(@PathVariable int id){
         try {
@@ -101,6 +132,8 @@ public class ClubController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    //Validar club
     @PutMapping("/validacion")
     public ResponseEntity<String> validarClub(@RequestBody ValidarClubDTO validarClubDTO) {
         try {
@@ -142,6 +175,17 @@ public class ClubController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    //Modificar datos del club
+    @PutMapping("/modificar")
+    public ResponseEntity<?> modificarClub(@RequestBody ModificarClubDTO modificarClubDTO){
+        try {
+            return ResponseEntity.ok(clubService.moficarDatosClub(modificarClubDTO));
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 
 

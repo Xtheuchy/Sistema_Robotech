@@ -357,7 +357,6 @@ const TorneoCard = ({ tournament, cargarTorneo }) => {
                                         <select id="estado" name="estado" value={formTorneo.estado} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white">
                                             <option value="Borrador">Borrador</option>
                                             <option value="Publico">Público</option>
-                                            <option value="Finalizado">Finalizado</option>
                                         </select>
                                     </div>
 

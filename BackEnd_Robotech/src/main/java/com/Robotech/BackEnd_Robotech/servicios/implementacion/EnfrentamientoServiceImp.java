@@ -51,7 +51,8 @@ public class EnfrentamientoServiceImp implements IEnfrentamientoServicio {
             // Paso 3: Crear los enfrentamientos para la primera ronda
             List<Enfrentamiento> enfrentamientos = crearEnfrentamientos(competidoresAleatorios, torneoId, 1);
 
-            // Paso 4: Registrar los enfrentamientos
+            // Paso 4: Registrar los enfrentamientos y guardamos el nuevo estado del torneo
+            torneoServicio.modificarEstado(torneo.getId(), "En curso");
             registrarEnfrentamientos(enfrentamientos);
         }else {
             if (competidores.size() < torneo.getCantidad()){

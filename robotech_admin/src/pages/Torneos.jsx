@@ -293,8 +293,7 @@ const Torneos = () => {
                                     <select id="estado" name="estado" value={formTorneo.estado} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white">
                                         <option value="" disabled>Seleccionar...</option>
                                         <option value="Borrador">Borrador</option>
-                                        <option value="En Curso">En Curso</option>
-                                        <option value="Finalizado">Finalizado</option>
+                                        <option value="Publico">Público</option>
                                     </select>
                                 </div>
                             </form>

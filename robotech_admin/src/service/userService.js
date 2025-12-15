@@ -3,6 +3,16 @@ import axios from 'axios';
 // (Asegúrate de que sea el puerto correcto, usualmente 8080)
 const API_URL = 'http://localhost:8080/api/usuarios';
 
+
+const listarTodosUsuarios = async () => {
+    try {
+        const response = await axios.get(`${API_URL}`);
+        return response.data; // Retorna el array [UsuarioDTO, ...]
+    } catch (error) {
+        throw error.response?.data || error.message || 'Error al listar usuarios';
+    }
+};
+
 /**
  1. Lista todos los usuarios
  Devuelve una lista de UsuarioDTO
@@ -13,7 +23,7 @@ const listarUsuarios = async () => {
         const response = await axios.get(`${API_URL}/listar`);
         return response.data; // Retorna el array [UsuarioDTO, ...]
     } catch (error) {
-        throw error.response?.data || error.message || 'Error al listar usuarios';
+        throw error.response?.data || error.message || 'Error al listar Jueces y administradores';
     }
 };
 
@@ -88,5 +98,6 @@ export const usuarioServicio = {
     registrarUsuario,
     actualizarUsuario,
     eliminarUsuario,
-    listarJueces
+    listarJueces, 
+    listarTodosUsuarios
 };

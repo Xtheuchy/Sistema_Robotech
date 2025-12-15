@@ -1,4 +1,3 @@
-// src/componentes/AsideBar.jsx
 import { Link } from 'react-router-dom';
 import Logo from '../assets/Logo_claro.png'
 import { useAuth } from '../context/AuthContext';
@@ -6,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 const AsideBar = ({ className }) => {
     // traigo la funcion para cerrar sesion del contexto
     const { logout } = useAuth();
-
+    const { usuario } = useAuth();
     const handleLogout = () => {
         logout();
     };
@@ -27,43 +26,63 @@ const AsideBar = ({ className }) => {
                 </picture>
             </header>
 
-            {/* seccion de navegacion principal */}
-            <nav className='flex-1 overflow-y-auto custom-scrollbar py-2'>
-                <p className="px-6 text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Menu</p>
-
-                <ul className='flex flex-col'>
-                    <li>
-                        <Link className={linkStyle} to="/">
-                            <span className={iconStyle}><i className="fa-solid fa-chart-line"></i></span>
-                            <span>DashBoard</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className={linkStyle} to="/usuarios">
-                            <span className={iconStyle}><i className="fa-solid fa-users"></i></span>
-                            <span>Usuarios</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className={linkStyle} to="/torneos">
-                            <span className={iconStyle}><i className="fa-solid fa-trophy"></i></span>
-                            <span>Torneos</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className={linkStyle} to="/clubes">
-                            <span className={iconStyle}><i className="fa-solid fa-user-group"></i></span>
-                            <span>Clubes</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className={linkStyle} to="/organizacion">
-                            <span className={iconStyle}><i className="fa-solid fa-gear"></i></span>
-                            <span>Organización</span>
-                        </Link>
-                    </li>
-                </ul>
-            </nav>
+            {usuario.rol == 'Juez' ?
+                // seccion de navegacion Juez
+                <nav className='flex-1 overflow-y-auto custom-scrollbar py-2'>
+                    <p className="px-6 text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Menu</p>
+                    <ul className='flex flex-col'>
+                        <li>
+                            <Link className={linkStyle} to="/">
+                                <span className={iconStyle}><i className="fa-solid fa-chart-line"></i></span>
+                                <span>DashBoard</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className={linkStyle} to="/torneos">
+                                <span className={iconStyle}><i className="fa-solid fa-trophy"></i></span>
+                                <span>Torneos</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
+                :
+                // seccion de navegacion principal 
+                <nav className='flex-1 overflow-y-auto custom-scrollbar py-2'>
+                    <p className="px-6 text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Menu</p>
+                    <ul className='flex flex-col'>
+                        <li>
+                            <Link className={linkStyle} to="/">
+                                <span className={iconStyle}><i className="fa-solid fa-chart-line"></i></span>
+                                <span>DashBoard</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className={linkStyle} to="/usuarios">
+                                <span className={iconStyle}><i className="fa-solid fa-users"></i></span>
+                                <span>Usuarios</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className={linkStyle} to="/torneos">
+                                <span className={iconStyle}><i className="fa-solid fa-trophy"></i></span>
+                                <span>Torneos</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className={linkStyle} to="/clubes">
+                                <span className={iconStyle}><i className="fa-solid fa-user-group"></i></span>
+                                <span>Clubes</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className={linkStyle} to="/organizacion">
+                                <span className={iconStyle}><i className="fa-solid fa-gear"></i></span>
+                                <span>Organización</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
+            }
 
             {/* footer con la accion de cerrar sesion */}
             <footer className="p-4 mt-auto">
