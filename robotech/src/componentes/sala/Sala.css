@@ -1,0 +1,286 @@
+/* Sala.css - Layout para Salas Independientes */
+
+/* General Page Layout */
+.sala-page {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Video Background */
+.video-background-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.bg-video,
+.bg-iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.1);
+}
+
+.bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 15, 0.85);
+    /* Fondo oscuro */
+    backdrop-filter: blur(5px);
+}
+
+/* Container Principal */
+.sala-container-split {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 20px 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Header */
+.sala-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+}
+
+.header-title h1 {
+    font-size: 2.5rem;
+    color: var(--electric-blue);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* SECCIÓN SUPERIOR: IMAGEN + DESCRIPCIÓN */
+.split-top-section {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    /* Imagen fija ancho mediano, resto desc */
+    gap: 40px;
+    align-items: start;
+}
+
+.image-col {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid var(--purple-glow);
+    box-shadow: 0 0 30px rgba(107, 33, 168, 0.3);
+}
+
+.medium-image {
+    width: 100%;
+    height: 300px;
+    /* Altura controlada mediano */
+    object-fit: cover;
+    display: block;
+}
+
+.desc-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.desc-col h2 {
+    font-size: 2rem;
+    color: var(--gold);
+    margin: 0;
+}
+
+.desc-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.stats-row {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-badge {
+    background: rgba(0, 191, 255, 0.1);
+    color: var(--electric-blue);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: 1px solid var(--electric-blue);
+}
+
+/* SECCIÓN CENTRAL: INSCRIPCION */
+.inscription-section {
+    background: linear-gradient(90deg, rgba(20, 20, 32, 0.9), rgba(107, 33, 168, 0.2));
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid var(--gold);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    /* Centrado */
+    width: 100%;
+}
+
+.inscription-section h3 {
+    color: var(--gold);
+    margin-bottom: 15px;
+}
+
+.btn-inscribir {
+    background: var(--gold);
+    color: black;
+    font-weight: bold;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.btn-inscribir:hover {
+    transform: scale(1.05);
+    background: #fff;
+}
+
+.mensaje-alerta {
+    color: #ffaaaa;
+    background: rgba(255, 0, 0, 0.2);
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* SECCIÓN INFERIOR: TABLA COMPETIDORES */
+.table-section {
+    background: rgba(26, 26, 46, 0.8);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-section h3 {
+    text-align: center;
+    color: var(--neon-green);
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.competitors-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.competitors-table th {
+    text-align: left;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.competitors-table td {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.competitors-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.robot-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    color: white;
+}
+
+.club-cell {
+    color: var(--text-muted);
+}
+
+.status-cell {
+    color: var(--neon-green);
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .split-top-section {
+        grid-template-columns: 1fr;
+    }
+
+    .medium-image {
+        height: 250px;
+    }
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1a1a2e;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid var(--gold);
+    text-align: center;
+}
+
+.robot-list {
+    margin: 20px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.robot-item {
+    padding: 10px;
+    border: 1px solid #333;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.robot-item.selected {
+    border-color: var(--gold);
+    background: rgba(212, 175, 55, 0.1);
+}
