@@ -10,5 +10,5 @@ public interface IRobotServicio {
     public List<Robot> listarPorCompetidor(Competidor competidor) throws Exception;
     public Robot agregarRobot(Robot robot, int id) throws Exception;
     public Robot buscarPorId(int id) throws Exception;
-    public void elimnarPorId(int id) throws Exception;
+    public void eliminarPorId(int id) throws Exception;
 }

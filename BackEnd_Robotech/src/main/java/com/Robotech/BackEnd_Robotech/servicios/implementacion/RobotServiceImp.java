@@ -45,7 +45,7 @@ public class RobotServiceImp implements IRobotServicio {
                 .orElseThrow(()-> new Exception("¡robot con id "+ id + "no encontrado!"));
     }
     @Override
-    public void elimnarPorId(int id) throws Exception {
+    public void eliminarPorId(int id) throws Exception {
         robotRepositorio.deleteById(id);
     }
 }

@@ -63,4 +63,15 @@ public class RobotController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminarRobot(@PathVariable int id){
+        try {
+            robotService.eliminarPorId(id);
+            return ResponseEntity.ok("Correctamente eliminado!!");
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 }
