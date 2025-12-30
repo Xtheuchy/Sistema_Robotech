@@ -11,7 +11,13 @@ const Categorias = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [currentId, setCurrentId] = useState(null);
-  const [form, setForm] = useState({ nombre: '', descripcion: '' });
+  const [form, setForm] = useState({
+    nombre: '',
+    descripcion: '',
+    habilidad: '',
+    peso_max: 0,
+    peso_min: 0
+  });
 
   // trae las categorias del backend
   const cargarDatos = async () => {
@@ -44,7 +50,7 @@ const Categorias = () => {
 
   // carga los datos para editar
   const handleOpenEdit = (item) => {
-    setForm({ nombre: item.nombre, descripcion: item.descripcion });
+    setForm({ nombre: item.nombre, descripcion: item.descripcion, habilidad:item.habilidad, peso_max:item.peso_max, peso_min:item.peso_min});
     setModoEdicion(true);
     setCurrentId(item.id);
     setModalOpen(true);
@@ -92,7 +98,6 @@ const Categorias = () => {
               Categorías
             </h2>
           </div>
-
           <div className="flex gap-2 w-full sm:w-auto">
             {/* buscador */}
             <div className="relative w-full sm:w-56">
@@ -211,6 +216,57 @@ const Categorias = () => {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">HABILIDAD</label>
+                <div className="relative">
+                  <span className="absolute top-3 left-3 text-gray-400">
+                    <i className="fa-solid fa-align-left text-xs"></i>
+                  </span>
+                  <input
+                    type='text'
+                    className="w-full py-2 pl-9 pr-3 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    value={form.habilidad}
+                    onChange={(e) => setForm({ ...form, habilidad: e.target.value })}
+                    placeholder="Ingrese una habilidad especial"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">PESO MAX.</label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                    <i className="fa-solid fa-tag text-xs"></i>
+                  </span>
+                  <input
+                    type="number"
+                    className="w-full py-2 pl-9 pr-3 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    value={form.peso_max}
+                    onChange={(e) => setForm({ ...form, peso_max: e.target.value })}
+                    placeholder="Cantidad máxima"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">PESO MIN.</label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                    <i className="fa-solid fa-tag text-xs"></i>
+                  </span>
+                  <input
+                    type="number"
+                    className="w-full py-2 pl-9 pr-3 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    value={form.peso_min}
+                    onChange={(e) => setForm({ ...form, peso_min: e.target.value })}
+                    placeholder="Cantidad mínima"
+                    required
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-gray-500 mb-1">DESCRIPCIÓN</label>
                 <div className="relative">

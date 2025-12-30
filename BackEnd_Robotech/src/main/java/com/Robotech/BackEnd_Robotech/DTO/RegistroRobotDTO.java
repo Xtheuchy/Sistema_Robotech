@@ -8,4 +8,5 @@ public class RegistroRobotDTO {
     private String nombre;
     private String foto;
     private String categoria;
+    private int peso;
 }

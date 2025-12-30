@@ -33,7 +33,10 @@ public class CategoriaController {
     public ResponseEntity<Categoria> agregarCategoria(@RequestBody Categoria categoria) throws Exception {
         categoria = new Categoria(
                 categoria.getNombre(),
-                categoria.getDescripcion());
+                categoria.getDescripcion(),
+                categoria.getPeso_max(),
+                categoria.getPeso_min(),
+                categoria.getHabilidad());
         categoria = categoriaService.agregarCategoria(categoria);
         return ResponseEntity.ok(categoria);
     }
@@ -44,6 +47,9 @@ public class CategoriaController {
             categoria = categoriaService.buscarPorId(id);
             categoria.setNombre(cat.getNombre());
             categoria.setDescripcion(cat.getDescripcion());
+            categoria.setHabilidad(cat.getHabilidad());
+            categoria.setPeso_min(cat.getPeso_min());
+            categoria.setPeso_max(cat.getPeso_max());
             return ResponseEntity.ok(categoriaService.modificarCategoria(categoria));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());

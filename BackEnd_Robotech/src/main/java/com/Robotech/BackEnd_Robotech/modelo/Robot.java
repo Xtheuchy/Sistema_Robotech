@@ -25,9 +25,16 @@ public class Robot {
     @JoinColumn(name = "competidor_id", nullable = false, columnDefinition = "INT")
     private Competidor competidor;
 
+    private int peso;
     public Robot(String nombre, String foto, Categoria categoria){
         this.nombre = nombre;
         this.foto = foto;
         this.categoria = categoria;
+    }
+    public Robot(String nombre, String foto, Categoria categoria, int peso){
+        this.nombre = nombre;
+        this.foto = foto;
+        this.categoria = categoria;
+        this.peso = peso;
     }
 }

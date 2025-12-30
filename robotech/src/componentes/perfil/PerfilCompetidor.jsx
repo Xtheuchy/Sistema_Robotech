@@ -15,6 +15,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
         nombre: "",
         foto: "",
         categoria: "",
+        peso: "",
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
@@ -127,9 +128,14 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
 
         setLoading(true);
         try {
-            await registrarRobot(userData.id, { nombre: robotForm.nombre, foto: robotForm.foto || "", categoria: robotForm.categoria });
+            await registrarRobot(userData.id, {
+                nombre: robotForm.nombre,
+                foto: robotForm.foto || "",
+                categoria: robotForm.categoria,
+                peso: parseInt(robotForm.peso) || 0
+            });
             await fetchRobots(userData.id); // Recargar lista
-            setRobotForm({ nombre: "", foto: "", categoria: "" });
+            setRobotForm({ nombre: "", foto: "", categoria: "", peso: "" });
             setShowRobotModal(false);
             setMessage({ type: "success", text: "Robot creado exitosamente" });
         } catch (err) {
@@ -155,7 +161,8 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
             id: robot.id,
             nombre: robot.nombre || "",
             foto: robot.foto || "",
-            categoria: typeof robot.categoria === 'object' ? robot.categoria?.nombre : robot.categoria || ""
+            categoria: typeof robot.categoria === 'object' ? robot.categoria?.nombre : robot.categoria || "",
+            peso: robot.peso || ""
         });
         setShowEditRobotModal(true);
     };
@@ -175,7 +182,8 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
             await modificarRobot({
                 id: editingRobot.id,
                 nombre: editingRobot.nombre,
-                foto: editingRobot.foto || ""
+                foto: editingRobot.foto || "",
+                peso: parseInt(editingRobot.peso) || 0
             });
             await fetchRobots(userData.id);
             setShowEditRobotModal(false);
@@ -343,7 +351,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                             <span>🔧</span>
                             <p>No tienes robots en tu hangar</p>
                             <button className="btn-secondary" onClick={() => setShowRobotModal(true)}>
-                                Construir mi primer robot
+                                Registrar mi primer robot
                             </button>
                         </div>
                     )}
@@ -427,7 +435,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                 <div className="modal-overlay" onClick={() => setShowRobotModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>🤖 Construir Robot</h3>
+                            <h3>🤖 Registrar Robot</h3>
                             <button className="modal-close" onClick={() => setShowRobotModal(false)}>×</button>
                         </div>
                         <div className="modal-body">
@@ -442,19 +450,30 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Categoría *</label>
+                                <label>Habilidad *</label>
                                 <select
                                     name="categoria"
                                     value={robotForm.categoria}
                                     onChange={handleRobotChange}
                                 >
-                                    <option value="">Selecciona categoría</option>
+                                    <option disabled value="">Selecciona la habilidad</option>
                                     {categorias.map((cat) => (
                                         <option key={cat.id || cat.nombre} value={cat.nombre}>
-                                            {cat.nombre}
+                                            {cat.habilidad}
                                         </option>
                                     ))}
                                 </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Peso (g) *</label>
+                                <input
+                                    type="number"
+                                    name="peso"
+                                    value={robotForm.peso}
+                                    onChange={handleRobotChange}
+                                    placeholder="500"
+                                    min="0"
+                                />
                             </div>
                             <div className="form-group">
                                 <label>Foto del Robot (URL)</label>
@@ -511,6 +530,18 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                                     value={editingRobot.nombre}
                                     onChange={handleEditRobotChange}
                                     placeholder="MechaKnight 3000"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Peso (g)</label>
+                                <input
+                                    type="number"
+                                    name="peso"
+                                    value={editingRobot.peso}
+                                    onChange={handleEditRobotChange}
+                                    placeholder="500"
+                                    min="0"
+                                    required
                                 />
                             </div>
                             <div className="form-group">

@@ -29,7 +29,6 @@ public class RobotController {
         this.competidorService = competidorService;
         this.categoriaService = categoriaService;
     }
-
     @GetMapping
     public ResponseEntity<?> listarRobots() throws Exception {
         try{
@@ -53,10 +52,17 @@ public class RobotController {
     public ResponseEntity<?> agregarRobot(@PathVariable int id, @RequestBody RegistroRobotDTO registroRobotDTO) throws Exception {
         try{
             Categoria categoria = categoriaService.buscarPorNombre(registroRobotDTO.getCategoria());
+            if (registroRobotDTO.getPeso() == 0){
+                return ResponseEntity.badRequest().body("Error: El peso del robot no puede ser cero!!");
+            }
+            if (categoria.getPeso_max()<registroRobotDTO.getPeso() || categoria.getPeso_min()>registroRobotDTO.getPeso()){
+                return ResponseEntity.badRequest().body("Error el peso debe ser entre: " + categoria.getPeso_min() + " - "+ categoria.getPeso_max());
+            }
             robot = new Robot(
                     registroRobotDTO.getNombre(),
                     registroRobotDTO.getFoto(),
-                    categoria);
+                    categoria,
+                    registroRobotDTO.getPeso());
             robot = robotService.agregarRobot(robot,id);
             return ResponseEntity.ok(robot);
         } catch (Exception e) {
