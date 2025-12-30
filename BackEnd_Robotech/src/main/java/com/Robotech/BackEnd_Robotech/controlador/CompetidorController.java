@@ -1,5 +1,6 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
+import com.Robotech.BackEnd_Robotech.DTO.CompetidorDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.DTO.RegistroCompetidorDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
@@ -64,6 +65,26 @@ public class CompetidorController {
             }else {
                 return ResponseEntity.badRequest().body("El código único ya ha sido utilizado.");
             }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+        }
+    }
+    //Editar datos del competidor
+    @PutMapping("/modificar")
+    public ResponseEntity<?> modificarCompetidor(@RequestBody CompetidorDTO competidorDTO){
+        try{
+            Competidor competidor = competidorService.modificarCompetidor(competidorDTO);
+            CompetidorDTO competidorDTO1 = new CompetidorDTO(
+                    competidor.getId(),
+                    competidor.getApodo(),
+                    competidor.getUsuario().getNombres(),
+                    competidor.getUsuario().getCorreo(),
+                    competidor.getUsuario().getRol().getNombre(),
+                    competidor.getUsuario().getDni(),
+                    competidor.getUsuario().getFoto(),
+                    competidor.getUsuario().getEstado()
+            );
+            return ResponseEntity.ok(competidorDTO1);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }

@@ -1,5 +1,6 @@
 package com.Robotech.BackEnd_Robotech.servicios.interfaz;
 
+import com.Robotech.BackEnd_Robotech.DTO.RegistroRobotDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.modelo.Robot;
 
@@ -11,4 +12,5 @@ public interface IRobotServicio {
     public Robot agregarRobot(Robot robot, int id) throws Exception;
     public Robot buscarPorId(int id) throws Exception;
     public void eliminarPorId(int id) throws Exception;
+    public Robot modificarRobot(RegistroRobotDTO registroRobotDTO) throws Exception;
 }

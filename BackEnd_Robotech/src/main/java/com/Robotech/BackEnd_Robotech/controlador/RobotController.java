@@ -72,6 +72,13 @@ public class RobotController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-
+    //Modificar robot
+    @PutMapping("/modificar")
+    public ResponseEntity<?> modificarRobot(@RequestBody RegistroRobotDTO registroRobotDTO){
+        try {
+            return ResponseEntity.ok(robotService.modificarRobot(registroRobotDTO));
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

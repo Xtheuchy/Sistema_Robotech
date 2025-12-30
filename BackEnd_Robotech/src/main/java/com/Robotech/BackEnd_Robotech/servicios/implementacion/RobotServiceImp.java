@@ -1,5 +1,6 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
+import com.Robotech.BackEnd_Robotech.DTO.RegistroRobotDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.modelo.Robot;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
@@ -47,5 +48,14 @@ public class RobotServiceImp implements IRobotServicio {
     @Override
     public void eliminarPorId(int id) throws Exception {
         robotRepositorio.deleteById(id);
+    }
+
+    @Override
+    public Robot modificarRobot(RegistroRobotDTO registroRobotDTO) throws Exception {
+        Robot robot = robotRepositorio.findById(registroRobotDTO.getId())
+                .orElseThrow(()-> new Exception("No se encontro robot con id : " + registroRobotDTO.getId()));
+        robot.setNombre(registroRobotDTO.getNombre());
+        robot.setFoto(registroRobotDTO.getFoto());
+        return  robotRepositorio.save(robot);
     }
 }

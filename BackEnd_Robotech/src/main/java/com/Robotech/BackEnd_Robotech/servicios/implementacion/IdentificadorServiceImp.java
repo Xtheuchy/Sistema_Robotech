@@ -1,6 +1,7 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
 import com.Robotech.BackEnd_Robotech.modelo.Club;
+import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
 import com.Robotech.BackEnd_Robotech.repositorio.IIdentificadorRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IIdentificadorServicio;
@@ -36,5 +37,10 @@ public class IdentificadorServiceImp implements IIdentificadorServicio {
     @Override
     public List<Identificador> listarIdentificadorPorClub(Club club) throws Exception {
         return identificadorRepositorio.findAllByClub(club);
+    }
+
+    @Override
+    public Identificador obtenerIdentificadorPorCompetidor(Competidor competidor) throws Exception {
+        return identificadorRepositorio.findByCompetidor(competidor);
     }
 }

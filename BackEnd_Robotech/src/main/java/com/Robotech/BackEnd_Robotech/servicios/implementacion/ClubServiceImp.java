@@ -74,7 +74,7 @@ public class ClubServiceImp implements IClubServicio {
     public ClubDTO obtenerPorId(int id) throws Exception {
         Club club = clubRepositorio.findById(id)
                 .orElseThrow(()->new Exception("Club con id: "+ id +" no encontrado "));
-        return new ClubDTO(club.getId(),
+        return new ClubDTO(club.getId(),club.getUsuario().getId(),
                 club.getUsuario().getNombres(),
                 club.getUsuario().getFoto(),
                 club.getUsuario().getCorreo(),

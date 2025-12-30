@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ClubDTO {
     private int id;
+    private int idPropietario;
     private String propietario;
     private String propietarioFoto;
     private String correo;

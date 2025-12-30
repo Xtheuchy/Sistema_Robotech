@@ -42,6 +42,7 @@ public class ClubController {
             Club club = clubService.obtenerPorUsuario(usuario);
             ClubDTO clubDTO = new ClubDTO(
                     club.getId(),
+                    club.getUsuario().getId(),
                     club.getUsuario().getNombres(),
                     club.getUsuario().getFoto(),
                     club.getUsuario().getCorreo(),
@@ -65,6 +66,7 @@ public class ClubController {
         List<ClubDTO> clubs = clubes.stream()
                 .map(club -> new ClubDTO(
                         club.getId(),
+                        club.getUsuario().getId(),
                         club.getUsuario().getNombres(),
                         club.getUsuario().getFoto(),
                         club.getUsuario().getCorreo(),
@@ -186,6 +188,20 @@ public class ClubController {
         }
     }
 
+    //Obtener club por competidor
+    @GetMapping("/competidorClub/{id}")
+    public ResponseEntity<?> obtenerClubPorCompetidor(@PathVariable int id){
+        try {
+            Competidor competidor = competidorService.buscarPorId(id);
+            Identificador identificador = identificadorService.obtenerIdentificadorPorCompetidor(competidor);
+            CompetidorClubDTO competidorClubDTO = new CompetidorClubDTO();
+            competidorClubDTO.setIdClub(identificador.getClub().getId());
+            competidorClubDTO.setNombreClub(identificador.getClub().getNombre());
+            return ResponseEntity.ok(competidorClubDTO);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
 

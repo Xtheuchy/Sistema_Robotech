@@ -6,9 +6,11 @@ import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.repositorio.ICompetidorRepositorio;
+import com.Robotech.BackEnd_Robotech.repositorio.IUsuarioRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IClubServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IIdentificadorServicio;
+import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +21,33 @@ public class CompetidorServiceImp implements ICompetidorServicio {
     private final ICompetidorRepositorio competidorRepositorio;
     private final IIdentificadorServicio identificadorServicio;
     private final IClubServicio clubServicio;
+    private final IUsuarioServicio usuarioRepositorio;
 
     @Autowired
-    public CompetidorServiceImp(IClubServicio clubServicio,ICompetidorRepositorio competidorRepositorio,IIdentificadorServicio identificadorServicio){
+    public CompetidorServiceImp(IUsuarioServicio usuarioRepositorio,IClubServicio clubServicio,ICompetidorRepositorio competidorRepositorio,IIdentificadorServicio identificadorServicio){
         this.competidorRepositorio = competidorRepositorio;
         this.identificadorServicio = identificadorServicio;
         this.clubServicio = clubServicio;
+        this.usuarioRepositorio = usuarioRepositorio;
+
     }
+
+    @Override
+    public Competidor modificarCompetidor(CompetidorDTO competidorDTO) throws Exception {
+        Competidor competidor = competidorRepositorio.findById(competidorDTO.getId())
+                .orElseThrow(()->new Exception("No se encontro el competidor"));
+
+        competidor.setApodo(competidorDTO.getApodo());
+        Usuario usuario = usuarioRepositorio.obtenerUsuarioPorId(competidor.getUsuario().getId());
+
+        usuario.setNombres(competidorDTO.getNombres());
+        usuario.setCorreo(competidorDTO.getCorreo());
+        usuario.setFoto(competidorDTO.getFoto());
+
+        usuarioRepositorio.actualizarUsuario(usuario.getId(),usuario);
+        return competidorRepositorio.save(competidor);
+    }
+
     @Override
     public List<Competidor> listarCompetidor() throws Exception {
         return competidorRepositorio.findAll();
