@@ -532,18 +532,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                                     placeholder="MechaKnight 3000"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Peso (g)</label>
-                                <input
-                                    type="number"
-                                    name="peso"
-                                    value={editingRobot.peso}
-                                    onChange={handleEditRobotChange}
-                                    placeholder="500"
-                                    min="0"
-                                    required
-                                />
-                            </div>
+                           
                             <div className="form-group">
                                 <label>Foto del Robot (URL)</label>
                                 <input

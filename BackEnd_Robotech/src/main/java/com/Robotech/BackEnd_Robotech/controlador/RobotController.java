@@ -52,9 +52,15 @@ public class RobotController {
     public ResponseEntity<?> agregarRobot(@PathVariable int id, @RequestBody RegistroRobotDTO registroRobotDTO) throws Exception {
         try{
             Categoria categoria = categoriaService.buscarPorNombre(registroRobotDTO.getCategoria());
+            robots = robotService.listarPorCompetidor(competidorService.buscarPorId(id));
+            boolean categoriadup = robots.stream().anyMatch(robot1 -> robot1.getCategoria().equals(categoria));
+            if (categoriadup){
+                return ResponseEntity.badRequest().body("Error: Ya tienes un robots en esa categoria");
+            }
             if (registroRobotDTO.getPeso() == 0){
                 return ResponseEntity.badRequest().body("Error: El peso del robot no puede ser cero!!");
             }
+
             if (categoria.getPeso_max()<registroRobotDTO.getPeso() || categoria.getPeso_min()>registroRobotDTO.getPeso()){
                 return ResponseEntity.badRequest().body("Error el peso debe ser entre: " + categoria.getPeso_min() + " - "+ categoria.getPeso_max());
             }
