@@ -62,7 +62,7 @@ public class RobotController {
             }
 
             if (categoria.getPeso_max()<registroRobotDTO.getPeso() || categoria.getPeso_min()>registroRobotDTO.getPeso()){
-                return ResponseEntity.badRequest().body("Error el peso debe ser entre: " + categoria.getPeso_min() + " - "+ categoria.getPeso_max());
+                return ResponseEntity.badRequest().body("Error: el peso del robot no es válido para esta categoría. Asegúrate de que se ajuste a los requisitos de peso de la categoría.");
             }
             robot = new Robot(
                     registroRobotDTO.getNombre(),

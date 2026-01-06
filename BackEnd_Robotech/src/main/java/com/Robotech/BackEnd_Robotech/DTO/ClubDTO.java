@@ -21,4 +21,19 @@ public class ClubDTO {
     private String logo;
     private String estado;
     private LocalDate Creado_en;
+    private int puntos;
+
+    public ClubDTO(int id, int idPropietario, String propietarioFoto, String propietario, String correo, String telefono, String clubNombre, String logo, String direccion, String estado, LocalDate creado_en) {
+        this.id = id;
+        this.idPropietario = idPropietario;
+        this.propietarioFoto = propietarioFoto;
+        this.propietario = propietario;
+        this.correo = correo;
+        this.telefono = telefono;
+        this.clubNombre = clubNombre;
+        this.logo = logo;
+        this.direccion = direccion;
+        this.estado = estado;
+        Creado_en = creado_en;
+    }
 }

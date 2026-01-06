@@ -5,6 +5,15 @@ import axiosInstance from './axiosConfig';
  */
 
 /**
+ * Listar todos los competidores
+ * @returns {Promise<Competidor[]>}
+ */
+export const listarCompetidores = async () => {
+    const response = await axiosInstance.get('/api/competidor/listar');
+    return response.data;
+};
+
+/**
  * Registrar un nuevo competidor
  * @param {Object} competidorData - RegistroCompetidorDTO
  * @param {string} competidorData.apodo - Apodo único del competidor

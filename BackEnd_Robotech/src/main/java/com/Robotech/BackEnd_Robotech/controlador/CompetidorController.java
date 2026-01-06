@@ -30,7 +30,15 @@ public class CompetidorController {
         this.rolService = rolService;
         this.usuarioService = usuarioService;
     }
-
+    //Listar competidores
+    @GetMapping("/listar")
+    public ResponseEntity<?> listarCompetidores()throws Exception{
+        try {
+            return ResponseEntity.ok(competidorService.listarCompetidor());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+        }
+    }
     //Registrar competidor
     @PostMapping("/Registrar")
     public ResponseEntity<?> registrarCompetidor(@RequestBody RegistroCompetidorDTO competidorDTO) throws Exception{

@@ -40,7 +40,8 @@ public class CategoriaController {
         categoria = categoriaService.agregarCategoria(categoria);
         return ResponseEntity.ok(categoria);
     }
-    //Modificar sede
+
+    //Modificar Categoria
     @PutMapping("/modificar/{id}")
     public ResponseEntity<?> modificarCategoria(@PathVariable int id, @RequestBody Categoria cat){
         try {
@@ -56,7 +57,7 @@ public class CategoriaController {
         }
     }
 
-    //Eliminar sede
+    //Eliminar Categoria
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<String> eliminarCategoria(@PathVariable int id){
         try{

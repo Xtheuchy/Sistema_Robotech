@@ -715,10 +715,9 @@
 
 .points {
     font-family: 'Orbitron', sans-serif;
-    font-weight: 600;
-    background: linear-gradient(135deg, #9333ea, #d4af37);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    color: #d4af37;
+    font-size: 1.1em;
 }
 
 .ranking-cta {

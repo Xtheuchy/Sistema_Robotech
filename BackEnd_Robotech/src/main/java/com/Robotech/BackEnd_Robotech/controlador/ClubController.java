@@ -43,13 +43,13 @@ public class ClubController {
             ClubDTO clubDTO = new ClubDTO(
                     club.getId(),
                     club.getUsuario().getId(),
-                    club.getUsuario().getNombres(),
                     club.getUsuario().getFoto(),
+                    club.getUsuario().getNombres(),
                     club.getUsuario().getCorreo(),
                     club.getTelefono(),
                     club.getNombre(),
-                    club.getDireccion_fiscal(),
                     club.getLogo(),
+                    club.getDireccion_fiscal(),
                     club.getEstado(),
                     club.getCreado_en()
             );
@@ -75,7 +75,8 @@ public class ClubController {
                         club.getDireccion_fiscal(),
                         club.getLogo(),
                         club.getEstado(),
-                        club.getCreado_en()
+                        club.getCreado_en(),
+                        club.getPuntos()
                 ))
                 .toList();
         return ResponseEntity.ok(clubs);

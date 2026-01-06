@@ -6,7 +6,6 @@ import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.modelo.Identificador;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.repositorio.ICompetidorRepositorio;
-import com.Robotech.BackEnd_Robotech.repositorio.IUsuarioRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IClubServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IIdentificadorServicio;
@@ -56,6 +55,7 @@ public class CompetidorServiceImp implements ICompetidorServicio {
     @Override
     public Competidor registrarCompetidor(Competidor competidor) throws Exception {
         if (competidorRepositorio.existsByApodo(competidor.getApodo())){
+            throw new Exception("El apodo ya esta registrado elige uno diferente!!");
         }
         return competidorRepositorio.save(competidor);
     }

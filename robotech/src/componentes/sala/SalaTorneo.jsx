@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { obtenerTorneoPorId, listarRobotsPorCompetidor, listarEnfrentamientosPorTorneo, listarInscripcionesPorTorneo, registrarInscripcion } from "../../api";
 import TorneoBracket from "./TorneoBracket";
+import Swal from 'sweetalert2';
 import "./Sala.css";
 
 // Imagen por defecto
@@ -138,17 +139,44 @@ const SalaTorneo = () => {
 
     const handleInscribir = async () => {
         if (!competidor) {
-            setMensaje("⚠ Inicia sesión como competidor para inscribirte.");
+            Swal.fire({
+                title: 'Inicia Sesión',
+                text: 'Debes iniciar sesión como competidor para inscribirte.',
+                icon: 'warning',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
             return;
         }
 
         // Validación local rápida
         if (robots.length === 0) {
-            setMensaje("⛔ No tienes robots. Crea uno en tu perfil antes de inscribirte.");
+            Swal.fire({
+                title: 'Sin Robots',
+                text: 'No tienes robots registrados. Crea uno en tu perfil antes de inscribirte.',
+                icon: 'error',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
             return;
         }
 
-        if (!window.confirm("⚠️ ADVERTENCIA: Una vez inscrito, NO podrás cancelar tu inscripción.\n\n¿Estás seguro de que deseas participar en este torneo?")) {
+        const result = await Swal.fire({
+            title: '¿Confirmar Inscripción?',
+            html: '<p style="color: #fbbf24; font-weight: bold;">⚠️ ADVERTENCIA</p><p>Una vez inscrito, <strong>NO podrás cancelar</strong> tu inscripción.</p><p>¿Estás seguro de que deseas participar en este torneo?</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, Inscribirme',
+            cancelButtonText: 'Cancelar',
+            background: '#1e293b',
+            color: '#fff'
+        });
+
+        if (!result.isConfirmed) {
             return;
         }
 
@@ -161,10 +189,24 @@ const SalaTorneo = () => {
                 competidorId: competidor.id
             });
             setInscrito(true);
-            setMensaje("✅ ¡Inscripción exitosa! Tu Inscripción ha sido registrado.");
+            Swal.fire({
+                title: '¡Inscripción Exitosa!',
+                text: 'Tu inscripción ha sido registrada correctamente.',
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#10b981'
+            });
         } catch (err) {
             const errorMsg = err.response?.data || "Error al realizar la inscripción";
-            setMensaje(`❌ ${typeof errorMsg === 'string' ? errorMsg : 'No cumples con los requisitos para este torneo'}`);
+            Swal.fire({
+                title: 'Error de Inscripción',
+                text: typeof errorMsg === 'string' ? errorMsg : 'No cumples con los requisitos para este torneo',
+                icon: 'error',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
         } finally {
             setLoadingInscripcion(false);
         }

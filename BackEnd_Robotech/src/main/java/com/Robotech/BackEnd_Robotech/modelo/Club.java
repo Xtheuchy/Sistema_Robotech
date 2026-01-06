@@ -28,6 +28,7 @@ public class Club {
 
     private LocalDate creado_en;
     private int puntos;
+
     public Club(Usuario usuario,String  nombre,String direccion_fiscal,String telefono,String logo, String estado){
         this.usuario = usuario;
         this.nombre = nombre;

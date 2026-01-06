@@ -16,7 +16,25 @@ const ClubCompetidor = () => {
             if (id) {
                 try {
                     const data = await obtenerClubPorId(id);
-                    setClubData(data);
+
+                    // Detectar si los campos están intercambiados
+                    const camposIntercambiados = data.propietario && data.propietario.startsWith('http');
+
+                    let datosCorregidos;
+                    if (camposIntercambiados) {
+                        console.log("⚠️ Campos intercambiados detectados, corrigiendo...");
+                        datosCorregidos = {
+                            ...data,
+                            propietario: data.propietarioFoto,
+                            propietarioFoto: data.propietario,
+                            logo: data.direccion,
+                            direccion: data.logo
+                        };
+                    } else {
+                        datosCorregidos = data;
+                    }
+
+                    setClubData(datosCorregidos);
                     fetchMiembros(data.id);
                 } catch (error) {
                     console.error("Error cargando club por ID:", error);
@@ -61,7 +79,7 @@ const ClubCompetidor = () => {
                 <div className="perfil-header club-header">
                     <div className="perfil-avatar club-avatar">
                         {clubData.logo ? (
-                            <img src={clubData.logo} alt={clubData.nombreClub} />
+                            <img src={clubData.logo} alt={clubData.clubNombre} />
                         ) : (
                             <span>🏢</span>
                         )}
@@ -69,15 +87,13 @@ const ClubCompetidor = () => {
                     <div className="perfil-info">
                         <h1>
                             <span className="text-gradient">
-                                {typeof clubData.propietario === 'object'
-                                    ? (clubData.propietario.apodo || clubData.propietario.nombres || 'Propietario')
-                                    : (clubData.propietario || 'Propietario')}
+                                {clubData.propietario || 'Propietario'}
                             </span>
                         </h1>
                         <p className="perfil-club-name" style={{ fontSize: '1.3rem', color: '#a78bfa', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                            🏢 {clubData.clubNombre || clubData.nombre || 'Nombre del Club'}
+                            🏢 {clubData.clubNombre || 'Nombre del Club'}
                         </p>
-                        <p className="perfil-email">{clubData.correo || clubData.email}</p>
+                        <p className="perfil-email">{clubData.correo}</p>
                     </div>
                 </div>
 
@@ -107,16 +123,13 @@ const ClubCompetidor = () => {
                                     <span>👤</span>
                                 )}
                             </div>
+                            <p style={{ margin: '0.5rem 0 0 0', color: '#a78bfa', fontWeight: 'bold' }}>Propietario</p>
                         </div>
                         {/* Info */}
                         <div className="info-grid" style={{ flex: 1 }}>
                             <div className="info-item">
                                 <span className="info-label">Nombre</span>
-                                <span className="info-value">
-                                    {typeof clubData.propietario === 'object'
-                                        ? (clubData.propietario.nombres || clubData.propietario.apodo)
-                                        : clubData.propietario}
-                                </span>
+                                <span className="info-value">{clubData.propietario}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Correo</span>
@@ -127,7 +140,7 @@ const ClubCompetidor = () => {
                                 <span className="info-value">{clubData.telefono}</span>
                             </div>
                             <div className="info-item">
-                                <span className="info-label">Dirección</span>
+                                <span className="info-label">Dirección del Club</span>
                                 <span className="info-value">{clubData.direccion}</span>
                             </div>
                         </div>

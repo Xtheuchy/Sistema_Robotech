@@ -50,7 +50,7 @@ const Categorias = () => {
 
   // carga los datos para editar
   const handleOpenEdit = (item) => {
-    setForm({ nombre: item.nombre, descripcion: item.descripcion, habilidad:item.habilidad, peso_max:item.peso_max, peso_min:item.peso_min});
+    setForm({ nombre: item.nombre, descripcion: item.descripcion, habilidad:item.habilidad, peso_max:item.peso_max, peso_min:item.peso_min });
     setModoEdicion(true);
     setCurrentId(item.id);
     setModalOpen(true);

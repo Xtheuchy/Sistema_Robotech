@@ -10,6 +10,13 @@ import afiche4 from "../../assets/imagenes/afiche4.jpg";
 const Ranking = () => {
     const [activeTab, setActiveTab] = useState("competidores");
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [competidores, setCompetidores] = useState([]);
+    const [clubs, setClubs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Verificar si el usuario ya inició sesión
+    const isLoggedIn = localStorage.getItem("usuario") || localStorage.getItem("club") || localStorage.getItem("competidor");
 
     const slides = [afiche1, afiche2, afiche3, afiche4];
 
@@ -21,32 +28,58 @@ const Ranking = () => {
         return () => clearInterval(interval);
     }, [slides.length]);
 
-    // Datos de ejemplo - reemplazar con API
-    const competidores = [
-        { pos: 1, nombre: "RobotMaster_X", club: "Tech Warriors", puntos: 2450, victorias: 28 },
-        { pos: 2, nombre: "CyberBot2000", club: "Digital Ninjas", puntos: 2380, victorias: 25 },
-        { pos: 3, nombre: "MechaKnight", club: "Iron Legion", puntos: 2250, victorias: 23 },
-        { pos: 4, nombre: "NanoBot_Pro", club: "Future Builders", puntos: 2100, victorias: 20 },
-        { pos: 5, nombre: "TitaniumForce", club: "Metal Storm", puntos: 1980, victorias: 18 },
-        { pos: 6, nombre: "SparkPlug", club: "Electric Dreams", puntos: 1850, victorias: 16 },
-        { pos: 7, nombre: "CircuitBreaker", club: "Tech Warriors", puntos: 1720, victorias: 14 },
-        { pos: 8, nombre: "RoboNinja", club: "Shadow Bots", puntos: 1650, victorias: 13 },
-        { pos: 9, nombre: "GearMaster", club: "Iron Legion", puntos: 1580, victorias: 12 },
-        { pos: 10, nombre: "ByteRunner", club: "Digital Ninjas", puntos: 1500, victorias: 11 },
-    ];
+    // Obtener datos de la API
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                // Obtener competidores
+                const competidoresRes = await fetch("http://localhost:8080/api/competidor/listar");
+                if (!competidoresRes.ok) throw new Error("Error al obtener competidores");
+                const competidoresData = await competidoresRes.json();
 
-    const clubs = [
-        { pos: 1, nombre: "Tech Warriors", miembros: 25, puntos: 8500, torneos: 12 },
-        { pos: 2, nombre: "Digital Ninjas", miembros: 20, puntos: 7800, torneos: 10 },
-        { pos: 3, nombre: "Iron Legion", miembros: 18, puntos: 7200, torneos: 9 },
-        { pos: 4, nombre: "Future Builders", miembros: 22, puntos: 6800, torneos: 8 },
-        { pos: 5, nombre: "Metal Storm", miembros: 15, puntos: 6200, torneos: 7 },
-        { pos: 6, nombre: "Electric Dreams", miembros: 12, puntos: 5600, torneos: 6 },
-        { pos: 7, nombre: "Shadow Bots", miembros: 14, puntos: 5100, torneos: 5 },
-        { pos: 8, nombre: "Cyber Squad", miembros: 16, puntos: 4800, torneos: 5 },
-        { pos: 9, nombre: "Robo Team", miembros: 10, puntos: 4200, torneos: 4 },
-        { pos: 10, nombre: "Mecha Force", miembros: 11, puntos: 3900, torneos: 4 },
-    ];
+                // Ordenar competidores por puntos de mayor a menor
+                const competidoresOrdenados = competidoresData
+                    .sort((a, b) => b.puntos - a.puntos)
+                    .map((c, index) => ({
+                        pos: index + 1,
+                        nombre: c.apodo,
+                        nombreCompleto: c.usuario?.nombres || "Sin nombre",
+                        foto: c.usuario?.foto || null,
+                        puntos: c.puntos || 0,
+                        id: c.id
+                    }));
+                setCompetidores(competidoresOrdenados);
+
+                // Obtener clubs
+                const clubsRes = await fetch("http://localhost:8080/api/club");
+                if (!clubsRes.ok) throw new Error("Error al obtener clubs");
+                const clubsData = await clubsRes.json();
+
+                // Ordenar clubs por puntos de mayor a menor
+                const clubsOrdenados = clubsData
+                    .sort((a, b) => b.puntos - a.puntos)
+                    .map((club, index) => ({
+                        pos: index + 1,
+                        nombre: club.clubNombre,
+                        propietario: club.propietario,
+                        logo: club.logo,
+                        puntos: club.puntos || 0,
+                        id: club.id
+                    }));
+                setClubs(clubsOrdenados);
+
+            } catch (err) {
+                console.error("Error fetching ranking data:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const getMedal = (pos) => {
         if (pos === 1) return "🥇";
@@ -106,73 +139,123 @@ const Ranking = () => {
                         </button>
                     </div>
 
+                    {/* Estado de carga */}
+                    {loading && (
+                        <div className="loading-container animate-fadeIn" style={{ textAlign: 'center', padding: '40px' }}>
+                            <p style={{ color: '#fff', fontSize: '1.2rem' }}>⏳ Cargando ranking...</p>
+                        </div>
+                    )}
+
+                    {/* Estado de error */}
+                    {error && !loading && (
+                        <div className="error-container animate-fadeIn" style={{ textAlign: 'center', padding: '40px' }}>
+                            <p style={{ color: '#ff6b6b', fontSize: '1.2rem' }}>❌ Error: {error}</p>
+                        </div>
+                    )}
+
                     {/* Tabla de Competidores */}
-                    {activeTab === "competidores" && (
+                    {!loading && !error && activeTab === "competidores" && (
                         <div className="ranking-table-container animate-fadeIn">
-                            <table className="ranking-table">
-                                <thead>
-                                    <tr>
-                                        <th>Pos</th>
-                                        <th>Competidor</th>
-                                        <th>Club</th>
-                                        <th>Puntos</th>
-                                        <th>Victorias</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {competidores.map((c) => (
-                                        <tr key={c.pos} className={c.pos <= 3 ? `rank-${c.pos}` : ""}>
-                                            <td>
-                                                <span className="rank-badge">{getMedal(c.pos)}</span>
-                                            </td>
-                                            <td>{c.nombre}</td>
-                                            <td>{c.club}</td>
-                                            <td className="points">{c.puntos.toLocaleString()}</td>
-                                            <td>{c.victorias}</td>
+                            {competidores.length === 0 ? (
+                                <p style={{ textAlign: 'center', color: '#aaa', padding: '40px' }}>
+                                    No hay competidores registrados aún.
+                                </p>
+                            ) : (
+                                <table className="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Pos</th>
+                                            <th>Foto</th>
+                                            <th>Apodo</th>
+                                            <th>Nombre</th>
+                                            <th>Puntos</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {competidores.map((c) => (
+                                            <tr key={c.id} className={c.pos <= 3 ? `rank-${c.pos}` : ""}>
+                                                <td>
+                                                    <span className="rank-badge">{getMedal(c.pos)}</span>
+                                                </td>
+                                                <td>
+                                                    <img
+                                                        src={c.foto || 'https://via.placeholder.com/40'}
+                                                        alt={c.nombre}
+                                                        style={{
+                                                            width: '40px',
+                                                            height: '40px',
+                                                            borderRadius: '50%',
+                                                            objectFit: 'cover'
+                                                        }}
+                                                    />
+                                                </td>
+                                                <td><strong>{c.nombre}</strong></td>
+                                                <td>{c.nombreCompleto}</td>
+                                                <td className="points">{c.puntos.toLocaleString()}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     )}
 
                     {/* Tabla de Clubs */}
-                    {activeTab === "clubs" && (
+                    {!loading && !error && activeTab === "clubs" && (
                         <div className="ranking-table-container animate-fadeIn">
-                            <table className="ranking-table">
-                                <thead>
-                                    <tr>
-                                        <th>Pos</th>
-                                        <th>Club</th>
-                                        <th>Miembros</th>
-                                        <th>Puntos</th>
-                                        <th>Torneos</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {clubs.map((club) => (
-                                        <tr key={club.pos} className={club.pos <= 3 ? `rank-${club.pos}` : ""}>
-                                            <td>
-                                                <span className="rank-badge">{getMedal(club.pos)}</span>
-                                            </td>
-                                            <td>{club.nombre}</td>
-                                            <td>{club.miembros}</td>
-                                            <td className="points">{club.puntos.toLocaleString()}</td>
-                                            <td>{club.torneos}</td>
+                            {clubs.length === 0 ? (
+                                <p style={{ textAlign: 'center', color: '#aaa', padding: '40px' }}>
+                                    No hay clubs registrados aún.
+                                </p>
+                            ) : (
+                                <table className="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Pos</th>
+                                            <th>Logo</th>
+                                            <th>Club</th>
+                                            <th>Propietario</th>
+                                            <th>Puntos</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {clubs.map((club) => (
+                                            <tr key={club.id} className={club.pos <= 3 ? `rank-${club.pos}` : ""}>
+                                                <td>
+                                                    <span className="rank-badge">{getMedal(club.pos)}</span>
+                                                </td>
+                                                <td>
+                                                    <img
+                                                        src={club.logo || 'https://via.placeholder.com/40'}
+                                                        alt={club.nombre}
+                                                        style={{
+                                                            width: '40px',
+                                                            height: '40px',
+                                                            borderRadius: '8px',
+                                                            objectFit: 'cover'
+                                                        }}
+                                                    />
+                                                </td>
+                                                <td><strong>{club.nombre}</strong></td>
+                                                <td>{club.propietario}</td>
+                                                <td className="points">{club.puntos.toLocaleString()}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     )}
 
-                    {/* CTA */}
-                    <div className="ranking-cta animate-fadeIn">
-                        <p>¿Quieres ver tu nombre aquí?</p>
-                        <a href="/registro/competidor" className="btn-primary">
-                            <span>Regístrate Ahora</span>
-                        </a>
-                    </div>
+                    {/* CTA - Solo mostrar si no hay sesión iniciada */}
+                    {!isLoggedIn && (
+                        <div className="ranking-cta animate-fadeIn">
+                            <p>¿Quieres ver tu nombre aquí?</p>
+                            <a href="/registro/competidor" className="btn-primary">
+                                <span>Regístrate Ahora</span>
+                            </a>
+                        </div>
+                    )}
                 </div>
             </section>
         </div>

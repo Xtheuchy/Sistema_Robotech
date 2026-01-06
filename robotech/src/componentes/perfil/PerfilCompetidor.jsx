@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { listarRobotsPorCompetidor, registrarRobot, eliminarRobot, modificarRobot, modificarCompetidor, listarCategorias, obtenerClubPorCompetidor } from "../../api";
+import Swal from 'sweetalert2';
 import "./Perfil.css";
 
 const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
@@ -19,6 +20,9 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
+    const [robotError, setRobotError] = useState(""); // Error para mostrar en el modal de robot
+    const [profileError, setProfileError] = useState(""); // Error para editar perfil
+    const [editRobotError, setEditRobotError] = useState(""); // Error para editar robot
     const [categorias, setCategorias] = useState([]);
     const [club, setClub] = useState(null);
 
@@ -77,17 +81,19 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
     };
 
     const handleSaveProfile = async () => {
+        setProfileError(""); // Limpiar error previo
+
         // Validación antes de enviar
         if (!editForm.apodo?.trim()) {
-            setMessage({ type: "error", text: "El apodo es requerido" });
+            setProfileError("El apodo es requerido");
             return;
         }
         if (!editForm.nombres?.trim()) {
-            setMessage({ type: "error", text: "El nombre es requerido" });
+            setProfileError("El nombre es requerido");
             return;
         }
         if (!editForm.correo?.trim()) {
-            setMessage({ type: "error", text: "El correo es requerido" });
+            setProfileError("El correo es requerido");
             return;
         }
 
@@ -110,19 +116,29 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
             setCompetidorActivo(competidorActualizado);
             localStorage.setItem("UsuarioData", JSON.stringify(competidorActualizado));
 
+            setProfileError("");
             setShowEditModal(false);
-            setMessage({ type: "success", text: "Perfil actualizado correctamente" });
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Perfil actualizado correctamente',
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
         } catch (err) {
-            const errorMsg = err.response?.data || err.message;
-            setMessage({ type: "error", text: typeof errorMsg === 'string' ? errorMsg : "Error al actualizar perfil" });
+            const errorMsg = err.response?.data?.message || err.response?.data || err.message || 'Error al actualizar perfil';
+            setProfileError(typeof errorMsg === 'string' ? errorMsg : 'Error al actualizar perfil');
         } finally {
             setLoading(false);
         }
     };
 
     const handleCreateRobot = async () => {
+        setRobotError(""); // Limpiar error previo
+
         if (!robotForm.nombre || !robotForm.categoria) {
-            setMessage({ type: "error", text: "Completa todos los campos del robot" });
+            setRobotError("Completa todos los campos del robot");
             return;
         }
 
@@ -136,23 +152,62 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
             });
             await fetchRobots(userData.id); // Recargar lista
             setRobotForm({ nombre: "", foto: "", categoria: "", peso: "" });
+            setRobotError("");
             setShowRobotModal(false);
-            setMessage({ type: "success", text: "Robot creado exitosamente" });
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Robot creado exitosamente',
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
         } catch (err) {
-            setMessage({ type: "error", text: "Error al crear robot" });
+            // NO cerrar el modal, mostrar error dentro del modal
+            const errorMsg = err.response?.data?.message || err.response?.data || err.message || 'Error al crear robot';
+            setRobotError(typeof errorMsg === 'string' ? errorMsg : 'Error al crear robot');
         } finally {
             setLoading(false);
         }
     };
 
     const handleDeleteRobot = async (id) => {
-        if (!window.confirm("¿Seguro que quieres eliminar este robot?")) return;
+        const result = await Swal.fire({
+            title: '¿Eliminar robot?',
+            text: '¿Seguro que quieres eliminar este robot? Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            background: '#1e293b',
+            color: '#fff'
+        });
+
+        if (!result.isConfirmed) return;
+
         try {
             await eliminarRobot(id);
             await fetchRobots(userData.id);
-            setMessage({ type: "success", text: "Robot eliminado" });
+            Swal.fire({
+                title: '¡Eliminado!',
+                text: 'El robot ha sido eliminado correctamente.',
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
         } catch (error) {
-            setMessage({ type: "error", text: "Error al eliminar robot" });
+            const errorMsg = error.response?.data?.message || error.response?.data || error.message || 'No se pudo eliminar el robot';
+            Swal.fire({
+                title: 'Error',
+                text: typeof errorMsg === 'string' ? errorMsg : 'No se pudo eliminar el robot',
+                icon: 'error',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
         }
     };
 
@@ -172,8 +227,10 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
     };
 
     const handleUpdateRobot = async () => {
+        setEditRobotError(""); // Limpiar error previo
+
         if (!editingRobot.nombre) {
-            setMessage({ type: "error", text: "El nombre del robot es requerido" });
+            setEditRobotError("El nombre del robot es requerido");
             return;
         }
 
@@ -186,11 +243,20 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                 peso: parseInt(editingRobot.peso) || 0
             });
             await fetchRobots(userData.id);
+            setEditRobotError("");
             setShowEditRobotModal(false);
             setEditingRobot(null);
-            setMessage({ type: "success", text: "Robot actualizado exitosamente" });
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Robot actualizado exitosamente',
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#06b6d4'
+            });
         } catch (err) {
-            setMessage({ type: "error", text: "Error al actualizar robot" });
+            const errorMsg = err.response?.data?.message || err.response?.data || err.message || 'Error al actualizar robot';
+            setEditRobotError(typeof errorMsg === 'string' ? errorMsg : 'Error al actualizar robot');
         } finally {
             setLoading(false);
         }
@@ -364,8 +430,25 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h3>✏️ Editar Perfil</h3>
-                            <button className="modal-close" onClick={() => setShowEditModal(false)}>×</button>
+                            <button className="modal-close" onClick={() => { setShowEditModal(false); setProfileError(""); }}>×</button>
                         </div>
+                        {profileError && (
+                            <div style={{
+                                background: 'rgba(239, 68, 68, 0.2)',
+                                border: '1px solid #ef4444',
+                                borderRadius: '8px',
+                                padding: '12px 16px',
+                                margin: '0 20px 15px 20px',
+                                color: '#fca5a5',
+                                fontSize: '0.9rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span>❌</span>
+                                <span>{profileError}</span>
+                            </div>
+                        )}
                         <div className="modal-body">
                             <div className="form-group">
                                 <label>Apodo *</label>
@@ -419,7 +502,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-secondary" onClick={() => setShowEditModal(false)}>
+                            <button className="btn-secondary" onClick={() => { setShowEditModal(false); setProfileError(""); }}>
                                 Cancelar
                             </button>
                             <button className="btn-primary" onClick={handleSaveProfile} disabled={loading}>
@@ -436,8 +519,25 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h3>🤖 Registrar Robot</h3>
-                            <button className="modal-close" onClick={() => setShowRobotModal(false)}>×</button>
+                            <button className="modal-close" onClick={() => { setShowRobotModal(false); setRobotError(""); }}>×</button>
                         </div>
+                        {robotError && (
+                            <div style={{
+                                background: 'rgba(239, 68, 68, 0.2)',
+                                border: '1px solid #ef4444',
+                                borderRadius: '8px',
+                                padding: '12px 16px',
+                                margin: '0 20px 15px 20px',
+                                color: '#fca5a5',
+                                fontSize: '0.9rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span>❌</span>
+                                <span>{robotError}</span>
+                            </div>
+                        )}
                         <div className="modal-body">
                             <div className="form-group">
                                 <label>Nombre del Robot *</label>
@@ -502,7 +602,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-secondary" onClick={() => setShowRobotModal(false)}>
+                            <button className="btn-secondary" onClick={() => { setShowRobotModal(false); setRobotError(""); }}>
                                 Cancelar
                             </button>
                             <button className="btn-primary" onClick={handleCreateRobot} disabled={loading}>
@@ -519,8 +619,25 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h3>✏️ Editar Robot</h3>
-                            <button className="modal-close" onClick={() => setShowEditRobotModal(false)}>×</button>
+                            <button className="modal-close" onClick={() => { setShowEditRobotModal(false); setEditRobotError(""); }}>×</button>
                         </div>
+                        {editRobotError && (
+                            <div style={{
+                                background: 'rgba(239, 68, 68, 0.2)',
+                                border: '1px solid #ef4444',
+                                borderRadius: '8px',
+                                padding: '12px 16px',
+                                margin: '0 20px 15px 20px',
+                                color: '#fca5a5',
+                                fontSize: '0.9rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span>❌</span>
+                                <span>{editRobotError}</span>
+                            </div>
+                        )}
                         <div className="modal-body">
                             <div className="form-group">
                                 <label>Nombre del Robot *</label>
@@ -532,7 +649,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                                     placeholder="MechaKnight 3000"
                                 />
                             </div>
-                           
+
                             <div className="form-group">
                                 <label>Foto del Robot (URL)</label>
                                 <input
@@ -560,7 +677,7 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-secondary" onClick={() => setShowEditRobotModal(false)}>
+                            <button className="btn-secondary" onClick={() => { setShowEditRobotModal(false); setEditRobotError(""); }}>
                                 Cancelar
                             </button>
                             <button className="btn-primary" onClick={handleUpdateRobot} disabled={loading}>

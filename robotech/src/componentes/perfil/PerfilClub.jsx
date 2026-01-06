@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { generarCodigoInvitacion, listarIntegrantesClub, modificarClub, actualizarUsuario } from "../../api";
+import Swal from 'sweetalert2';
 import "./Perfil.css";
 
 const PerfilClub = ({ clubActivo }) => {
@@ -14,12 +15,38 @@ const PerfilClub = ({ clubActivo }) => {
     const [ownerForm, setOwnerForm] = useState({});
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
+    const [clubEditError, setClubEditError] = useState(""); // Error para modal editar club
+    const [ownerEditError, setOwnerEditError] = useState(""); // Error para modal editar propietario
     const [copiado, setCopiado] = useState(false);
 
     useEffect(() => {
         const cargarDatosClub = async () => {
             if (clubActivo) {
-                console.log("clubActivo completo:", clubActivo); // DEBUG: ver campos del usuario
+                console.log("=== DEBUG clubActivo ===");
+                console.log("clubActivo completo:", clubActivo);
+
+                // Detectar si los campos están intercambiados
+                // Si propietario contiene "http" es porque tiene la URL de la foto
+                const camposIntercambiados = clubActivo.propietario && clubActivo.propietario.startsWith('http');
+
+                let datosCorregidos;
+                if (camposIntercambiados) {
+                    console.log("⚠️ Campos intercambiados detectados, corrigiendo...");
+                    datosCorregidos = {
+                        ...clubActivo,
+                        // Intercambiar propietario <-> propietarioFoto
+                        propietario: clubActivo.propietarioFoto,
+                        propietarioFoto: clubActivo.propietario,
+                        // Intercambiar logo <-> direccion
+                        logo: clubActivo.direccion,
+                        direccion: clubActivo.logo
+                    };
+                } else {
+                    datosCorregidos = clubActivo;
+                }
+
+                console.log("Datos corregidos:", datosCorregidos);
+                console.log("=========================");
 
                 // clubActivo ya viene con los datos del club desde Login.jsx
                 // clubActivo.id = ID del club
@@ -28,12 +55,11 @@ const PerfilClub = ({ clubActivo }) => {
                 // Guardar el ID del usuario propietario
                 setPropietarioUserId(clubActivo.idPropietario);
 
-                // Usar directamente los datos que ya tenemos del login
-                // Esto evita hacer una llamada redundante a la API
-                setClubData(clubActivo);
+                // Usar los datos corregidos
+                setClubData(datosCorregidos);
                 setClubId(clubActivo.id); // El ID del club
-                setEditForm(clubActivo);
-                setOwnerForm(clubActivo);
+                setEditForm(datosCorregidos);
+                setOwnerForm(datosCorregidos);
 
                 // Cargar miembros usando el ID del club
                 if (clubActivo.id) {
@@ -62,6 +88,7 @@ const PerfilClub = ({ clubActivo }) => {
     };
 
     const handleSaveProfile = async () => {
+        setClubEditError(""); // Limpiar error previo
         setLoading(true);
         try {
             // Crear DTO para la API según ModificarClubDTO
@@ -89,17 +116,27 @@ const PerfilClub = ({ clubActivo }) => {
             localStorage.setItem("clubActivo", JSON.stringify(updatedData));
             setClubData(updatedData);
             setEditForm(updatedData);
+            setClubEditError("");
             setShowEditModal(false);
-            setMessage({ type: "success", text: "Datos del club actualizados correctamente" });
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Datos del club actualizados correctamente',
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#a855f7'
+            });
         } catch (err) {
             console.error("Error actualizando club:", err);
-            setMessage({ type: "error", text: err.response?.data || "Error al actualizar el club" });
+            const errorMsg = err.response?.data || "Error al actualizar el club";
+            setClubEditError(typeof errorMsg === 'string' ? errorMsg : 'Error al actualizar el club');
         } finally {
             setLoading(false);
         }
     };
 
     const handleSaveOwner = async () => {
+        setOwnerEditError(""); // Limpiar error previo
         setLoading(true);
         try {
             // Obtener datos ORIGINALES del propietario desde propietarioData (no sobrescrito)
@@ -134,11 +171,20 @@ const PerfilClub = ({ clubActivo }) => {
             localStorage.setItem("clubActivo", JSON.stringify({ ...savedData, ...updatedData }));
             setClubData(updatedData);
             setOwnerForm(updatedData);
+            setOwnerEditError("");
             setShowOwnerModal(false);
-            setMessage({ type: "success", text: "Datos del propietario actualizados correctamente" });
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Datos del propietario actualizados correctamente',
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#a855f7'
+            });
         } catch (err) {
             console.error("Error actualizando propietario:", err);
-            setMessage({ type: "error", text: err.response?.data || "Error al actualizar el propietario" });
+            const errorMsg = err.response?.data || "Error al actualizar el propietario";
+            setOwnerEditError(typeof errorMsg === 'string' ? errorMsg : 'Error al actualizar el propietario');
         } finally {
             setLoading(false);
         }
@@ -159,7 +205,14 @@ const PerfilClub = ({ clubActivo }) => {
             // Intentar usar clubData.id como fallback
             const idToUse = clubData?.id;
             if (!idToUse) {
-                setMessage({ type: "error", text: "Error: No se pudo obtener el ID del club." });
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo obtener el ID del club.',
+                    icon: 'error',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#a855f7'
+                });
                 return;
             }
             // Generar con el fallback ID
@@ -168,10 +221,24 @@ const PerfilClub = ({ clubActivo }) => {
                 const updatedData = { ...clubData, codigoClub: nuevoCodigo };
                 localStorage.setItem("clubActivo", JSON.stringify(updatedData));
                 setClubData(updatedData);
-                setMessage({ type: "success", text: "Nuevo código generado: " + nuevoCodigo });
+                Swal.fire({
+                    title: '¡Código Generado!',
+                    text: 'Nuevo código: ' + nuevoCodigo,
+                    icon: 'success',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#a855f7'
+                });
             } catch (error) {
                 console.error("Error generando código:", error);
-                setMessage({ type: "error", text: error.response?.data || "Error al generar código. Intenta de nuevo." });
+                Swal.fire({
+                    title: 'Error',
+                    text: error.response?.data || 'Error al generar código. Intenta de nuevo.',
+                    icon: 'error',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#a855f7'
+                });
             }
             return;
         }
@@ -181,10 +248,24 @@ const PerfilClub = ({ clubActivo }) => {
             const updatedData = { ...clubData, codigoClub: nuevoCodigo };
             localStorage.setItem("clubActivo", JSON.stringify(updatedData));
             setClubData(updatedData);
-            setMessage({ type: "success", text: "Nuevo código generado: " + nuevoCodigo });
+            Swal.fire({
+                title: '¡Código Generado!',
+                text: 'Nuevo código: ' + nuevoCodigo,
+                icon: 'success',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#a855f7'
+            });
         } catch (error) {
             console.error("Error generando código:", error);
-            setMessage({ type: "error", text: error.response?.data || "Error al generar código. Intenta de nuevo." });
+            Swal.fire({
+                title: 'Error',
+                text: error.response?.data || 'Error al generar código. Intenta de nuevo.',
+                icon: 'error',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#a855f7'
+            });
         }
     };
 
@@ -278,19 +359,19 @@ const PerfilClub = ({ clubActivo }) => {
                         <div className="info-grid" style={{ flex: 1 }}>
                             <div className="info-item">
                                 <span className="info-label">Nombre</span>
-                                <span className="info-value">{clubData.propietario}</span>
+                                <span className="info-value">{clubData.propietario || 'Sin nombre'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Correo</span>
-                                <span className="info-value">{clubData.correo}</span>
+                                <span className="info-value">{clubData.correo || 'Sin correo'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Teléfono</span>
-                                <span className="info-value">{clubData.telefono}</span>
+                                <span className="info-value">{clubData.telefono || 'Sin teléfono'}</span>
                             </div>
                             <div className="info-item">
-                                <span className="info-label">Dirección</span>
-                                <span className="info-value">{clubData.direccion}</span>
+                                <span className="info-label">Dirección del Club</span>
+                                <span className="info-value">{clubData.direccion || 'Sin dirección'}</span>
                             </div>
                         </div>
                     </div>
@@ -404,8 +485,25 @@ const PerfilClub = ({ clubActivo }) => {
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h3>✏️ Editar Perfil del Club</h3>
-                            <button className="modal-close" onClick={() => setShowEditModal(false)}>×</button>
+                            <button className="modal-close" onClick={() => { setShowEditModal(false); setClubEditError(""); }}>×</button>
                         </div>
+                        {clubEditError && (
+                            <div style={{
+                                background: 'rgba(239, 68, 68, 0.2)',
+                                border: '1px solid #ef4444',
+                                borderRadius: '8px',
+                                padding: '12px 16px',
+                                margin: '0 20px 15px 20px',
+                                color: '#fca5a5',
+                                fontSize: '0.9rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span>❌</span>
+                                <span>{clubEditError}</span>
+                            </div>
+                        )}
                         <div className="modal-body">
                             <div className="form-group">
                                 <label>Nombre del Club</label>
@@ -446,7 +544,7 @@ const PerfilClub = ({ clubActivo }) => {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-secondary" onClick={() => setShowEditModal(false)}>
+                            <button className="btn-secondary" onClick={() => { setShowEditModal(false); setClubEditError(""); }}>
                                 Cancelar
                             </button>
                             <button className="btn-primary" onClick={handleSaveProfile} disabled={loading}>
@@ -463,8 +561,25 @@ const PerfilClub = ({ clubActivo }) => {
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h3>👤 Editar Datos del Propietario</h3>
-                            <button className="modal-close" onClick={() => setShowOwnerModal(false)}>×</button>
+                            <button className="modal-close" onClick={() => { setShowOwnerModal(false); setOwnerEditError(""); }}>×</button>
                         </div>
+                        {ownerEditError && (
+                            <div style={{
+                                background: 'rgba(239, 68, 68, 0.2)',
+                                border: '1px solid #ef4444',
+                                borderRadius: '8px',
+                                padding: '12px 16px',
+                                margin: '0 20px 15px 20px',
+                                color: '#fca5a5',
+                                fontSize: '0.9rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <span>❌</span>
+                                <span>{ownerEditError}</span>
+                            </div>
+                        )}
                         <div className="modal-body">
                             <div className="form-group">
                                 <label>Nombre del Propietario</label>
@@ -496,7 +611,7 @@ const PerfilClub = ({ clubActivo }) => {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-secondary" onClick={() => setShowOwnerModal(false)}>
+                            <button className="btn-secondary" onClick={() => { setShowOwnerModal(false); setOwnerEditError(""); }}>
                                 Cancelar
                             </button>
                             <button className="btn-primary" onClick={handleSaveOwner} disabled={loading}>
