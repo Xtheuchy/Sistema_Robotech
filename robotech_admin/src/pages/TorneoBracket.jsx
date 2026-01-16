@@ -2,8 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { enfrentamientoServicio } from '../service/enfrentamientoService';
 import Swal from 'sweetalert2';
+import { useAuth } from '../context/AuthContext';
 
 const TorneoBracketAdmin = () => {
+    //Obtener al usuario que inicio sesion 
+    const { usuario } = useAuth();
+
     // obtengo el id del torneo de la url
     const { torneoId } = useParams();
 
@@ -154,13 +158,15 @@ const TorneoBracketAdmin = () => {
                     <h2 className="text-xl font-bold text-white">Gestión de Torneo</h2>
                     <p className="text-sm text-slate-400">Torneo #{torneoId} <span className="mx-2">•</span> Ronda Actual: <span className="text-blue-400 font-bold">{rondaActual}</span></p>
                 </div>
-                <button
-                    onClick={handleGenerarRonda}
-                    disabled={generating}
-                    className={`bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg shadow-blue-500/30 transition-all duration-200 flex items-center gap-2 cursor-pointer ${generating ? 'opacity-70 cursor-not-allowed' : 'hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/50 hover:-translate-y-0.5'}`}
-                >
-                    {generating ? 'Procesando...' : <><span className="mr-2">⚡</span> Generar Siguiente Ronda</>}
-                </button>
+                {
+                    usuario.rol === "Juez" && <button
+                        onClick={handleGenerarRonda}
+                        disabled={generating}
+                        className={`bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg shadow-blue-500/30 transition-all duration-200 flex items-center gap-2 cursor-pointer ${generating ? 'opacity-70 cursor-not-allowed' : 'hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/50 hover:-translate-y-0.5'}`}
+                    >
+                        {generating ? 'Procesando...' : <><span className="mr-2">⚡</span> Generar Siguiente Ronda</>}
+                    </button>
+                }
             </header>
 
             {/* area visual del bracket */}
@@ -252,7 +258,7 @@ const AdminMatchCard = ({ match, hasConnector, onEdit }) => {
                 <div className="flex justify-between items-center bg-slate-900/50 px-3 py-2 border-b border-slate-700/50 min-h-10">
 
                     {/* muestra el boton de ingreso solo si no ha finalizado */}
-                    {!isFinished && (
+                    {!isFinished && usuario.rol === "Juez" && (
                         <button
                             onClick={onEdit}
                             className="cursor-pointer text-[10px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded transition-colors font-medium shadow-sm animate-pulse-slow"

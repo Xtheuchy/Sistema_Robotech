@@ -5,8 +5,11 @@ import TorneoCard from "../components/card/TorneoCard";
 import { categoriaServicio } from "../service/categoriaService";
 import { sedeServicio } from "../service/sedeService";
 import { usuarioServicio } from '../service/userService';
+import { useAuth } from "../context/AuthContext";
 
 const Torneos = () => {
+    //Obtenemos al usuario para listar por rol
+    const { usuario } = useAuth();
     // estados para almacenar la informacion traida de la bd
     const [torneos, setTorneos] = useState([]);
     const [categoria, setCategoria] = useState([]);
@@ -111,12 +114,21 @@ const Torneos = () => {
 
     // actualiza la lista visual cada vez que cambia el filtro seleccionado
     useEffect(() => {
+        // Verificar si el usuario es JUEZ
+        const esJuez = usuario?.rol?.toUpperCase() === 'JUEZ';
+
+        // Primero filtrar por rol (juez solo ve sus torneos asignados)
+        const torneosBase = esJuez
+            ? torneos.filter(t => t.correoJuez === usuario.correo)
+            : torneos;
+
+        // Luego aplicar el filtro de estado
         if (filtro === 'todos') {
-            setTorneosFiltrados(torneos);
+            setTorneosFiltrados(torneosBase);
         } else {
-            setTorneosFiltrados(torneos.filter(torneo => torneo.estado === filtro));
+            setTorneosFiltrados(torneosBase.filter(torneo => torneo.estado === filtro));
         }
-    }, [filtro, torneos]);
+    }, [filtro, torneos, usuario]);
 
     if (loading && torneos.length === 0) return <p>Cargando torneos...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -146,11 +158,13 @@ const Torneos = () => {
                         </button>
                     ))}
                 </div>
-                <button
-                    onClick={abrirModal}
-                    className="cursor-pointer bg-blue-800 text-white px-3 py-1 rounded-xl">
-                    Registrar torneo
-                </button>
+                {usuario.rol === 'Administrador' && (
+                    <button
+                        onClick={abrirModal}
+                        className="cursor-pointer bg-blue-800 text-white px-3 py-1 rounded-xl">
+                        Registrar torneo
+                    </button>
+                )}
             </nav>
 
             {/* area principal donde se renderizan las tarjetas */}

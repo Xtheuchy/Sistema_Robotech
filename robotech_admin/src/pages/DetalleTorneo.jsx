@@ -5,8 +5,11 @@ import { torneoServicio } from "../service/torneoService";
 import { inscripcionServicio } from "../service/inscripcionService";
 import { enfrentamientoServicio } from "../service/enfrentamientoService";
 import Swal from "sweetalert2";
+import { useAuth } from "../context/AuthContext";
 
 const DetalleTorneo = () => {
+    //Obtener al usuario que inicio sesion 
+    const { usuario } = useAuth();
     // obtenemos el id de la url
     const { id } = useParams();
 
@@ -170,12 +173,14 @@ const DetalleTorneo = () => {
 
                     {/* barra de acciones rapidas */}
                     <section className="flex flex-col sm:flex-row gap-4">
-                        <button
-                            onClick={() => generarEnfrentamiento(torneo.id)}
-                            className="cursor-pointer flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2">
-                            <i className="fa-solid fa-microchip"></i>
-                            Generar Bracket
-                        </button>
+                        {
+                            usuario.rol === "Juez" && <button
+                                onClick={() => generarEnfrentamiento(torneo.id)}
+                                className="cursor-pointer flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                                <i className="fa-solid fa-microchip"></i>
+                                Generar Bracket
+                            </button>
+                        }
 
                         <Link
                             to={`/TorneoBracket/${torneo.id}`}

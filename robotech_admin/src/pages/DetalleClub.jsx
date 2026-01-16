@@ -122,7 +122,7 @@ const DetalleClub = () => {
                             </h3>
                             <div className="flex items-center gap-4">
                                 <img
-                                    src={club.propietarioFoto || "https://via.placeholder.com/100"}
+                                    src={club.propietarioFoto}
                                     alt={club.propietario}
                                     className="w-16 h-16 rounded-full object-cover border border-gray-200"
                                 />

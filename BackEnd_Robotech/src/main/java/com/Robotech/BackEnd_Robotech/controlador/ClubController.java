@@ -43,15 +43,16 @@ public class ClubController {
             ClubDTO clubDTO = new ClubDTO(
                     club.getId(),
                     club.getUsuario().getId(),
-                    club.getUsuario().getFoto(),
                     club.getUsuario().getNombres(),
+                    club.getUsuario().getFoto(),
                     club.getUsuario().getCorreo(),
                     club.getTelefono(),
                     club.getNombre(),
-                    club.getLogo(),
                     club.getDireccion_fiscal(),
+                    club.getLogo(),
                     club.getEstado(),
-                    club.getCreado_en()
+                    club.getCreado_en(),
+                    club.getPuntos()
             );
             return ResponseEntity.ok(clubDTO);
         } catch (Exception e) {
