@@ -66,8 +66,22 @@ const Torneos = () => {
         setError(null);
         try {
             await torneoServicio.registrarTorneo(formTorneo);
-            cargarTorneos()
+            cargarTorneos();
             cerrarModal();
+            // Limpiar el formulario para próximos registros
+            setFormTorneo({
+                id: "",
+                categoria: "",
+                nombre_torneo: "",
+                descripcion_torneo: "",
+                foto: "",
+                cantidad: 8,
+                fecha_inicio: "",
+                fecha_final: "",
+                estado: "",
+                sede: "",
+                correoJuez: ""
+            });
             return Swal.fire({
                 icon: "success",
                 title: "¡Torneo Creado!",
@@ -315,7 +329,7 @@ const Torneos = () => {
                         <footer className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
                             <button type="button" onClick={cerrarModal} className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition-colors">Cancelar</button>
                             <button type="submit" form="editTorneoForm" className="px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all flex items-center gap-2">
-                                <i className="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                                <i className="fa-solid fa-plus"></i> Registrar Torneo
                             </button>
                         </footer>
                     </article>

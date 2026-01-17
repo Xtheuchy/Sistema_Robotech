@@ -1,22 +1,21 @@
-// src/componentes/ListaUsuarios.jsx
 import React, { useState, useEffect, useMemo } from 'react';
+import Swal from 'sweetalert2';
 import { usuarioServicio } from '../service/userService';
 import BotonAgregarUsuario from './BotonAgregarUsuario';
 import BtnEditarUsuario from './BtnEditarUsuario';
 
+/**
+ * Componente que muestra la lista de usuarios con filtros y acciones CRUD
+ * Permite buscar, filtrar por rol, agregar, editar y eliminar usuarios
+ */
 function ListaUsuarios() {
-    // estado para guardar todos los usuarios que vienen del backend
     const [usuariosOriginales, setUsuariosOriginales] = useState([]);
-
-    // estados para manejar la busqueda y el filtro de rol
     const [terminoBusqueda, setTerminoBusqueda] = useState('');
     const [filtroRol, setFiltroRol] = useState('TODOS');
-
-    // estados para controlar la carga y errores
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // trae la lista de usuarios desde la base de datos
+    // Obtiene la lista de usuarios desde el backend
     const cargarUsuarios = async () => {
         try {
             setLoading(true);
@@ -30,32 +29,51 @@ function ListaUsuarios() {
         }
     };
 
-    // al montar el componente carga los datos necesarios
     useEffect(() => {
         cargarUsuarios();
     }, []);
 
-    // extrae los roles unicos para llenar el select
+    // Extrae los roles únicos para el filtro
     const rolesUnicos = useMemo(() => {
         const roles = new Set(usuariosOriginales.map(user => user.rol));
         return ['TODOS', ...roles];
     }, [usuariosOriginales]);
 
-    // elimina al usuario despues de confirmar
+    // Elimina un usuario después de confirmar
     const handleEliminar = async (id, nombre) => {
-        if (window.confirm(`¿Estás seguro de que deseas eliminar a ${nombre}?`)) {
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: `¿Deseas eliminar a ${nombre}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
             try {
                 await usuarioServicio.eliminarUsuario(id);
-                alert('Usuario eliminado correctamente');
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Eliminado!',
+                    text: 'Usuario eliminado correctamente.',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
                 await cargarUsuarios();
             } catch (err) {
-                setError(err.toString());
-                alert(`Error al eliminar usuario: ${err.toString()}`);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error al eliminar usuario: ${err.toString()}`
+                });
             }
         }
     };
 
-    // filtra la lista en tiempo real segun lo que escriba el usuario
+    // Filtra usuarios según búsqueda y rol seleccionado
     const usuariosFiltrados = useMemo(() => {
         let usuariosTemp = [...usuariosOriginales];
 
@@ -110,12 +128,11 @@ function ListaUsuarios() {
                 </div>
             </header>
 
-            {/* seccion de filtros y controles */}
+            {/* Sección de filtros */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 transition-shadow hover:shadow-md">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
 
                     <div className="flex flex-col md:flex-row gap-4 grow">
-                        {/* filtro de busqueda */}
                         <div className="grow max-w-md">
                             <label htmlFor="busqueda" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                                 Buscar Usuario
@@ -137,7 +154,6 @@ function ListaUsuarios() {
                             </div>
                         </div>
 
-                        {/* filtro de rol */}
                         <div className="w-full md:w-64">
                             <label htmlFor="filtroRol" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                                 Filtrar por Rol
@@ -164,14 +180,13 @@ function ListaUsuarios() {
                         </div>
                     </div>
 
-                    {/* boton para agregar usuario */}
                     <div className="shrink-0">
                         <BotonAgregarUsuario enUsuarioAgregado={cargarUsuarios} />
                     </div>
                 </div>
             </section>
 
-            {/* tabla de resultados */}
+            {/* Tabla de usuarios */}
             <section className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -243,7 +258,6 @@ function ListaUsuarios() {
                     </table>
                 </div>
 
-                {/* mensaje si no hay resultados */}
                 {usuariosFiltrados.length === 0 && !loading && (
                     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
                         <div className="bg-gray-50 p-4 rounded-full mb-4">

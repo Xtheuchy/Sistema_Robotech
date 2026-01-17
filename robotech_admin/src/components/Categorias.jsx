@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import { categoriaServicio } from '../service/categoriaService';
 
 const Categorias = () => {
@@ -50,7 +51,7 @@ const Categorias = () => {
 
   // carga los datos para editar
   const handleOpenEdit = (item) => {
-    setForm({ nombre: item.nombre, descripcion: item.descripcion, habilidad:item.habilidad, peso_max:item.peso_max, peso_min:item.peso_min });
+    setForm({ nombre: item.nombre, descripcion: item.descripcion, habilidad: item.habilidad, peso_max: item.peso_max, peso_min: item.peso_min });
     setModoEdicion(true);
     setCurrentId(item.id);
     setModalOpen(true);
@@ -68,19 +69,52 @@ const Categorias = () => {
         setCategorias([...categorias, nuevo || { ...form, id: Date.now() }]);
       }
       setModalOpen(false);
+      Swal.fire({
+        icon: 'success',
+        title: modoEdicion ? '¡Categoría Actualizada!' : '¡Categoría Registrada!',
+        text: modoEdicion ? 'La categoría se ha actualizado correctamente.' : 'La categoría se ha registrado correctamente.',
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
-      alert("Error al guardar " + error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Error al guardar: ${error.toString()}`
+      });
     }
   };
 
   // elimina la categoria tras confirmar
   const handleDelete = async (id) => {
-    if (window.confirm("¿Seguro que deseas eliminar?")) {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas eliminar esta categoría?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
       try {
         await categoriaServicio.eliminarCategoria(id);
         setCategorias(categorias.filter(c => c.id !== id));
+        Swal.fire({
+          icon: 'success',
+          title: '¡Eliminada!',
+          text: 'La categoría ha sido eliminada correctamente.',
+          showConfirmButton: false,
+          timer: 1500
+        });
       } catch (error) {
-        alert("Error al eliminar " + error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Error al eliminar: ${error.toString()}`
+        });
       }
     }
   };

@@ -1,17 +1,21 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
 import com.Robotech.BackEnd_Robotech.modelo.Categoria;
+import com.Robotech.BackEnd_Robotech.modelo.Torneo;
 import com.Robotech.BackEnd_Robotech.repositorio.ICategoriaRepositorio;
+import com.Robotech.BackEnd_Robotech.repositorio.ITorneoRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoriaServiceImp implements ICategoriaServicio {
-    @Autowired
-    private ICategoriaRepositorio categoriaRepositorio;
+
+    @Autowired private ICategoriaRepositorio categoriaRepositorio;
+    @Autowired private ITorneoRepositorio torneoRepositorio;
 
     @Override
     public List<Categoria> listarCategoria() throws Exception {
@@ -45,6 +49,13 @@ public class CategoriaServiceImp implements ICategoriaServicio {
 
     @Override
     public void eliminarPorId(int id) throws Exception {
+        Optional<Categoria> categoria = categoriaRepositorio.findById(id);
+        if (categoria.isPresent()){
+            Optional<Torneo> torneo = torneoRepositorio.findByCategoria(categoria);
+            if (torneo.isPresent()){
+                throw new Exception("La categoría, ya esta en uso");
+            }
+        }
         categoriaRepositorio.deleteById(id);
     }
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import { sedeServicio } from '../service/sedeService';
 
 const Sedes = () => {
@@ -67,18 +68,53 @@ const Sedes = () => {
                 setSedes([...sedes, nuevaSede || { ...form, id: Date.now() }]);
             }
             cerrarModal();
+            Swal.fire({
+                icon: 'success',
+                title: modoEdicion ? '¡Sede Actualizada!' : '¡Sede Registrada!',
+                text: modoEdicion ? 'La sede se ha actualizado correctamente.' : 'La sede se ha registrado correctamente.',
+                showConfirmButton: false,
+                timer: 1500
+            });
         } catch (error) {
-            alert("Error al procesar la solicitud" + error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `Error al procesar la solicitud: ${error.toString()}`
+            });
         }
     };
 
     // elimina la sede tras confirmacion
     const handleEliminar = async (id) => {
-        if (window.confirm('¿Seguro que deseas eliminar esta sede?')) {
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¿Deseas eliminar esta sede?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
             try {
                 await sedeServicio.eliminarSede(id);
                 setSedes(sedes.filter(s => s.id !== id));
-            } catch (error) { console.error(error); }
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Eliminada!',
+                    text: 'La sede ha sido eliminada correctamente.',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error al eliminar la sede: ${error.toString()}`
+                });
+            }
         }
     };
 

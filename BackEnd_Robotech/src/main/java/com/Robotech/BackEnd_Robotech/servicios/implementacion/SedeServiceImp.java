@@ -1,17 +1,23 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
 import com.Robotech.BackEnd_Robotech.modelo.Sede;
+import com.Robotech.BackEnd_Robotech.modelo.Torneo;
 import com.Robotech.BackEnd_Robotech.repositorio.ISedeRepositorio;
+import com.Robotech.BackEnd_Robotech.repositorio.ITorneoRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ISedeServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SedeServiceImp implements ISedeServicio {
     @Autowired
     private ISedeRepositorio sedeRepositorio;
+    @Autowired
+    ITorneoRepositorio torneoRepositorio;
+
     @Override
     public List<Sede> listarSedes() throws Exception {
         return sedeRepositorio.findAll();
@@ -24,6 +30,13 @@ public class SedeServiceImp implements ISedeServicio {
 
     @Override
     public void eliminarPorId(int id) throws Exception {
+        Optional<Sede> sede = sedeRepositorio.findById(id);
+        if (sede.isPresent()){
+            Optional<Torneo> torneo = torneoRepositorio.findBySede(sede);
+            if (torneo.isPresent()){
+                throw new Exception("La sede, ya esta en uso");
+            }
+        }
         sedeRepositorio.deleteById(id);
     }
 

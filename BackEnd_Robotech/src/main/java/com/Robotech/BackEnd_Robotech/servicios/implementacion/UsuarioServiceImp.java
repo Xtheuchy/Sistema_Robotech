@@ -1,8 +1,10 @@
 package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 
 import com.Robotech.BackEnd_Robotech.modelo.Rol;
+import com.Robotech.BackEnd_Robotech.modelo.Torneo;
 import com.Robotech.BackEnd_Robotech.modelo.Usuario;
 import com.Robotech.BackEnd_Robotech.repositorio.IRolRepositorio;
+import com.Robotech.BackEnd_Robotech.repositorio.ITorneoRepositorio;
 import com.Robotech.BackEnd_Robotech.repositorio.IUsuarioRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +21,13 @@ import java.util.regex.Pattern;
 public class UsuarioServiceImp implements IUsuarioServicio {
     // Inyección de dependencias
     private final IUsuarioRepositorio usuarioRepositorio;
+    private final ITorneoRepositorio torneoRepositorio;
     private final IRolRepositorio rolRepositorio;
     private final PasswordEncoder passwordEncoder;
     @Autowired
-    public UsuarioServiceImp(IUsuarioRepositorio usuarioRepositorio, IRolRepositorio rolRepositorio, PasswordEncoder passwordEncoder) {
+    public UsuarioServiceImp(IUsuarioRepositorio usuarioRepositorio,ITorneoRepositorio torneoRepositorio ,IRolRepositorio rolRepositorio, PasswordEncoder passwordEncoder) {
         this.usuarioRepositorio = usuarioRepositorio;
+        this.torneoRepositorio = torneoRepositorio;
         this.rolRepositorio = rolRepositorio;
         this.passwordEncoder = passwordEncoder;
     }
@@ -76,6 +80,12 @@ public class UsuarioServiceImp implements IUsuarioServicio {
         // Buscamos para verificar la existencia antes de eliminar
         Usuario usuario = usuarioRepositorio.findById(id)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + id));
+        if (usuario.getRol().getNombre().equalsIgnoreCase("juez")){
+            Optional<Torneo> torneo = torneoRepositorio.findByJuez(usuario);
+            if (torneo.isPresent()){
+                throw new Exception("El juez " + usuario.getNombres() + " ya tiene un torneo asignado.");
+            }
+        }
         usuarioRepositorio.delete(usuario);
     }
     @Override
