@@ -3,7 +3,7 @@ package com.Robotech.BackEnd_Robotech.util;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 
 public class SimilarityUtil {
-    private static final double SIMILARITY_THRESHOLD = 0.95;
+    private static final double SIMILARITY_THRESHOLD = 0.90;
 
     /**
      * Valida si dos cadenas son suficientemente similares utilizando el algoritmo Jaro-Winkler.

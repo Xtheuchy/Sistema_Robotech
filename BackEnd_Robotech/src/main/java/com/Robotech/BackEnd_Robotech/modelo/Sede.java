@@ -7,7 +7,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "sedes")
+@Table(name = "sedes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "nombreSede"),
+        @UniqueConstraint(columnNames = "direccion")
+
+})
 public class Sede {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

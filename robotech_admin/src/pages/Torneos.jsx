@@ -46,7 +46,7 @@ const Torneos = () => {
         cantidad: 8,
         fecha_inicio: "",
         fecha_final: "",
-        estado: "",
+        estado: "Borrador",
         sede: "",
         correoJuez: ""
     });
@@ -319,9 +319,7 @@ const Torneos = () => {
                                 <div className="space-y-1 md:col-span-2">
                                     <label htmlFor="estado" className="block text-sm font-medium text-gray-700">Estado</label>
                                     <select id="estado" name="estado" value={formTorneo.estado} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white">
-                                        <option value="" disabled>Seleccionar...</option>
                                         <option value="Borrador">Borrador</option>
-                                        <option value="Publico">Público</option>
                                     </select>
                                 </div>
                             </form>

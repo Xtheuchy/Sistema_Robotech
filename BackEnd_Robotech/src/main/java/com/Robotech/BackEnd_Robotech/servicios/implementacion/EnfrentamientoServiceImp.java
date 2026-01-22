@@ -123,12 +123,12 @@ public class EnfrentamientoServiceImp implements IEnfrentamientoServicio {
         if (competidor == null) return;
         // 1. Sumar puntos al competidor (Siempre se hace)
         competidorServicio.modificarPuntoDeCompetidor(competidor, puntaje);
-        // 2. Sumar puntos al Club (Solo si existe la relación en la tabla intermedia)
+        // 2. Sumar puntos al Club
         Identificador identificador = identificadorRepositorio.findByCompetidor(competidor);
         // Verificamos que exista el identificador y que tenga un club asociado
         if (identificador != null && identificador.getClub() != null) {
             Club club = identificador.getClub();
-            // Calculamos el 30% (o el porcentaje que definas)
+            // Calculamos el 30%
             int puntosParaElClub = (int) Math.round(puntaje * 0.3);
 
             clubServicio.modificarPuntoDeClub(club, puntosParaElClub);

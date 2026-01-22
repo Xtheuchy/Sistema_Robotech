@@ -52,6 +52,21 @@ public class SedeServiceImp implements ISedeServicio {
 
     @Override
     public Sede modificarSede(Sede sede) throws Exception {
+        // Verifica si la sede que se desea modificar existe
+        Optional<Sede> sd = sedeRepositorio.findById(sede.getId());
+        if (sd.isPresent()) {
+            // Busca otra sede con el mismo nombre, excluyendo la sede que estamos modificando
+            Sede sedePorNombre = sedeRepositorio.findByNombreSede(sede.getNombreSede());
+
+            // Si se encuentra otra sede con el mismo nombre y no es la misma sede
+            if (sedePorNombre != null && sedePorNombre.getId() != sede.getId()) {
+                throw new Exception("El nombre: " + sede.getNombreSede() + " ya está en uso.");
+            }
+        } else {
+            throw new Exception("Sede no encontrada.");
+        }
+
+        // Guarda los cambios si todo está bien
         return sedeRepositorio.save(sede);
     }
 

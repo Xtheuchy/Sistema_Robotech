@@ -3,8 +3,6 @@ package com.Robotech.BackEnd_Robotech.servicios.implementacion;
 import com.Robotech.BackEnd_Robotech.DTO.RegistroRobotDTO;
 import com.Robotech.BackEnd_Robotech.modelo.Competidor;
 import com.Robotech.BackEnd_Robotech.modelo.Robot;
-import com.Robotech.BackEnd_Robotech.modelo.Usuario;
-import com.Robotech.BackEnd_Robotech.repositorio.ICompetidorRepositorio;
 import com.Robotech.BackEnd_Robotech.repositorio.IRobotRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICompetidorServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.IRobotServicio;
@@ -12,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RobotServiceImp implements IRobotServicio {

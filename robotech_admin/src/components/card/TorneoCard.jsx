@@ -6,8 +6,10 @@ import { Link } from "react-router-dom";
 import { categoriaServicio } from "../../service/categoriaService";
 import { sedeServicio } from "../../service/sedeService";
 import { usuarioServicio } from '../../service/userService';
+import { useAuth } from "../../context/AuthContext";
 
 const TorneoCard = ({ tournament, cargarTorneo }) => {
+    const {usuario} = useAuth();
     // estado para controlar el modal y la carga de datos
     const [modalAbierto, setModalAbierto] = useState(false);
     const [error, setError] = useState(null);
@@ -199,7 +201,7 @@ const TorneoCard = ({ tournament, cargarTorneo }) => {
                     >
                         Ver Detalles
                     </Link>
-
+                    {usuario.rol === "Administrador"&& 
                     <div className="flex gap-1 border-l border-gray-200 pl-2 ml-1">
                         {((tournament.estado === "Borrador") || (tournament.estado === "Publico")) &&
                             <button
@@ -217,7 +219,8 @@ const TorneoCard = ({ tournament, cargarTorneo }) => {
                         >
                             <i className="fa-solid fa-trash text-xs"></i>
                         </button>
-                    </div>
+                    </div>}
+                    
                 </footer>
             </article>
 

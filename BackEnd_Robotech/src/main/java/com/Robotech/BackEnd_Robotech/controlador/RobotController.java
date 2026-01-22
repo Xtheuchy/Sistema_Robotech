@@ -53,6 +53,10 @@ public class RobotController {
         try{
             Categoria categoria = categoriaService.buscarPorNombre(registroRobotDTO.getCategoria());
             robots = robotService.listarPorCompetidor(competidorService.buscarPorId(id));
+            boolean nombreDup = robots.stream().anyMatch(robot1 -> robot1.getNombre().equals(registroRobotDTO.getNombre()));
+            if (nombreDup) {
+                return ResponseEntity.badRequest().body("Error: Ya tiene un robot con ese nombre");
+            }
             boolean categoriadup = robots.stream().anyMatch(robot1 -> robot1.getCategoria().equals(categoria));
             if (categoriadup){
                 return ResponseEntity.badRequest().body("Error: Ya tienes un robots en esa categoria");

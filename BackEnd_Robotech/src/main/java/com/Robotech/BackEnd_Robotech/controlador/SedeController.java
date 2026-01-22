@@ -41,7 +41,8 @@ public class SedeController {
             sede.setNombreSede(sd.getNombreSede());
             sede.setDireccion(sd.getDireccion());
             sede.setCapacidad(sd.getCapacidad());
-            return ResponseEntity.ok(sedeServicio.modificarSede(sede));
+            sedeServicio.modificarSede(sede);
+            return ResponseEntity.ok("Sede modificado exitosamente");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }

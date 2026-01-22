@@ -159,7 +159,7 @@ const TorneoBracketAdmin = () => {
                     <p className="text-sm text-slate-400">Torneo #{torneoId} <span className="mx-2">•</span> Ronda Actual: <span className="text-blue-400 font-bold">{rondaActual}</span></p>
                 </div>
                 {
-                    usuario.rol === "Juez" && <button
+                    usuario.rol?.toUpperCase() === "JUEZ" && <button
                         onClick={handleGenerarRonda}
                         disabled={generating}
                         className={`bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg shadow-blue-500/30 transition-all duration-200 flex items-center gap-2 cursor-pointer ${generating ? 'opacity-70 cursor-not-allowed' : 'hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/50 hover:-translate-y-0.5'}`}
@@ -196,6 +196,7 @@ const TorneoBracketAdmin = () => {
                                         match={match}
                                         hasConnector={!isLastRound}
                                         onEdit={() => handleOpenEdit(match)}
+                                        usuario={usuario}
                                     />
                                 ))}
                             </div>
@@ -238,7 +239,7 @@ const TorneoBracketAdmin = () => {
 };
 
 // componente visual para cada tarjeta de partido
-const AdminMatchCard = ({ match, hasConnector, onEdit }) => {
+const AdminMatchCard = ({ match, hasConnector, onEdit, usuario }) => {
     const winner = match.apodoGanador;
 
     // determina si el partido ya tiene un ganador
@@ -258,7 +259,7 @@ const AdminMatchCard = ({ match, hasConnector, onEdit }) => {
                 <div className="flex justify-between items-center bg-slate-900/50 px-3 py-2 border-b border-slate-700/50 min-h-10">
 
                     {/* muestra el boton de ingreso solo si no ha finalizado */}
-                    {!isFinished && usuario.rol === "Juez" && (
+                    {!isFinished && usuario.rol?.toUpperCase() === "JUEZ" && (
                         <button
                             onClick={onEdit}
                             className="cursor-pointer text-[10px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded transition-colors font-medium shadow-sm animate-pulse-slow"

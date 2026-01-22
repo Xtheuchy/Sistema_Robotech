@@ -215,13 +215,13 @@ const RegistroClub = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Correo Electrónico *</label>
+                            <label>Correo Electrónico (terminar con @robotech.com) *</label>
                             <input
                                 type="email"
                                 name="responsableCorreo"
                                 value={formData.responsableCorreo}
                                 onChange={handleChange}
-                                placeholder="correo@club.com"
+                                placeholder="correo@robotech.com"
                                 required
                             />
                         </div>

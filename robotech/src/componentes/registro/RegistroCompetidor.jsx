@@ -195,13 +195,13 @@ const RegistroCompetidor = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Correo Electrónico *</label>
+                            <label>Correo Electrónico (terminar con @robotech.com)*</label>
                             <input
                                 type="email"
                                 name="correo"
                                 value={formData.correo}
                                 onChange={handleChange}
-                                placeholder="correo@ejemplo.com"
+                                placeholder="correo@robotech.com"
                                 required
                             />
                         </div>
