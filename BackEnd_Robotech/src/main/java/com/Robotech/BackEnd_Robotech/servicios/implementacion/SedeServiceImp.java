@@ -25,6 +25,12 @@ public class SedeServiceImp implements ISedeServicio {
 
     @Override
     public Sede agregarSede(Sede sede) throws Exception {
+        if(sede.getNombreSede() == null || sede.getNombreSede().isEmpty()){
+            throw new Exception("El nombre de la sede no puede estar vacío");
+        }
+        if (sede.getDireccion() == null || sede.getDireccion().isEmpty()){
+            throw new Exception("La dirección de la sede no puede estar vacío");
+        }
         return sedeRepositorio.save(sede);
     }
 

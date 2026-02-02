@@ -11,6 +11,7 @@ import com.Robotech.BackEnd_Robotech.servicios.interfaz.IUsuarioServicio;
 import com.Robotech.BackEnd_Robotech.util.SimilarityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ClubServiceImp implements IClubServicio {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Club registrarClub(RegistroClubDTO registroClubDTO, Usuario usuario) throws Exception {
         List<Club> clubes = listarClubes();
         for (Club club1 : clubes) {

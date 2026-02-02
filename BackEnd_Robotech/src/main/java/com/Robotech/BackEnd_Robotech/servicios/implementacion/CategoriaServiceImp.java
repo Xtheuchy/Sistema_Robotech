@@ -23,6 +23,12 @@ public class CategoriaServiceImp implements ICategoriaServicio {
     }
     @Override
     public Categoria agregarCategoria(Categoria categoria) throws Exception {
+        if(categoria.getNombre() == null || categoria.getNombre().isEmpty()){
+            throw new Exception("El nombre de la categoría no puede estar vacío");
+        }
+        if (categoria.getHabilidad() == null || categoria.getHabilidad().isEmpty()){
+            throw new Exception("La habilidad de la categoría no puede estar vacío");
+        }
         return categoriaRepositorio.save(categoria);
     }
 

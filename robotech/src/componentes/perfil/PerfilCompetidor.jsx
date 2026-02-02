@@ -285,8 +285,8 @@ const PerfilCompetidor = ({ competidorActivo, setCompetidorActivo }) => {
                 {/* Header del perfil */}
                 <div className="perfil-header">
                     <div className="perfil-avatar">
-                        {userData.logo ? (
-                            <img src={userData.logo} alt={userData.apodo} />
+                        {userData.foto ? (
+                            <img src={userData.foto} alt={userData.apodo} />
                         ) : (
                             <span>🤖</span>
                         )}
