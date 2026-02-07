@@ -26,7 +26,8 @@ public class UsuarioController {
         this.usuarioServicio = usuarioServicio;
         this.rolServicio = rolServicio;
     }
-    // --- 1. REGISTRO USUARIO (POST) ---
+
+    // 1. REGISTRO USUARIO
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarUsuario(@RequestBody RegistroDTO registroDTO) {
         try {
@@ -40,6 +41,7 @@ public class UsuarioController {
                     roldb,
                     registroDTO.getEstado()
             );
+
             Usuario nuevoUsuario = usuarioServicio.agregarUsuario(usuario);
 
             // Retorna el objeto creado con el ID generado y un estado 201 CREATED.
@@ -49,6 +51,7 @@ public class UsuarioController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
     // --- 2. ACTUALIZAR USUARIO (PUT) ---
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody RegistroDTO usuarioDTO) {
