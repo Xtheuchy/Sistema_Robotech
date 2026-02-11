@@ -1,7 +1,6 @@
 package com.Robotech.BackEnd_Robotech.controlador;
 
 import com.Robotech.BackEnd_Robotech.modelo.Categoria;
-import com.Robotech.BackEnd_Robotech.servicios.implementacion.CategoriaServiceImp;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

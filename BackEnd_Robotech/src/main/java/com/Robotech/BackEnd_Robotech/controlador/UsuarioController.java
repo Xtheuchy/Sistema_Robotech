@@ -39,8 +39,7 @@ public class UsuarioController {
                     registroDTO.getPassword(),
                     registroDTO.getFoto(),
                     roldb,
-                    registroDTO.getEstado()
-            );
+                    registroDTO.getEstado());
 
             Usuario nuevoUsuario = usuarioServicio.agregarUsuario(usuario);
 
@@ -57,7 +56,8 @@ public class UsuarioController {
     public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody RegistroDTO usuarioDTO) {
         try {
             Rol roldb = rolServicio.obtenerPorNombre(usuarioDTO.getRol());
-            Usuario usuario = new Usuario(usuarioDTO.getNombres(),usuarioDTO.getCorreo(),usuarioDTO.getDni(),usuarioDTO.getPassword(),usuarioDTO.getFoto(),roldb);
+            Usuario usuario = new Usuario(usuarioDTO.getNombres(), usuarioDTO.getCorreo(), usuarioDTO.getDni(),
+                    usuarioDTO.getPassword(), usuarioDTO.getFoto(), roldb);
             Usuario usuarioActualizado = usuarioServicio.actualizarUsuario(id, usuario);
             return ResponseEntity.ok(usuarioActualizado); // 200 OK
         } catch (Exception e) {
@@ -69,6 +69,7 @@ public class UsuarioController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST); // 400
         }
     }
+
     // --- 3. LISTAR TODOS LOS USUARIOS (GET) ---
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarUsuarios() throws Exception {
@@ -82,14 +83,14 @@ public class UsuarioController {
                         usuario.getRol().getNombre(),
                         usuario.getDni(),
                         usuario.getFoto(),
-                        usuario.getEstado()
-                ))
+                        usuario.getEstado()))
                 .toList();
         // Retornar la respuesta
         return ResponseEntity.ok(usuariosDTO);
     }
+
     @GetMapping("/listar")
-    public ResponseEntity<?> listarAdminyJuez() throws Exception{
+    public ResponseEntity<?> listarAdminyJuez() throws Exception {
         List<Usuario> usuarios = usuarioServicio.listarAdministradoryJuez();
         List<UsuarioDTO> usuariosDTO = usuarios.stream()
                 .map(usuario -> new UsuarioDTO(
@@ -99,11 +100,11 @@ public class UsuarioController {
                         usuario.getRol().getNombre(),
                         usuario.getDni(),
                         usuario.getFoto(),
-                        usuario.getEstado()
-                ))
+                        usuario.getEstado()))
                 .toList();
         return ResponseEntity.ok(usuariosDTO);
     }
+
     // --- 4. OBTENER USUARIO POR ID (GET) ---
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Integer id) {
@@ -111,13 +112,14 @@ public class UsuarioController {
             Usuario usuario = usuarioServicio.obtenerUsuarioPorId(id);
             return ResponseEntity.ok(usuario); // Retorna el usuario con estado 200 OK
         } catch (Exception e) {
-            //Si el servicio lanza la excepción es usuario no fue encontrado, devolvemos 404 NOT FOUND
+            // Si el servicio lanza la excepción es usuario no fue encontrado, devolvemos
+            // 404 NOT FOUND
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/jueces")
-    public ResponseEntity<?> listarJueces(){
+    public ResponseEntity<?> listarJueces() {
         try {
             List<Usuario> jueces = usuarioServicio.listarJueces();
             List<JuezDTO> juezDTOList = jueces.stream()
@@ -125,11 +127,10 @@ public class UsuarioController {
                             juez.getNombres(),
                             juez.getCorreo(),
                             juez.getDni(),
-                            juez.getFoto()
-                    ))
+                            juez.getFoto()))
                     .toList();
             return ResponseEntity.ok(juezDTOList);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
@@ -142,9 +143,8 @@ public class UsuarioController {
             // Si la eliminación es exitosa, se devuelve 204 NO CONTENT
             return new ResponseEntity<>("Usuario con ID " + id + " eliminado correctamente.", HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            //Devolvemos 404 NOT FOUND.
+            // Devolvemos 404 NOT FOUND.
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }
-

@@ -52,6 +52,7 @@ public class TorneoController {
             if (!sedeServicio.verificarNombreSede(torneoDTO.getSede())) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La sede no existe");
             }
+
             Categoria categoria = categoriaServicio.buscarPorNombre(torneoDTO.getCategoria());
             Sede sede = sedeServicio.buscarPorNombre(torneoDTO.getSede());
             Usuario juez = usuarioServicio.obtenerUsuarioPorCorreo(torneoDTO.getCorreoJuez());

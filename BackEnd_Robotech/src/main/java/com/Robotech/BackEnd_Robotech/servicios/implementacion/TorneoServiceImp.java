@@ -8,7 +8,6 @@ import com.Robotech.BackEnd_Robotech.modelo.Torneo;
 import com.Robotech.BackEnd_Robotech.repositorio.IInscripcionRepositorio;
 import com.Robotech.BackEnd_Robotech.repositorio.ITorneoRepositorio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ICategoriaServicio;
-import com.Robotech.BackEnd_Robotech.servicios.interfaz.IInscripcionServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ISedeServicio;
 import com.Robotech.BackEnd_Robotech.servicios.interfaz.ITorneoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
