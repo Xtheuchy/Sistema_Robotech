@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // Navbars y Footer
-import NavbarGamer from "./componentes/navbar/NavbarGamer.jsx";
-import NavbarCompetidor from "./componentes/navbar/NavbarCompetidor.jsx";
-import NavbarClub from "./componentes/navbar/NavbarClub.jsx";
-import Footer from "./componentes/navbar/Footer.jsx";
+import NavbarGamer from "./componentes/Navbar/NavbarGamer.jsx";
+import NavbarCompetidor from "./componentes/Navbar/NavbarCompetidor.jsx";
+import NavbarClub from "./componentes/Navbar/NavbarClub.jsx";
+import Footer from "./componentes/Navbar/Footer.jsx";
 
 // Páginas principales
 import Inicio from "./componentes/paginas/Inicio.jsx";
