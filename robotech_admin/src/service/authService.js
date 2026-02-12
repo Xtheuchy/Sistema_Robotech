@@ -1,7 +1,7 @@
 // src/service/authService.js
 
 // URL API de Autenticación
-const API_URL = "http://localhost:8080/auth";
+const API_URL = "https://robotech-backend-v456.onrender.com/auth";
 
 export const login = async (credencialesDTO) => {
   const response = await fetch(`${API_URL}/login/admin`, {

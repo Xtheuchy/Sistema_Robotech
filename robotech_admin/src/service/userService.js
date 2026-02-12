@@ -1,7 +1,7 @@
 import axios from 'axios';
 // La URL base de tu API de Spring Boot
 // (Asegúrate de que sea el puerto correcto, usualmente 8080)
-const API_URL = 'http://localhost:8080/api/usuarios';
+const API_URL = 'https://robotech-backend-v456.onrender.com/api/usuarios';
 
 
 const listarTodosUsuarios = async () => {
@@ -80,7 +80,7 @@ const eliminarUsuario = async (id) => {
 /**
  6. Listar jueces
  */
-const listarJueces = async () =>{
+const listarJueces = async () => {
     try {
         const response = await axios.get(`${API_URL}/jueces`);
         return response.data
@@ -98,6 +98,6 @@ export const usuarioServicio = {
     registrarUsuario,
     actualizarUsuario,
     eliminarUsuario,
-    listarJueces, 
+    listarJueces,
     listarTodosUsuarios
 };

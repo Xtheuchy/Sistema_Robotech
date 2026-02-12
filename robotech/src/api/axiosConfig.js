@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Configuración base de Axios para la API de Robotech
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'https://robotech-backend-v456.onrender.com';
 
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,

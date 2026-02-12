@@ -6,9 +6,16 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Solo proxy para rutas de API (todas empiezan con /api o /auth)
-      '/api': 'http://localhost:8080',
-      '/auth': 'http://localhost:8080',
+      '/api': {
+        target: 'https://robotech-backend-v456.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/auth': {
+        target: 'https://robotech-backend-v456.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })

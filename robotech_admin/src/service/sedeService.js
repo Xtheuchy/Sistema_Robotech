@@ -1,10 +1,10 @@
 import axios from "axios";
 
 //URL de la API
-const URL_API = "http://localhost:8080/api/sede"
+const URL_API = "https://robotech-backend-v456.onrender.com/api/sede"
 
 //Listar sedes
-const listarSedes = async () =>{
+const listarSedes = async () => {
     try {
         const response = await axios.get(URL_API);
         return response.data
@@ -13,7 +13,7 @@ const listarSedes = async () =>{
     }
 }
 //Registrar sede
-const registrarSede = async (sede) =>{
+const registrarSede = async (sede) => {
     try {
         const response = await axios.post(`${URL_API}/registrar`, sede)
         return response.data
@@ -24,7 +24,7 @@ const registrarSede = async (sede) =>{
 
 //Eliminar sede
 
-const eliminarSede = async (id) =>{
+const eliminarSede = async (id) => {
     try {
         const response = await axios.delete(`${URL_API}/eliminar/${id}`)
         return response.data
@@ -33,7 +33,7 @@ const eliminarSede = async (id) =>{
     }
 }
 //Modificar sede
-const actualizarSede = async (id, sede) =>{
+const actualizarSede = async (id, sede) => {
     try {
         const response = await axios.put(`${URL_API}/modificar/${id}`, sede);
         return response.data

@@ -1,11 +1,11 @@
 import axios from "axios";
 
 //URL de la API
-const URL_API = "http://localhost:8080/api/categoria"
+const URL_API = "https://robotech-backend-v456.onrender.com/api/categoria"
 
 //Listar categorias
 
-const listarCategorias = async () =>{
+const listarCategorias = async () => {
     try {
         const response = await axios.get(URL_API);
         return response.data
@@ -14,7 +14,7 @@ const listarCategorias = async () =>{
     }
 }
 //Registrar categoria
-const registrarCategoria = async (categoria) =>{
+const registrarCategoria = async (categoria) => {
     try {
         const response = await axios.post(`${URL_API}/registrar`, categoria)
         return response.data
@@ -24,7 +24,7 @@ const registrarCategoria = async (categoria) =>{
 }
 
 //Eliminar categoria
-const eliminarCategoria = async (id) =>{
+const eliminarCategoria = async (id) => {
     try {
         const response = await axios.delete(`${URL_API}/eliminar/${id}`)
         return response.data
@@ -34,7 +34,7 @@ const eliminarCategoria = async (id) =>{
 }
 
 //Modificar Categoria
-const actualizarCategoria = async (id, categoria) =>{
+const actualizarCategoria = async (id, categoria) => {
     try {
         const response = await axios.put(`${URL_API}/modificar/${id}`, categoria);
         return response.data

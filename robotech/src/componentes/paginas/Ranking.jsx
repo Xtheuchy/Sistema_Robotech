@@ -35,7 +35,7 @@ const Ranking = () => {
             setError(null);
             try {
                 // Obtener competidores
-                const competidoresRes = await fetch("http://localhost:8080/api/competidor/listar");
+                const competidoresRes = await fetch("https://robotech-backend-v456.onrender.com/api/competidor/listar");
                 if (!competidoresRes.ok) throw new Error("Error al obtener competidores");
                 const competidoresData = await competidoresRes.json();
 
@@ -53,7 +53,7 @@ const Ranking = () => {
                 setCompetidores(competidoresOrdenados);
 
                 // Obtener clubs
-                const clubsRes = await fetch("http://localhost:8080/api/club");
+                const clubsRes = await fetch("https://robotech-backend-v456.onrender.com/api/club");
                 if (!clubsRes.ok) throw new Error("Error al obtener clubs");
                 const clubsData = await clubsRes.json();
 

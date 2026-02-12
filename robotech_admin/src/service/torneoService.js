@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //URL api torneo
-const API_URL = "http://localhost:8080/api/torneo";
+const API_URL = "https://robotech-backend-v456.onrender.com/api/torneo";
 
 //1. Registrar torneo
 const registrarTorneo = async (torneo) => {
@@ -22,11 +22,11 @@ const listarTorneos = async () => {
     }
 };
 //Obtener torneo por id
-const obtenerTorneoPorId = async (id) =>{
-    try{
+const obtenerTorneoPorId = async (id) => {
+    try {
         const response = await axios.get(`${API_URL}/torneoId/${id}`)
         return response.data;
-    }catch(error){
+    } catch (error) {
         throw error.response?.data || error.message || 'Error al obtener torneo por id';
     }
 }
@@ -49,11 +49,11 @@ const listarTorneoBorrador = async () => {
     }
 };
 //5. modificar estado de torneo
-const actualizarEstado = async (id, nuevoEstado) =>{
-    try{
+const actualizarEstado = async (id, nuevoEstado) => {
+    try {
         const response = await axios.put(`${API_URL}/estado/${id}`, nuevoEstado);
         return response.data;
-    }catch(error){
+    } catch (error) {
         throw error.response?.data || error.message || 'Error al actualizar estado del torneo';
     }
 }
@@ -63,7 +63,7 @@ const actualizarEstado = async (id, nuevoEstado) =>{
  */
 const actualizarTorneo = async (Torneo) => {
     try {
-        const response = await axios.put(`${API_URL}/modificar`,Torneo);
+        const response = await axios.put(`${API_URL}/modificar`, Torneo);
         return response.data; // Retorna el Torneo actualizado
     } catch (error) {
         throw error.response?.data || error.message || 'Error al actualizar Torneo';
